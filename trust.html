@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trust Centre — BillSource AI</title>
+  <link rel="icon" type="image/png" href="logo2.png"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--orange:#FF6600;--blue:#1E88E5;--font:Helvetica,Arial,sans-serif}
+    body.dark{--bg:#0D0D0D;--card:#1A1A1A;--border:#2A2A2A;--text:#F5F5F0;--muted:#888880;--nav-bg:rgba(13,13,13,0.95)}
+    body.light{--bg:#FFFFFF;--card:#FFFFFF;--border:#E0E0E0;--text:#111111;--muted:#666660;--nav-bg:rgba(255,255,255,0.95)}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background 0.3s,color 0.3s}
+    nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2.5rem;border-bottom:0.5px solid var(--border);background:var(--nav-bg);position:sticky;top:0;z-index:100}
+    .logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .logo-sub{color:var(--orange);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;display:block}
+    .nav-right{display:flex;gap:10px;align-items:center}
+    .btn-ghost{background:transparent;border:0.5px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:6px;font-size:13px;cursor:pointer;font-family:var(--font);text-decoration:none}
+    .btn-ghost:hover{border-color:var(--orange);color:var(--orange)}
+    .btn-primary{background:var(--orange);border:none;color:#fff;padding:9px 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);text-decoration:none}
+    .theme-toggle{background:transparent;border:0.5px solid var(--border);color:var(--muted);width:36px;height:36px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+    .page{max-width:860px;margin:0 auto;padding:3rem 2.5rem}
+    h1{font-size:2rem;font-weight:700;margin-bottom:0.5rem}
+    .subtitle{color:var(--muted);font-size:1rem;margin-bottom:3rem;line-height:1.7}
+    .section{margin-bottom:3rem}
+    .section-title{font-size:1.1rem;font-weight:700;margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:0.5px solid var(--border);color:var(--orange)}
+    .cert-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-bottom:1.5rem}
+    .cert-card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:1.5rem}
+    body.light .cert-card{box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+    .cert-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(30,136,229,0.1);border:0.5px solid rgba(30,136,229,0.3);color:var(--blue);font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;margin-bottom:0.75rem}
+    .cert-badge.green{background:rgba(46,204,113,0.1);border-color:rgba(46,204,113,0.3);color:#1a9a52}
+    .cert-badge.orange{background:rgba(255,102,0,0.1);border-color:rgba(255,102,0,0.3);color:var(--orange)}
+    .cert-name{font-weight:700;font-size:1rem;margin-bottom:0.4rem}
+    .cert-by{font-size:12px;color:var(--muted);margin-bottom:0.75rem}
+    .cert-desc{font-size:13px;color:var(--muted);line-height:1.6}
+    .cert-link{display:inline-block;margin-top:0.75rem;font-size:12px;color:var(--blue);text-decoration:none}
+    .cert-link:hover{text-decoration:underline}
+    .ethics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+    .ethics-item{background:var(--card);border:0.5px solid var(--border);border-radius:10px;padding:1.25rem}
+    .ethics-icon{font-size:1.5rem;margin-bottom:0.5rem}
+    .ethics-title{font-weight:700;font-size:0.9rem;margin-bottom:0.4rem}
+    .ethics-desc{font-size:12px;color:var(--muted);line-height:1.6}
+    .notice{background:rgba(255,102,0,0.06);border:0.5px solid rgba(255,102,0,0.2);border-radius:10px;padding:1.25rem 1.5rem;font-size:13px;color:var(--text);line-height:1.7;margin-bottom:1.5rem}
+    .notice strong{color:var(--orange)}
+    .stack-item{display:flex;align-items:flex-start;gap:1rem;padding:1rem 0;border-bottom:0.5px solid var(--border)}
+    .stack-item:last-child{border-bottom:none}
+    .stack-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0;margin-top:6px}
+    .stack-text{font-size:13px;color:var(--text);line-height:1.6}
+    .stack-text strong{color:var(--text)}
+    footer{padding:1.5rem 2.5rem;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-top:3rem}
+    .footer-brand{display:flex;align-items:center;gap:10px}
+    .footer-brand-text{font-size:11px;color:var(--muted);line-height:1.6}
+    .footer-links{display:flex;gap:1.25rem;flex-wrap:wrap}
+    .footer-links a{font-size:11px;color:var(--muted);text-decoration:none}
+    .footer-links a:hover{color:var(--orange)}
+    .footer-contact{font-size:11px;color:var(--muted);line-height:1.8}
+  </style>
+</head>
+<body class="dark">
+<nav>
+  <a class="logo" href="index.html">
+    <img src="logo2.png" alt="BillSource" height="32" style="object-fit:contain;max-width:140px" onerror="this.style.display='none'"/>
+    <span class="logo-sub">AI Billing Intelligence &middot; billsource.ai</span>
+  </a>
+  <div class="nav-right">
+    <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">&#9788;</button>
+    <a class="btn-ghost" href="index.html">&#8592; Back</a>
+    <a class="btn-primary" href="index.html#demo-section">Try Billi</a>
+  </div>
+</nav>
+
+<div class="page">
+  <h1>Trust Centre</h1>
+  <p class="subtitle">Security, compliance and ethical AI commitments from BillSource AI and our infrastructure partners. We believe trust is earned through transparency.</p>
+
+  <!-- ETHICAL AI -->
+  <div class="section">
+    <div class="section-title">Ethical &amp; Responsible AI Commitment</div>
+    <div class="notice"><strong>Our commitment:</strong> Billi is built on the principle that AI should augment human decision-making, not replace it. We adhere to responsible AI practices across every layer of our platform — from the models we use to how we handle your data.</div>
+    <div class="ethics-grid">
+      <div class="ethics-item">
+        <div class="ethics-icon">&#128065;</div>
+        <div class="ethics-title">Transparency</div>
+        <div class="ethics-desc">Billi always discloses when you are interacting with AI. Responses are clearly attributed and we never impersonate human advisors.</div>
+      </div>
+      <div class="ethics-item">
+        <div class="ethics-icon">&#128274;</div>
+        <div class="ethics-title">Data Privacy</div>
+        <div class="ethics-desc">Your conversations are never used to train AI models. Your billing data and documents remain your intellectual property at all times.</div>
+      </div>
+      <div class="ethics-item">
+        <div class="ethics-icon">&#9878;</div>
+        <div class="ethics-title">Human Oversight</div>
+        <div class="ethics-desc">Billi is an advisory tool. All financial, legal and collection decisions remain with qualified human professionals.</div>
+      </div>
+      <div class="ethics-item">
+        <div class="ethics-icon">&#9878;</div>
+        <div class="ethics-title">Bias Mitigation</div>
+        <div class="ethics-desc">Our knowledge base is curated from authoritative South African legislation, industry standards and established best practices — not biased internet sources.</div>
+      </div>
+      <div class="ethics-item">
+        <div class="ethics-icon">&#128202;</div>
+        <div class="ethics-title">Accuracy First</div>
+        <div class="ethics-desc">When Billi is uncertain, it says so. We actively discourage over-reliance on AI for regulated financial and legal advice.</div>
+      </div>
+      <div class="ethics-item">
+        <div class="ethics-icon">&#127759;</div>
+        <div class="ethics-title">Regulatory Alignment</div>
+        <div class="ethics-desc">Our AI practices align with the EU AI Act principles, South Africa's POPIA, and the NCR's consumer protection requirements.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INFRASTRUCTURE CERTIFICATIONS -->
+  <div class="section">
+    <div class="section-title">Infrastructure Security Certifications</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:1.25rem;line-height:1.7">BillSource AI is hosted on Railway — a certified enterprise-grade cloud infrastructure platform. The following certifications apply to our hosting environment.</p>
+    <div class="cert-grid">
+      <div class="cert-card">
+        <div class="cert-badge green">&#10003; Certified</div>
+        <div class="cert-name">SOC 2 Type II</div>
+        <div class="cert-by">Railway &middot; Audited by independent CPA</div>
+        <div class="cert-desc">Validates security controls, availability, processing integrity, confidentiality and privacy practices over a sustained audit period — the highest level of SOC assurance.</div>
+        <a class="cert-link" href="https://trust.railway.com" target="_blank" rel="noopener">View Railway Trust Centre &#8599;</a>
+      </div>
+      <div class="cert-card">
+        <div class="cert-badge green">&#10003; Certified</div>
+        <div class="cert-name">SOC 3</div>
+        <div class="cert-by">Railway &middot; Public attestation report</div>
+        <div class="cert-desc">Public-facing summary of SOC 2 Type II controls — independently verified security posture available without NDA.</div>
+        <a class="cert-link" href="https://trust.railway.com" target="_blank" rel="noopener">View Railway Trust Centre &#8599;</a>
+      </div>
+      <div class="cert-card">
+        <div class="cert-badge green">&#10003; Compliant</div>
+        <div class="cert-name">HIPAA</div>
+        <div class="cert-by">Railway &middot; Healthcare data compliance</div>
+        <div class="cert-desc">HIPAA attestation confirming appropriate technical safeguards including data encryption at rest, SSL in transit, SSO and automatic DDoS protection.</div>
+        <a class="cert-link" href="https://trust.railway.com" target="_blank" rel="noopener">View Railway Trust Centre &#8599;</a>
+      </div>
+      <div class="cert-card">
+        <div class="cert-badge green">&#10003; Compliant</div>
+        <div class="cert-name">GDPR</div>
+        <div class="cert-by">Railway &middot; EU Data Protection</div>
+        <div class="cert-desc">Data Processing Agreement available. Full subprocessor list published for transparency. EU-US Data Privacy Framework certified.</div>
+        <a class="cert-link" href="https://trust.railway.com" target="_blank" rel="noopener">View Railway Trust Centre &#8599;</a>
+      </div>
+      <div class="cert-card">
+        <div class="cert-badge orange">&#128336; In Progress</div>
+        <div class="cert-name">ISO 27001</div>
+        <div class="cert-by">Railway &middot; International ISMS standard</div>
+        <div class="cert-desc">Railway has publicly committed to ISO 27001 certification as their next compliance milestone following SOC 2 Type II completion.</div>
+        <a class="cert-link" href="https://trust.railway.com" target="_blank" rel="noopener">View Railway Trust Centre &#8599;</a>
+      </div>
+      <div class="cert-card">
+        <div class="cert-badge green">&#10003; Compliant</div>
+        <div class="cert-name">POPIA</div>
+        <div class="cert-by">AnyABEX (Pty) Ltd &middot; South Africa</div>
+        <div class="cert-desc">BillSource AI processes personal information in compliance with the Protection of Personal Information Act, 2013 (Act 4 of 2013) of South Africa.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LLM PROVIDER -->
+  <div class="section">
+    <div class="section-title">AI Model Provider</div>
+    <div class="cert-grid">
+      <div class="cert-card">
+        <div class="cert-badge green">&#10003; Enterprise Grade</div>
+        <div class="cert-name">Anthropic Claude API</div>
+        <div class="cert-by">Claude Haiku &middot; claude.ai</div>
+        <div class="cert-desc">Billi is powered by Anthropic's Claude — built with Constitutional AI principles. Anthropic explicitly does not train on API customer data. Your conversations are private.</div>
+        <a class="cert-link" href="https://www.anthropic.com/privacy" target="_blank" rel="noopener">Anthropic Privacy Policy &#8599;</a>
+      </div>
+      <div class="cert-card">
+        <div class="cert-badge green">&#10003; Open Source</div>
+        <div class="cert-name">Flowise AI Orchestration</div>
+        <div class="cert-by">Flowise &middot; Apache 2.0 License</div>
+        <div class="cert-desc">Our AI agent orchestration layer uses Flowise — an open-source, auditable framework. No vendor lock-in. Full source code transparency.</div>
+        <a class="cert-link" href="https://flowiseai.com" target="_blank" rel="noopener">Flowise Platform &#8599;</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHANGE CONTROL -->
+  <div class="section">
+    <div class="section-title">Change Management &amp; Operational Controls</div>
+    <div class="notice"><strong>ISO-aligned practices:</strong> AnyABEX (Pty) Ltd follows ISO 27001-aligned change management practices. We are not yet ISO 27001 certified but actively work toward this standard.</div>
+    <div>
+      <div class="stack-item">
+        <div class="stack-dot"></div>
+        <div class="stack-text"><strong>Version Control via GitHub</strong> — All application code, configuration changes and documentation are managed through GitHub with full commit history, pull request reviews and audit trails. Every change to billsource.ai is traceable to a specific commit, author and timestamp.</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-dot"></div>
+        <div class="stack-text"><strong>Automated Deployment Pipeline</strong> — Changes to production are deployed via Railway's automated CI/CD pipeline triggered only from approved GitHub commits. No direct server access for deployments.</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-dot"></div>
+        <div class="stack-text"><strong>Knowledge Base Version Control</strong> — AI training documents are version-controlled and changes to the knowledge base follow a review process before being embedded into the vector store.</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-dot"></div>
+        <div class="stack-text"><strong>Environment Separation</strong> — Development and production environments are strictly separated. No untested changes reach production.</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-dot"></div>
+        <div class="stack-text"><strong>Incident Response</strong> — Security incidents are logged, triaged and resolved with documented root cause analysis. Contact <a href="mailto:security@billsource.ai" style="color:var(--blue)">security@billsource.ai</a> to report a vulnerability.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="section">
+    <div class="section-title">Security Contact</div>
+    <div class="cert-card" style="max-width:400px">
+      <div class="cert-name" style="margin-bottom:0.75rem">Report a security concern</div>
+      <div class="cert-desc" style="margin-bottom:0.5rem">&#128231; <a href="mailto:security@billsource.ai" style="color:var(--blue)">security@billsource.ai</a></div>
+      <div class="cert-desc" style="margin-bottom:0.5rem">&#128222; +27 12 661 0385</div>
+      <div class="cert-desc">We aim to respond to all security disclosures within 48 hours and to resolve critical issues within 7 days.</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-brand">
+    <img src="logo2.png" alt="BillSource" height="20" style="object-fit:contain;max-width:100px" onerror="this.style.display='none'"/>
+    <div class="footer-brand-text">
+      <div style="color:var(--text);font-size:12px;font-weight:700">billsource<sup style="font-size:8px">&#174;</sup> &middot; Billi AI</div>
+      <div>&copy; 2026 AnyABEX (Pty) Ltd &middot; All rights reserved &middot; Registered trademark</div>
+    </div>
+  </div>
+  <div class="footer-contact">
+    <div>International: <a href="tel:+27126610385" style="color:var(--muted)">+27 12 661 0385</a></div>
+    <div>Technical: <a href="tel:0126610385" style="color:var(--muted)">012 661 0385</a></div>
+  </div>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="trust.html">Trust Centre</a>
+    <a href="index.html#demo-section">Support</a>
+    <a href="https://billsource.com" target="_blank">billsource.com</a>
+  </div>
+</footer>
+<script>
+  function toggleTheme(){var b=document.body,btn=document.getElementById('theme-btn');if(b.classList.contains('dark')){b.classList.replace('dark','light');btn.innerHTML='&#9790;';localStorage.setItem('bs-theme','light')}else{b.classList.replace('light','dark');btn.innerHTML='&#9788;';localStorage.setItem('bs-theme','dark')}}
+  (function(){var s=localStorage.getItem('bs-theme');if(s==='light'){document.body.classList.replace('dark','light');document.getElementById('theme-btn').innerHTML='&#9790;'}})();
+</script>
+</body>
+</html>
