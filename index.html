@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Billi — BillSource AI · billsource.ai</title>
+  <meta name="description" content="Billi is your AI billing intelligence — EBPP, debt collection, dunning strategies, financial ratios and business risk management powered by BillSource AI."/>
+  <meta name="theme-color" content="#FF6600"/>
+  <link rel="icon" type="image/png" href="icon-only_billsource_orange.png"/>
+  <link rel="apple-touch-icon" href="icon-only_billsource_orange.png"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --orange:#FF6600;
+      --blue:#1E88E5;
+      --blue-dark:#1565C0;
+      --font: Helvetica, Arial, sans-serif;
+    }
+    /* DARK THEME (default) */
+    body.dark{
+      --bg:#0D0D0D;
+      --bg2:#111111;
+      --card:#1A1A1A;
+      --border:#2A2A2A;
+      --text:#F5F5F0;
+      --muted:#888880;
+      --input-bg:#0D0D0D;
+      --msg-ai:#1F1F1F;
+      --nav-bg:rgba(13,13,13,0.95);
+    }
+    /* LIGHT THEME */
+    body.light{
+      --bg:#FFFFFF;
+      --bg2:#F7F7F5;
+      --card:#FFFFFF;
+      --border:#E0E0E0;
+      --text:#111111;
+      --muted:#666660;
+      --input-bg:#F7F7F5;
+      --msg-ai:#F2F2F0;
+      --nav-bg:rgba(255,255,255,0.95);
+    }
+    html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;transition:background 0.3s,color 0.3s}
+
+    /* NAV */
+    nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2.5rem;border-bottom:0.5px solid var(--border);background:var(--nav-bg);position:sticky;top:0;z-index:100;backdrop-filter:blur(8px);transition:background 0.3s,border-color 0.3s}
+    .logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .logo-text{font-family:var(--font);font-weight:700;font-size:1.1rem;color:var(--text)}
+    .logo-sub{color:var(--orange);font-size:0.6rem;font-weight:400;letter-spacing:0.1em;text-transform:uppercase;display:block}
+    .nav-right{display:flex;gap:10px;align-items:center}
+    .btn-ghost{background:transparent;border:0.5px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:6px;font-size:13px;cursor:pointer;font-family:var(--font);transition:all 0.2s}
+    .btn-ghost:hover{border-color:var(--orange);color:var(--orange)}
+    .btn-primary{background:var(--orange);border:none;color:#fff;padding:9px 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);transition:opacity 0.2s}
+    .btn-primary:hover{opacity:0.88}
+
+    /* THEME TOGGLE */
+    .theme-toggle{background:transparent;border:0.5px solid var(--border);color:var(--muted);width:36px;height:36px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0}
+    .theme-toggle:hover{border-color:var(--orange);color:var(--orange)}
+
+    /* HERO */
+    .hero{padding:5rem 2.5rem 3rem;text-align:center;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:700px;height:350px;background:radial-gradient(ellipse,rgba(255,102,0,0.08) 0%,transparent 70%);pointer-events:none}
+    .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,102,0,0.1);border:0.5px solid rgba(255,102,0,0.3);color:var(--orange);font-size:12px;padding:5px 14px;border-radius:20px;margin-bottom:1.5rem}
+    .badge-dot{width:6px;height:6px;background:var(--orange);border-radius:50%;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+    h1{font-family:var(--font);font-size:3rem;font-weight:700;line-height:1.1;margin-bottom:1.25rem;max-width:680px;margin-left:auto;margin-right:auto}
+    h1 span{color:var(--orange)}
+    .hero-sub{color:var(--muted);font-size:1.05rem;max-width:480px;margin:0 auto 2.5rem;line-height:1.7}
+    .hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .btn-lg{padding:13px 28px;font-size:15px;border-radius:8px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all 0.2s;border:none}
+    .btn-lg.primary{background:var(--orange);color:#fff}
+    .btn-lg.primary:hover{opacity:0.88;transform:translateY(-1px)}
+    .btn-lg.secondary{background:transparent;border:0.5px solid var(--border);color:var(--text)}
+    .btn-lg.secondary:hover{border-color:var(--muted)}
+
+    /* TRADEMARK */
+    .trademark-section{padding:2rem 2.5rem;border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border);margin:0 2.5rem;display:flex;flex-direction:column;align-items:center}
+    .tm-logo-wrap{display:flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:center}
+    .tm-divider{width:1px;height:44px;background:var(--border)}
+    .tm-name{font-family:var(--font);font-size:1.5rem;font-weight:700;color:var(--text)}
+    .tm-name span{color:var(--orange)}
+    .tm-tagline{font-size:11px;color:var(--muted);letter-spacing:0.04em;margin-top:2px}
+    .tm-reg{font-size:10px;color:var(--muted);margin-top:4px;opacity:0.7}
+    .tm-desc{font-size:12px;color:var(--muted);max-width:280px;line-height:1.7}
+
+    /* PLANS */
+    .plans{padding:3.5rem 2.5rem;max-width:960px;margin:0 auto;width:100%}
+    .section-label{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;font-weight:600}
+    .section-title{font-family:var(--font);font-size:1.6rem;font-weight:700;margin-bottom:2rem}
+    .plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+    .plan-card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:1.5rem;position:relative;transition:border-color 0.2s,background 0.3s}
+    body.light .plan-card{box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+    .plan-card:hover{border-color:var(--orange)}
+    .plan-card.featured{border-color:var(--orange);border-width:1.5px}
+    .plan-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--orange);color:#fff;font-size:10px;font-weight:600;padding:3px 12px;border-radius:20px;white-space:nowrap;font-family:var(--font)}
+    .plan-name{font-family:var(--font);font-size:0.8rem;font-weight:700;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted)}
+    .plan-price{font-size:1.9rem;font-weight:700;font-family:var(--font);margin-bottom:0.25rem;color:var(--text)}
+    .plan-price span{font-size:0.85rem;font-weight:400;color:var(--muted)}
+    .plan-msgs{font-size:11px;color:var(--muted);margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:0.5px solid var(--border)}
+    .plan-feature{font-size:13px;color:var(--text);display:flex;align-items:center;gap:8px;margin-bottom:8px;opacity:0.85}
+    .check{color:var(--orange);font-weight:700}
+    .plan-btn{width:100%;margin-top:1.25rem;padding:10px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all 0.2s}
+    .plan-btn.outlined{background:transparent;border:0.5px solid var(--border);color:var(--text)}
+    .plan-btn.outlined:hover{border-color:var(--orange);color:var(--orange)}
+    .plan-btn.filled{background:var(--orange);border:none;color:#fff}
+    .plan-btn.filled:hover{opacity:0.88}
+
+    /* DEMO CHAT */
+    .demo{padding:2rem 2.5rem 4rem;max-width:860px;margin:0 auto;width:100%}
+    .chat-container{background:var(--card);border:0.5px solid var(--border);border-radius:16px;overflow:hidden;transition:background 0.3s,border-color 0.3s}
+    body.light .chat-container{box-shadow:0 2px 12px rgba(0,0,0,0.08)}
+    .chat-header{padding:1rem 1.25rem;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:10px}
+    .billi-name-text{font-weight:700;font-size:14px;color:var(--text)}
+    .billi-status{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;margin-top:2px}
+    .status-dot{width:6px;height:6px;background:#2ecc71;border-radius:50%}
+    .chat-messages{padding:1.25rem;display:flex;flex-direction:column;gap:12px;min-height:280px;max-height:340px;overflow-y:auto}
+    .msg{display:flex;gap:8px;align-items:flex-start}
+    .msg.user{flex-direction:row-reverse}
+    .msg-avatar-user{width:28px;height:28px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);flex-shrink:0;font-weight:700}
+    .msg-bubble{max-width:80%;padding:10px 14px;border-radius:10px;font-size:13.5px;line-height:1.6;font-family:var(--font)}
+    .msg-bubble.ai{background:var(--msg-ai);border:0.5px solid var(--border);color:var(--text)}
+    .msg-bubble.user{background:var(--orange);color:#fff}
+    .typing{display:flex;gap:4px;align-items:center;padding:4px 2px}
+    .dot{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite}
+    .dot:nth-child(2){animation-delay:0.2s}
+    .dot:nth-child(3){animation-delay:0.4s}
+    @keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+    .chat-suggestions{padding:0 1.25rem 0.875rem;display:flex;gap:8px;flex-wrap:wrap}
+    .suggestion{background:transparent;border:0.5px solid var(--border);color:var(--muted);padding:6px 12px;border-radius:20px;font-size:12px;cursor:pointer;font-family:var(--font);transition:all 0.2s}
+    .suggestion:hover{border-color:var(--orange);color:var(--orange)}
+    .chat-input-area{padding:1rem 1.25rem;border-top:0.5px solid var(--border);display:flex;gap:10px;align-items:center}
+    .chat-input{flex:1;background:var(--input-bg);border:0.5px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;font-family:var(--font);outline:none;transition:border-color 0.2s,background 0.3s}
+    .chat-input:focus{border-color:var(--orange)}
+    .chat-input::placeholder{color:var(--muted)}
+    .send-btn{background:var(--orange);border:none;color:#fff;width:40px;height:40px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;transition:opacity 0.2s}
+    .send-btn:hover{opacity:0.85}
+
+    /* FOOTER */
+    footer{padding:1.5rem 2.5rem;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+    .footer-brand{display:flex;align-items:center;gap:10px}
+    .footer-brand-text{font-size:11px;color:var(--muted);line-height:1.6;font-family:var(--font)}
+    .footer-brand-name{color:var(--text);font-size:12px;font-weight:700}
+    .footer-links{display:flex;gap:1.5rem}
+    .footer-links a{font-size:11px;color:var(--muted);text-decoration:none;transition:color 0.2s;font-family:var(--font)}
+    .footer-links a:hover{color:var(--orange)}
+
+    /* LOGIN MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:500;align-items:center;justify-content:center}
+    .modal-overlay.open{display:flex}
+    .login-box{background:var(--card);border:0.5px solid var(--border);border-radius:16px;padding:2.5rem;width:360px;text-align:center;transition:background 0.3s}
+    body.light .login-box{box-shadow:0 8px 32px rgba(0,0,0,0.12)}
+    .login-title{font-family:var(--font);font-size:1.25rem;font-weight:700;margin-bottom:0.5rem;margin-top:1rem;color:var(--text)}
+    .login-sub{font-size:12px;color:var(--muted);margin-bottom:1.75rem;line-height:1.6}
+    .google-btn{width:100%;padding:12px;background:#fff;border:0.5px solid #ddd;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);color:#333;margin-bottom:12px;transition:opacity 0.2s}
+    .google-btn:hover{opacity:0.92}
+    .divider{display:flex;align-items:center;gap:12px;margin:1rem 0;color:var(--muted);font-size:11px}
+    .divider::before,.divider::after{content:'';flex:1;height:0.5px;background:var(--border)}
+    .email-input{width:100%;background:var(--input-bg);border:0.5px solid var(--border);border-radius:8px;padding:11px 14px;color:var(--text);font-size:14px;font-family:var(--font);outline:none;margin-bottom:10px;transition:border-color 0.2s}
+    .email-input:focus{border-color:var(--orange)}
+    .login-note{font-size:10px;color:var(--muted);margin-top:1rem;line-height:1.6}
+
+    /* EMBED BANNER */
+    .embed-banner{background:rgba(255,102,0,0.08);border:0.5px solid rgba(255,102,0,0.2);border-radius:10px;padding:1rem 1.25rem;margin:0 2.5rem 0;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+    .embed-banner-text{font-size:13px;color:var(--text);line-height:1.6}
+    .embed-banner-text strong{color:var(--orange)}
+
+    /* RESPONSIVE */
+    @media(max-width:640px){
+      nav{padding:1rem 1.25rem}
+      .hero{padding:3rem 1.25rem 2rem}
+      h1{font-size:2rem}
+      .trademark-section,.embed-banner{margin:0 1.25rem}
+      .plans{padding:2.5rem 1.25rem}
+      .demo{padding:1.5rem 1.25rem 3rem}
+      footer{padding:1.25rem;flex-direction:column;text-align:center}
+      .login-box{width:90%;padding:1.75rem}
+      .tm-divider{display:none}
+    }
+  </style>
+</head>
+<body class="dark">
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#">
+    <img src="icon-only_billsource_orange.png" alt="BillSource" width="38" height="38"
+      style="border-radius:50%;border:2px solid #1E88E5;object-fit:cover"
+      onerror="this.style.display='none'"/>
+    <div>
+      <div class="logo-text">BillSource <span style="color:var(--orange)">·</span> Billi</div>
+      <span class="logo-sub">AI Billing Intelligence · billsource.ai</span>
+    </div>
+  </a>
+  <div class="nav-right">
+    <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" title="Toggle light/dark">&#9788;</button>
+    <button class="btn-ghost" onclick="openLogin()">Sign in</button>
+    <button class="btn-primary" onclick="openLogin()">Get started free</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="badge"><span class="badge-dot"></span>MVP Phase 1 &mdash; live now</div>
+  <h1>Meet <span>Billi</span> &mdash; your AI billing intelligence</h1>
+  <p class="hero-sub">Electronic bill payment, debt collection, financial ratios, dunning strategies and business risk &mdash; trained on your domain, ready for your team.</p>
+  <div class="hero-cta">
+    <button class="btn-lg primary" onclick="openLogin()">
+      <svg width="16" height="16" viewBox="0 0 18 18" fill="none" style="vertical-align:-3px;margin-right:6px">
+        <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
+        <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
+        <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+        <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+      </svg>
+      Continue with Google
+    </button>
+    <button class="btn-lg secondary" onclick="document.getElementById('demo-section').scrollIntoView({behavior:'smooth'})">See Billi in action &#8595;</button>
+  </div>
+</section>
+
+<!-- TRADEMARK -->
+<section class="trademark-section">
+  <div class="tm-logo-wrap">
+    <img src="logo2.png" alt="billsource registered trademark" height="48"
+      onerror="this.style.display='none';document.getElementById('tm-svg').style.display='block'"/>
+    <svg id="tm-svg" style="display:none" width="64" height="64" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+      <g transform="rotate(-8,50,60)">
+        <rect x="8" y="12" width="64" height="84" rx="7" fill="#FF6600"/>
+        <rect x="20" y="34" width="40" height="5" rx="2.5" fill="#fff" opacity="0.9"/>
+        <rect x="20" y="45" width="32" height="5" rx="2.5" fill="#fff" opacity="0.75"/>
+        <polygon points="8,84 72,84 72,96 40,106 8,96" fill="#CC4400"/>
+      </g>
+      <circle cx="50" cy="60" r="48" fill="none" stroke="#1E88E5" stroke-width="3"/>
+    </svg>
+    <div class="tm-divider"></div>
+    <div>
+      <div class="tm-name"><span>bill</span>source<sup style="font-size:11px;color:var(--muted)">&#174;</sup></div>
+      <div class="tm-tagline">All your bills in one place. &middot; 2.0</div>
+      <div class="tm-reg">Registered trademark &middot; AnyABEX (Pty) Ltd &middot; &copy; 2026 &middot; All rights reserved</div>
+    </div>
+    <div class="tm-divider"></div>
+    <div class="tm-desc">Powered by Billi &mdash; the AI intelligence layer built on the BillSource platform. Your data, your IP, your brand.</div>
+  </div>
+</section>
+
+<!-- BILLSOURCE.COM EMBED BANNER -->
+<div class="embed-banner" style="margin-top:2rem">
+  <div class="embed-banner-text">
+    <strong>Already a BillSource customer?</strong> Log in to billsource.com to access Billi directly inside your billing dashboard &mdash; no separate login needed.
+  </div>
+  <a href="https://billsource.com" target="_blank" rel="noopener">
+    <button class="btn-primary" style="white-space:nowrap">Go to billsource.com &#8599;</button>
+  </a>
+</div>
+
+<!-- PRICING -->
+<section class="plans">
+  <div class="section-label">Pricing</div>
+  <div class="section-title">Simple, usage-based plans</div>
+  <div class="plans-grid">
+    <div class="plan-card">
+      <div class="plan-name">Free</div>
+      <div class="plan-price">R0 <span>/mo</span></div>
+      <div class="plan-msgs">10 messages &middot; try Billi</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Full knowledge base access</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Billing &amp; dunning Q&amp;A</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> 1 user</div>
+      <button class="plan-btn outlined" onclick="openLogin()">Start free</button>
+    </div>
+    <div class="plan-card featured">
+      <div class="plan-badge">Most popular</div>
+      <div class="plan-name" style="color:var(--orange)">Solo</div>
+      <div class="plan-price">R199 <span>/mo</span></div>
+      <div class="plan-msgs">500 messages &middot; 1 person</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Full knowledge base</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Debt collection tools</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Financial ratio analysis</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Conversation history</div>
+      <button class="plan-btn filled" onclick="openLogin()">Get started</button>
+    </div>
+    <div class="plan-card">
+      <div class="plan-name">Team</div>
+      <div class="plan-price">R499 <span>/mo</span></div>
+      <div class="plan-msgs">2 000 messages &middot; up to 5 users</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Everything in Solo</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> 5 user seats</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Shared conversation log</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Priority support</div>
+      <button class="plan-btn outlined" onclick="openLogin()">Choose Team</button>
+    </div>
+    <div class="plan-card">
+      <div class="plan-name">Business</div>
+      <div class="plan-price">R999 <span>/mo</span></div>
+      <div class="plan-msgs">10 000 messages &middot; unlimited users</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Everything in Team</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Unlimited seats</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> API access</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Custom knowledge base</div>
+      <button class="plan-btn outlined" onclick="openLogin()">Choose Business</button>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO CHAT -->
+<section class="demo" id="demo-section">
+  <div class="section-label">Live demo</div>
+  <div class="section-title">Ask Billi anything</div>
+  <div class="chat-container">
+    <div class="chat-header">
+      <img src="icon-only_billsource_orange.png" alt="Billi" width="32" height="32"
+        style="border-radius:50%;object-fit:cover;border:1.5px solid #1E88E5;flex-shrink:0"
+        onerror="this.style.display='none'"/>
+      <div>
+        <div class="billi-name-text">Billi</div>
+        <div class="billi-status"><span class="status-dot"></span>Online &middot; BillSource AI</div>
+      </div>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="msg">
+        <img src="icon-only_billsource_orange.png" alt="Billi" width="28" height="28"
+          style="border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid #1565C0"
+          onerror="this.outerHTML='<div style=width:28px;height:28px;border-radius:50%;background:#1565C0;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;font-weight:700>B</div>'"/>
+        <div class="msg-bubble ai">Hi! I'm Billi, your BillSource AI assistant. I specialise in EBPP, debt collection, dunning strategies, financial ratios and business risk management. How can I help you today?</div>
+      </div>
+    </div>
+    <div class="chat-suggestions" id="suggestions">
+      <button class="suggestion" onclick="sendSuggestion(this)">What is EBPP?</button>
+      <button class="suggestion" onclick="sendSuggestion(this)">Best dunning sequence for overdue accounts?</button>
+      <button class="suggestion" onclick="sendSuggestion(this)">Key financial ratios for credit risk?</button>
+      <button class="suggestion" onclick="sendSuggestion(this)">Debt collection law in South Africa</button>
+    </div>
+    <div class="chat-input-area" id="chat-input-area">
+      <input class="chat-input" id="chat-input" placeholder="Ask Billi a billing question..." onkeydown="if(event.key==='Enter')sendMessage()"/>
+      <button class="send-btn" onclick="sendMessage()">&#8594;</button>
+    </div>
+  </div>
+  <p style="font-size:12px;color:var(--muted);margin-top:10px;text-align:center;font-family:var(--font)">
+    Demo limited to 3 messages &middot;
+    <a style="color:var(--orange);cursor:pointer;text-decoration:none" onclick="openLogin()">Sign up free</a>
+    for 10 messages &middot; No card required
+  </p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <img src="icon-only_billsource_orange.png" alt="BillSource" width="28" height="28"
+      style="border-radius:50%;object-fit:cover" onerror="this.style.display='none'"/>
+    <div class="footer-brand-text">
+      <div class="footer-brand-name">billsource<sup style="font-size:8px">&#174;</sup> &middot; Billi AI</div>
+      <div>&copy; 2026 AnyABEX (Pty) Ltd &middot; All rights reserved &middot; Registered trademark</div>
+    </div>
+  </div>
+  <div class="footer-links">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Support</a>
+    <a href="https://billsource.com" target="_blank" rel="noopener">billsource.com</a>
+  </div>
+</footer>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="login-modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="login-box" id="login-box">
+    <img src="icon-only_billsource_orange.png" alt="BillSource" width="64" height="64"
+      style="border-radius:50%;border:2px solid #1E88E5;object-fit:cover;display:block;margin:0 auto"
+      onerror="this.style.display='none'"/>
+    <div class="login-title">Sign in to BillSource</div>
+    <div class="login-sub">Access Billi &mdash; your AI billing intelligence. Private, secure, built on your domain expertise.</div>
+    <button class="google-btn" onclick="googleSignIn()">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
+        <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
+        <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+        <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+      </svg>
+      Continue with Google
+    </button>
+    <div class="divider">or</div>
+    <input class="email-input" type="email" placeholder="Enter your work email" id="email-input"/>
+    <button class="btn-primary" style="width:100%;padding:11px;border-radius:8px;font-size:14px;font-family:var(--font)" onclick="emailSignIn()">Continue with email</button>
+    <div class="login-note">
+      Your conversations are private and never used for AI training.<br>
+      billsource&#174; is a registered trademark of AnyABEX (Pty) Ltd &copy; 2026
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ═══════════════════════════════════════════
+     CONFIGURATION — update these two values
+     ═══════════════════════════════════════════ */
+  var FLOWISE_API = 'https://billsource.ai/api/v1/prediction/YOUR-CHATFLOW-ID-HERE';
+  var GOOGLE_AUTH_URL = '/auth/google';
+
+  /* ═══════════════════════════════════════════
+     THEME TOGGLE
+     ═══════════════════════════════════════════ */
+  function toggleTheme() {
+    var body = document.body;
+    var btn = document.getElementById('theme-btn');
+    if (body.classList.contains('dark')) {
+      body.classList.replace('dark', 'light');
+      btn.innerHTML = '&#9790;';
+      localStorage.setItem('bs-theme', 'light');
+    } else {
+      body.classList.replace('light', 'dark');
+      btn.innerHTML = '&#9788;';
+      localStorage.setItem('bs-theme', 'dark');
+    }
+  }
+  /* Restore saved preference */
+  (function() {
+    var saved = localStorage.getItem('bs-theme');
+    if (saved === 'light') {
+      document.body.classList.replace('dark', 'light');
+      document.getElementById('theme-btn').innerHTML = '&#9790;';
+    }
+  })();
+
+  /* ═══════════════════════════════════════════
+     DEMO CHAT
+     ═══════════════════════════════════════════ */
+  var demoCount = 0, maxDemo = 3, isTyping = false;
+
+  var fb = {
+    ebpp: 'EBPP (Electronic Bill Payment and Presentment) allows businesses to deliver bills electronically and receive payments digitally — replacing paper with email, web portals or apps. It reduces billing costs by up to 70% and dramatically shortens your DSO (Days Sales Outstanding).',
+    dunning: 'An effective dunning sequence: Day 1 — friendly reminder, Day 7 — polite follow-up with amount outstanding, Day 14 — firm notice with late fee warning, Day 21 — formal demand letter, Day 30 — final notice before collections, Day 45+ — refer to collections or legal.',
+    ratio: 'Key credit risk ratios: Current Ratio (>1.5 healthy), Quick Ratio (>1.0 preferred), Debt-to-Equity (<2.0 acceptable), Days Sales Outstanding (lower = better), Interest Coverage Ratio (>3.0 safe). Watch DSO closely — above 45 days signals collection risk.',
+    debt: 'SA debt collection is governed by the National Credit Act (34 of 2005) and Debt Collectors Act (114 of 1998). Collectors must register with the Council for Debt Collectors. The in duplum rule limits interest to 100% of outstanding capital. Always serve a Section 129 notice before legal action.',
+    def: 'Great question. Sign up for a free account to access my full knowledge base — 597 chunks of specialised billing, dunning, EBPP and financial risk expertise ready to help your business.'
+  };
+
+  function getFallback(msg) {
+    var l = msg.toLowerCase();
+    if (l.includes('ebpp') || l.includes('electronic bill')) return fb.ebpp;
+    if (l.includes('dunning') || l.includes('overdue') || l.includes('sequence')) return fb.dunning;
+    if (l.includes('ratio') || l.includes('credit risk')) return fb.ratio;
+    if (l.includes('debt') || l.includes('collection') || l.includes('legal')) return fb.debt;
+    return fb.def;
+  }
+
+  function billiAv() {
+    return '<img src="icon-only_billsource_orange.png" alt="Billi" width="28" height="28" style="border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid #1565C0" onerror="this.outerHTML=\'<div style=width:28px;height:28px;border-radius:50%;background:#1565C0;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;font-weight:700>B</div>\'">';
+  }
+
+  function addMessage(text, role) {
+    var msgs = document.getElementById('chat-messages');
+    var d = document.createElement('div');
+    d.className = 'msg' + (role === 'user' ? ' user' : '');
+    var av = role === 'user' ? '<div class="msg-avatar-user">U</div>' : billiAv();
+    d.innerHTML = av + '<div class="msg-bubble ' + role + '">' + text + '</div>';
+    msgs.appendChild(d);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function showTyping() {
+    var msgs = document.getElementById('chat-messages');
+    var d = document.createElement('div');
+    d.className = 'msg'; d.id = 'typing-indicator';
+    d.innerHTML = billiAv() + '<div class="msg-bubble ai"><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>';
+    msgs.appendChild(d);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function removeTyping() { var t = document.getElementById('typing-indicator'); if (t) t.remove(); }
+
+  async function sendMessage() {
+    if (isTyping) return;
+    var input = document.getElementById('chat-input');
+    var msg = input.value.trim();
+    if (!msg) return;
+    if (demoCount >= maxDemo) { openLogin(); return; }
+    input.value = ''; demoCount++;
+    document.getElementById('suggestions').style.display = 'none';
+    addMessage(msg, 'user'); isTyping = true; showTyping();
+    var responseText = '';
+    try {
+      var res = await fetch(FLOWISE_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: msg })
+      });
+      if (res.ok) { var data = await res.json(); responseText = data.text || data.answer || getFallback(msg); }
+      else { responseText = getFallback(msg); }
+    } catch (e) { responseText = getFallback(msg); }
+    removeTyping(); addMessage(responseText, 'ai'); isTyping = false;
+    if (demoCount >= maxDemo) showLock();
+  }
+
+  function sendSuggestion(el) { document.getElementById('chat-input').value = el.textContent; sendMessage(); }
+
+  function showLock() {
+    document.getElementById('chat-input-area').innerHTML =
+      '<div style="width:100%;text-align:center;padding:1rem">' +
+      '<div style="font-size:13px;color:var(--muted);margin-bottom:10px;font-family:var(--font)">' +
+      '<strong style="color:var(--text)">You\'ve used all 3 demo messages.</strong><br>' +
+      'Sign up free for 10 messages — no card needed.</div>' +
+      '<button class="btn-primary" style="padding:10px 24px;border-radius:7px;font-size:13px" onclick="openLogin()">Create free account</button></div>';
+  }
+
+  /* ═══════════════════════════════════════════
+     AUTH
+     ═══════════════════════════════════════════ */
+  function openLogin() { document.getElementById('login-modal').classList.add('open'); }
+
+  function googleSignIn() {
+    /* Once server.js is deployed, replace with: window.location.href = GOOGLE_AUTH_URL; */
+    document.getElementById('login-box').innerHTML =
+      '<div style="font-size:3rem;margin-bottom:1rem">&#10003;</div>' +
+      '<div class="login-title">Redirecting to Google...</div>' +
+      '<div class="login-sub" style="margin-top:0.5rem">You will be authenticated via Google OAuth and redirected to your BillSource account at billsource.ai</div>';
+  }
+
+  function emailSignIn() {
+    var email = document.getElementById('email-input').value;
+    if (!email) return;
+    document.getElementById('login-box').innerHTML =
+      '<div style="font-size:3rem;margin-bottom:1rem">&#9993;</div>' +
+      '<div class="login-title">Check your inbox</div>' +
+      '<div class="login-sub" style="margin-top:0.5rem">Magic link sent to <strong>' + email + '</strong><br>Click it to access Billi — no password needed.</div>';
+  }
+</script>
+</body>
+</html>
