@@ -2,9 +2,6 @@
   "name": "billsource-ai",
   "version": "1.0.0",
   "scripts": {
-    "start": "serve . -p $PORT -s"
-  },
-  "dependencies": {
-    "serve": "^14.0.0"
+    "start": "node server.js"
   }
 }
