@@ -3,42 +3,45 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Billi — BillSource AI · billsource.ai</title>
-  <meta name="description" content="Billi is your AI billing intelligence — EBPP, debt collection, dunning strategies, financial ratios and business risk management powered by BillSource AI."/>
-  <meta name="theme-color" content="#FF6600"/>
+  <title>Billi — BillSource AI · Know your financial health score in 60 seconds</title>
+  <meta name="description" content="Upload your income statement. Billi analyses 12 financial ratios, scores your business health, and tells you exactly what to do — before the cash flow crisis hits."/>
+  <meta name="theme-color" content="#E8621A"/>
   <link rel="icon" type="image/png" href="icon-only_billsource_orange.png"/>
   <link rel="apple-touch-icon" href="icon-only_billsource_orange.png"/>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     :root{
-      --orange:#FF6600;
-      --blue:#1E88E5;
-      --blue-dark:#1565C0;
+      --orange:#E8621A;
+      --orange-soft:#D4571A;
+      --orange-glow:rgba(232,98,26,0.12);
+      --orange-glow-light:rgba(232,98,26,0.06);
+      --blue:#2D7DD2;
+      --blue-dark:#1A5FA8;
       --font: Helvetica, Arial, sans-serif;
     }
-    /* DARK THEME (default) */
+    /* DARK THEME (default) — warm charcoal */
     body.dark{
-      --bg:#0D0D0D;
-      --bg2:#111111;
-      --card:#1A1A1A;
-      --border:#2A2A2A;
-      --text:#F5F5F0;
-      --muted:#888880;
-      --input-bg:#0D0D0D;
-      --msg-ai:#1F1F1F;
-      --nav-bg:rgba(13,13,13,0.95);
+      --bg:#1C1C1E;
+      --bg2:#242426;
+      --card:#2A2A2C;
+      --border:#3A3A3C;
+      --text:#F0EDE8;
+      --muted:#8A8784;
+      --input-bg:#1C1C1E;
+      --msg-ai:#2A2A2C;
+      --nav-bg:rgba(28,28,30,0.96);
     }
-    /* LIGHT THEME */
+    /* LIGHT THEME — warm cream/mushroom */
     body.light{
-      --bg:#FFFFFF;
-      --bg2:#F7F7F5;
-      --card:#FFFFFF;
-      --border:#E0E0E0;
-      --text:#111111;
-      --muted:#666660;
-      --input-bg:#F7F7F5;
-      --msg-ai:#F2F2F0;
-      --nav-bg:rgba(255,255,255,0.95);
+      --bg:#F5F0EB;
+      --bg2:#EDE8E2;
+      --card:#FAF7F4;
+      --border:#D8D0C8;
+      --text:#1A1614;
+      --muted:#6B6460;
+      --input-bg:#EDE8E2;
+      --msg-ai:#EDE8E2;
+      --nav-bg:rgba(245,240,235,0.96);
     }
     html{scroll-behavior:smooth}
     body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;transition:background 0.3s,color 0.3s}
@@ -60,8 +63,8 @@
 
     /* HERO */
     .hero{padding:5rem 2.5rem 3rem;text-align:center;position:relative;overflow:hidden}
-    .hero::before{content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:700px;height:350px;background:radial-gradient(ellipse,rgba(255,102,0,0.08) 0%,transparent 70%);pointer-events:none}
-    .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,102,0,0.1);border:0.5px solid rgba(255,102,0,0.3);color:var(--orange);font-size:12px;padding:5px 14px;border-radius:20px;margin-bottom:1.5rem}
+    .hero::before{content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:700px;height:350px;background:radial-gradient(ellipse,var(--orange-glow) 0%,transparent 70%);pointer-events:none}
+    .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(232,98,26,0.09);border:0.5px solid rgba(232,98,26,0.25);color:var(--orange);font-size:12px;padding:5px 14px;border-radius:20px;margin-bottom:1.5rem}
     .badge-dot{width:6px;height:6px;background:var(--orange);border-radius:50%;animation:pulse 2s infinite}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
     h1{font-family:var(--font);font-size:3rem;font-weight:700;line-height:1.1;margin-bottom:1.25rem;max-width:680px;margin-left:auto;margin-right:auto}
@@ -90,10 +93,10 @@
     .section-title{font-family:var(--font);font-size:1.6rem;font-weight:700;margin-bottom:2rem}
     .plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
     .plan-card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:1.5rem;position:relative;transition:border-color 0.2s,background 0.3s}
-    body.light .plan-card{box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+    body.light .plan-card{box-shadow:0 1px 6px rgba(80,50,20,0.07)}
     .plan-card:hover{border-color:var(--orange)}
-    .plan-card.featured{border-color:var(--orange);border-width:1.5px}
-    .plan-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--orange);color:#fff;font-size:10px;font-weight:600;padding:3px 12px;border-radius:20px;white-space:nowrap;font-family:var(--font)}
+    .plan-card.featured{border-color:var(--orange-soft);border-width:1.5px}
+    .plan-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--orange-soft);color:#fff;font-size:10px;font-weight:600;padding:3px 12px;border-radius:20px;white-space:nowrap;font-family:var(--font)}
     .plan-name{font-family:var(--font);font-size:0.8rem;font-weight:700;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted)}
     .plan-price{font-size:1.9rem;font-weight:700;font-family:var(--font);margin-bottom:0.25rem;color:var(--text)}
     .plan-price span{font-size:0.85rem;font-weight:400;color:var(--muted)}
@@ -109,7 +112,7 @@
     /* DEMO CHAT */
     .demo{padding:2rem 2.5rem 4rem;max-width:860px;margin:0 auto;width:100%}
     .chat-container{background:var(--card);border:0.5px solid var(--border);border-radius:16px;overflow:hidden;transition:background 0.3s,border-color 0.3s}
-    body.light .chat-container{box-shadow:0 2px 12px rgba(0,0,0,0.08)}
+    body.light .chat-container{box-shadow:0 2px 14px rgba(80,50,20,0.09)}
     .chat-header{padding:1rem 1.25rem;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:10px}
     .billi-name-text{font-weight:700;font-size:14px;color:var(--text)}
     .billi-status{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;margin-top:2px}
@@ -149,7 +152,7 @@
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:500;align-items:center;justify-content:center}
     .modal-overlay.open{display:flex}
     .login-box{background:var(--card);border:0.5px solid var(--border);border-radius:16px;padding:2.5rem;width:360px;text-align:center;transition:background 0.3s}
-    body.light .login-box{box-shadow:0 8px 32px rgba(0,0,0,0.12)}
+    body.light .login-box{box-shadow:0 8px 32px rgba(80,50,20,0.13)}
     .login-title{font-family:var(--font);font-size:1.25rem;font-weight:700;margin-bottom:0.5rem;margin-top:1rem;color:var(--text)}
     .login-sub{font-size:12px;color:var(--muted);margin-bottom:1.75rem;line-height:1.6}
     .google-btn{width:100%;padding:12px;background:#fff;border:0.5px solid #ddd;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);color:#333;margin-bottom:12px;transition:opacity 0.2s}
@@ -161,12 +164,71 @@
     .login-note{font-size:10px;color:var(--muted);margin-top:1rem;line-height:1.6}
 
     /* EMBED BANNER */
-    .embed-banner{background:rgba(255,102,0,0.08);border:0.5px solid rgba(255,102,0,0.2);border-radius:10px;padding:1rem 1.25rem;margin:0 2.5rem 0;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+    .embed-banner{background:var(--orange-glow-light);border:0.5px solid rgba(232,98,26,0.18);border-radius:10px;padding:1rem 1.25rem;margin:0 2.5rem 0;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
     .embed-banner-text{font-size:13px;color:var(--text);line-height:1.6}
     .embed-banner-text strong{color:var(--orange)}
 
-    /* RESPONSIVE */
+    /* HOW IT WORKS */
+    .how{padding:3.5rem 2.5rem;max-width:860px;margin:0 auto;width:100%}
+    .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;position:relative}
+    .steps::before{content:'';position:absolute;top:28px;left:calc(16.6% + 16px);right:calc(16.6% + 16px);height:1px;background:linear-gradient(90deg,var(--orange),rgba(232,98,26,0.28));z-index:0}
+    .step{text-align:center;padding:0 1.5rem;position:relative;z-index:1}
+    .step-num{width:56px;height:56px;border-radius:50%;background:var(--orange);color:#fff;font-size:1.3rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;position:relative;box-shadow:0 0 0 6px var(--bg),0 0 0 7px rgba(232,98,26,0.18)}
+    .step-title{font-weight:700;font-size:0.95rem;margin-bottom:0.5rem;color:var(--text)}
+    .step-desc{font-size:12.5px;color:var(--muted);line-height:1.7}
     @media(max-width:640px){
+      .steps{grid-template-columns:1fr;gap:2rem}
+      .steps::before{display:none}
+    }
+
+    /* UPLOAD ZONE */
+    .upload-zone{border:1.5px dashed rgba(232,98,26,0.35);border-radius:12px;padding:2rem;text-align:center;cursor:pointer;transition:all 0.2s;background:rgba(232,98,26,0.04);margin-bottom:1rem}
+    .upload-zone:hover{border-color:var(--orange);background:var(--orange-glow-light)}
+    .upload-icon{font-size:2rem;margin-bottom:0.75rem;display:block}
+    .upload-title{font-weight:700;font-size:0.95rem;color:var(--text);margin-bottom:0.25rem}
+    .upload-sub{font-size:12px;color:var(--muted)}
+    .upload-types{display:flex;gap:8px;justify-content:center;margin-top:0.75rem;flex-wrap:wrap}
+    .upload-type{background:rgba(232,98,26,0.1);border:0.5px solid rgba(232,98,26,0.28);color:var(--orange);font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:0.05em}
+
+    /* SCORE PREVIEW */
+    .score-preview{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:1.25rem;margin-top:1rem;display:none}
+    .score-preview.visible{display:block;animation:fadeUp 0.4s ease}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .score-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+    .score-badge{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px}
+    .score-badge.green{background:rgba(46,204,113,0.15);color:#2ecc71;border:0.5px solid rgba(46,204,113,0.3)}
+    .score-badge.amber{background:rgba(255,193,7,0.15);color:#f39c12;border:0.5px solid rgba(255,193,7,0.3)}
+    .score-badge.red{background:rgba(231,76,60,0.15);color:#e74c3c;border:0.5px solid rgba(231,76,60,0.3)}
+    .ratio-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .ratio-item{background:var(--bg2);border-radius:8px;padding:0.6rem 0.75rem}
+    .ratio-label{font-size:10px;color:var(--muted);margin-bottom:2px}
+    .ratio-value{font-size:1rem;font-weight:700;color:var(--text)}
+    .ratio-status{font-size:9px;margin-top:2px}
+    .ratio-status.ok{color:#2ecc71}
+    .ratio-status.warn{color:#f39c12}
+    .ratio-status.bad{color:#e74c3c}
+
+    /* RISK METER */
+    .risk-meter{margin:1rem 0}
+    .risk-meter-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px}
+    .risk-bar{height:6px;border-radius:3px;background:var(--border);overflow:hidden}
+    .risk-fill{height:100%;border-radius:3px;transition:width 1s ease;background:linear-gradient(90deg,#2ecc71,#f39c12,#e74c3c)}
+
+    /* STAT ROW */
+    .stat-row{display:flex;gap:1.5rem;justify-content:center;padding:2rem 2.5rem;border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border);flex-wrap:wrap}
+    .stat{text-align:center}
+    .stat-num{font-size:1.8rem;font-weight:700;color:var(--orange);font-family:var(--font)}
+    .stat-desc{font-size:11px;color:var(--muted);margin-top:2px}
+
+    /* EMBED BANNER updated */
+    .embed-banner-text strong{color:var(--orange)}
+
+    /* RESPONSIVE additions */
+    @media(max-width:640px){
+      .ratio-grid{grid-template-columns:repeat(2,1fr)}
+      .stat-row{gap:1rem;padding:1.5rem 1.25rem}
+      .how{padding:2.5rem 1.25rem}
+    }
       nav{padding:1rem 1.25rem}
       .hero{padding:3rem 1.25rem 2rem}
       h1{font-size:2rem}
@@ -189,7 +251,7 @@
       onerror="this.style.display='none'"/>
     <div>
       <div class="logo-text">BillSource <span style="color:var(--orange)">·</span> Billi</div>
-      <span class="logo-sub">AI Billing Intelligence · billsource.ai</span>
+      <span class="logo-sub">Financial Intelligence · billsource.ai</span>
     </div>
   </a>
   <div class="nav-right">
@@ -201,62 +263,129 @@
 
 <!-- HERO -->
 <section class="hero">
-  <div class="badge"><span class="badge-dot"></span>MVP Phase 1 &mdash; live now</div>
-  <h1>Meet <span>Billi</span> &mdash; your AI billing intelligence</h1>
-  <p class="hero-sub">Electronic bill payment, debt collection, financial ratios, dunning strategies and business risk &mdash; trained on your domain, ready for your team.</p>
+  <div class="badge"><span class="badge-dot"></span>Live now &mdash; free to try, no card required</div>
+  <h1>Upload your financials.<br><span>Know your risk score</span> in 60 seconds.</h1>
+  <p class="hero-sub">Billi analyses your income statement, scores your cash flow health across 12 financial ratios, and tells you exactly what to do &mdash; before the crisis hits.</p>
   <div class="hero-cta">
-    <button class="btn-lg primary" onclick="openLogin()">
-      <svg width="16" height="16" viewBox="0 0 18 18" fill="none" style="vertical-align:-3px;margin-right:6px">
-        <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
-        <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
-        <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
-        <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
-      </svg>
-      Continue with Google
+    <button class="btn-lg primary" onclick="document.getElementById('upload-section').scrollIntoView({behavior:'smooth'})">
+      &#8593; Upload a statement &mdash; it&rsquo;s free
     </button>
-    <button class="btn-lg secondary" onclick="document.getElementById('demo-section').scrollIntoView({behavior:'smooth'})">See Billi in action &#8595;</button>
+    <button class="btn-lg secondary" onclick="document.getElementById('demo-section').scrollIntoView({behavior:'smooth'})">Ask Billi a question &#8595;</button>
   </div>
 </section>
 
 <!-- TRADEMARK -->
 <section class="trademark-section">
   <div class="tm-logo-wrap">
-    <img src="logo2.png" alt="billsource registered trademark" height="52" style="object-fit:contain;max-width:200px"/>
+    <img src="logo2.png" alt="billsource registered trademark" height="48"
+      onerror="this.style.display='none';document.getElementById('tm-svg').style.display='block'"/>
+    <svg id="tm-svg" style="display:none" width="64" height="64" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+      <g transform="rotate(-8,50,60)">
+        <rect x="8" y="12" width="64" height="84" rx="7" fill="#E8621A"/>
+        <rect x="20" y="34" width="40" height="5" rx="2.5" fill="#fff" opacity="0.9"/>
+        <rect x="20" y="45" width="32" height="5" rx="2.5" fill="#fff" opacity="0.75"/>
+        <polygon points="8,84 72,84 72,96 40,106 8,96" fill="#CC4400"/>
+      </g>
+      <circle cx="50" cy="60" r="48" fill="none" stroke="#1E88E5" stroke-width="3"/>
+    </svg>
     <div class="tm-divider"></div>
-    <div class="tm-desc">Powered by Billi &mdash; the AI intelligence layer built on the BillSource platform. Your data, your IP, your brand.</div>
+    <div class="tm-desc">Billi is the AI intelligence layer built on the BillSource platform. Your financial data stays private &mdash; never used for AI training, never shared.</div>
   </div>
+</section>
+
+<!-- STATS -->
+<div class="stat-row">
+  <div class="stat"><div class="stat-num">12</div><div class="stat-desc">Financial ratios analysed</div></div>
+  <div class="stat"><div class="stat-num">60s</div><div class="stat-desc">From upload to health score</div></div>
+  <div class="stat"><div class="stat-num">4</div><div class="stat-desc">Risk levels — Green to Critical</div></div>
+  <div class="stat"><div class="stat-num">R0</div><div class="stat-desc">To try your first analysis</div></div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="how">
+  <div class="section-label">How it works</div>
+  <div class="section-title">Three steps to financial clarity</div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-title">Upload your statement</div>
+      <div class="step-desc">Drop in your income statement or balance sheet &mdash; PDF, CSV, or image. Billi extracts every line item automatically.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-title">Billi runs the analysis</div>
+      <div class="step-desc">12 financial ratios calculated instantly. Node Health Score and Risk Score computed. No spreadsheets, no formulas, no guesswork.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-title">Get your action plan</div>
+      <div class="step-desc">Plain-English report with your risk classification &mdash; Green, Watch, Stress, or Critical &mdash; and specific steps to take today.</div>
+    </div>
+  </div>
+</section>
+
+<!-- UPLOAD SECTION -->
+<section class="demo" id="upload-section" style="padding-bottom:2rem">
+  <div class="section-label">Financial health check</div>
+  <div class="section-title">Upload a statement &mdash; free</div>
+  <div class="upload-zone" onclick="triggerUpload()" id="upload-zone"
+    ondragover="event.preventDefault();this.style.borderColor='#FF6600'"
+    ondragleave="this.style.borderColor=''"
+    ondrop="handleDrop(event)">
+    <span class="upload-icon">&#128196;</span>
+    <div class="upload-title">Drop your income statement or balance sheet here</div>
+    <div class="upload-sub">or click to browse &mdash; we handle the rest</div>
+    <div class="upload-types">
+      <span class="upload-type">PDF</span>
+      <span class="upload-type">CSV</span>
+      <span class="upload-type">XLSX</span>
+      <span class="upload-type">JPG / PNG</span>
+    </div>
+  </div>
+  <input type="file" id="file-input" accept=".pdf,.csv,.xlsx,.jpg,.jpeg,.png" style="display:none" onchange="handleFileSelect(this)"/>
+
+  <!-- DEMO SCORE PREVIEW — shown after upload interaction -->
+  <div class="score-preview" id="score-preview">
+    <div class="score-header">
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--text)">Sample Business &mdash; March 2026</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">Analysis complete &middot; 12 ratios calculated</div>
+      </div>
+      <span class="score-badge amber">&#127993; WATCH</span>
+    </div>
+    <div class="risk-meter">
+      <div class="risk-meter-label"><span>Risk Score</span><span>0.42 / 1.0</span></div>
+      <div class="risk-bar"><div class="risk-fill" id="risk-fill" style="width:0%"></div></div>
+    </div>
+    <div class="ratio-grid">
+      <div class="ratio-item"><div class="ratio-label">Gross Margin</div><div class="ratio-value">34%</div><div class="ratio-status warn">&#9679; Below 40% target</div></div>
+      <div class="ratio-item"><div class="ratio-label">Current Ratio</div><div class="ratio-value">1.2</div><div class="ratio-status warn">&#9679; Watch &mdash; below 1.5</div></div>
+      <div class="ratio-item"><div class="ratio-label">Debtor Days</div><div class="ratio-value">58d</div><div class="ratio-status bad">&#9679; Critical &mdash; above 30d</div></div>
+      <div class="ratio-item"><div class="ratio-label">Net Margin</div><div class="ratio-value">8%</div><div class="ratio-status ok">&#9679; Healthy</div></div>
+      <div class="ratio-item"><div class="ratio-label">Debt-to-Equity</div><div class="ratio-value">0.8</div><div class="ratio-status ok">&#9679; Healthy</div></div>
+      <div class="ratio-item"><div class="ratio-label">Cash Conv. Cycle</div><div class="ratio-value">36d</div><div class="ratio-status warn">&#9679; Cash gap risk</div></div>
+    </div>
+    <div style="margin-top:1rem;padding:0.875rem;background:var(--orange-glow-light);border-radius:8px;border:0.5px solid rgba(232,98,26,0.18)">
+      <div style="font-size:12px;font-weight:700;color:var(--orange);margin-bottom:4px">Billi&rsquo;s top recommendation</div>
+      <div style="font-size:12.5px;color:var(--text);line-height:1.6">Your 36-day cash gap is your biggest risk. You&rsquo;re collecting in 58 days while paying suppliers in 22. Tighten debtor terms to 30 days and negotiate 45-day terms with your top 3 suppliers. Sign up to get your full action plan.</div>
+    </div>
+    <button class="btn-lg primary" style="width:100%;margin-top:1rem;border-radius:8px" onclick="openLogin()">Get my full health report &rarr;</button>
+  </div>
+  <p style="font-size:12px;color:var(--muted);margin-top:10px;text-align:center;font-family:var(--font)">
+    Free analysis &middot; No account needed to upload &middot;
+    <a style="color:var(--orange);cursor:pointer;text-decoration:none" onclick="openLogin()">Sign up</a>
+    to save your report
+  </p>
 </section>
 
 <!-- BILLSOURCE.COM EMBED BANNER -->
 <div class="embed-banner" style="margin-top:2rem">
   <div class="embed-banner-text">
-    <strong>Already a BillSource customer?</strong> Log in to billsource.com to access Billi directly inside your billing dashboard &mdash; no separate login needed.
+    <strong>Already a BillSource customer?</strong> Your debtors, creditors, and invoice data loads automatically &mdash; no upload needed. Access Billi directly inside your billing dashboard with no separate login.
   </div>
   <a href="https://billsource.com" target="_blank" rel="noopener">
     <button class="btn-primary" style="white-space:nowrap">Go to billsource.com &#8599;</button>
   </a>
-</div>
-
-
-<!-- ETHICAL AI ASSURANCE STRIP -->
-<div style="background:rgba(30,136,229,0.06);border-top:0.5px solid rgba(30,136,229,0.15);border-bottom:0.5px solid rgba(30,136,229,0.15);padding:1.25rem 2.5rem;display:flex;align-items:center;justify-content:center;gap:2rem;flex-wrap:wrap;text-align:center">
-  <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)">
-    <span style="color:#1E88E5;font-size:16px">&#128274;</span>
-    <strong style="color:var(--text)">Data never used for AI training</strong>
-  </div>
-  <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)">
-    <span style="color:#1E88E5;font-size:16px">&#10003;</span>
-    <strong style="color:var(--text)">POPIA compliant</strong>
-  </div>
-  <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)">
-    <span style="color:#1E88E5;font-size:16px">&#127959;</span>
-    <strong style="color:var(--text)">Hosted on SOC 2 Type II infrastructure</strong>
-  </div>
-  <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)">
-    <span style="color:#1E88E5;font-size:16px">&#128065;</span>
-    <strong style="color:var(--text)">Transparent AI &mdash; always advisory</strong>
-  </div>
-  <a href="trust.html" target="_blank" rel="noopener" style="font-size:12px;color:#1E88E5;text-decoration:none;border:0.5px solid rgba(30,136,229,0.4);padding:5px 12px;border-radius:20px">View Trust Centre &#8599;</a>
 </div>
 
 <!-- PRICING -->
@@ -267,41 +396,42 @@
     <div class="plan-card">
       <div class="plan-name">Free</div>
       <div class="plan-price">R0 <span>/mo</span></div>
-      <div class="plan-msgs">10 messages &middot; try Billi</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> Full knowledge base access</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> Billing &amp; dunning Q&amp;A</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> 1 user</div>
-      <button class="plan-btn outlined" onclick="openLogin()">Start free</button>
+      <div class="plan-msgs">1 analysis &middot; try Billi</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Upload 1 income statement</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> 12-ratio health report</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Risk score &amp; classification</div>
+      <button class="plan-btn outlined" onclick="document.getElementById('upload-section').scrollIntoView({behavior:'smooth'})">Try free now</button>
     </div>
     <div class="plan-card featured">
       <div class="plan-badge">Most popular</div>
       <div class="plan-name" style="color:var(--orange)">Solo</div>
       <div class="plan-price">R199 <span>/mo</span></div>
-      <div class="plan-msgs">500 messages &middot; 1 person</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> Full knowledge base</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> Debt collection tools</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> Financial ratio analysis</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> Conversation history</div>
+      <div class="plan-msgs">Unlimited analyses &middot; 1 person</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Financial health score (NHS + RS)</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Document upload &mdash; all formats</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Full action plan &amp; recommendations</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Debt collection letter drafts</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Report history &amp; trend tracking</div>
       <button class="plan-btn filled" onclick="openLogin()">Get started</button>
     </div>
     <div class="plan-card">
-      <div class="plan-name">Team</div>
-      <div class="plan-price">R499 <span>/mo</span></div>
-      <div class="plan-msgs">2 000 messages &middot; up to 5 users</div>
+      <div class="plan-name">Accountant</div>
+      <div class="plan-price">R799 <span>/mo</span></div>
+      <div class="plan-msgs">Up to 20 client reports &middot; 1 user</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Everything in Solo</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> 5 user seats</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> Shared conversation log</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Client portfolio dashboard</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Branded client reports</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Priority support</div>
-      <button class="plan-btn outlined" onclick="openLogin()">Choose Team</button>
+      <button class="plan-btn outlined" onclick="openLogin()">Choose Accountant</button>
     </div>
     <div class="plan-card">
       <div class="plan-name">Business</div>
       <div class="plan-price">R999 <span>/mo</span></div>
-      <div class="plan-msgs">10 000 messages &middot; unlimited users</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> Everything in Team</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> Unlimited seats</div>
+      <div class="plan-msgs">Unlimited &middot; unlimited users</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Everything in Accountant</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> BillSource.com live data sync</div>
       <div class="plan-feature"><span class="check">&#10003;</span> API access</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> Custom knowledge base</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Ecosystem risk scoring</div>
       <button class="plan-btn outlined" onclick="openLogin()">Choose Business</button>
     </div>
   </div>
@@ -310,7 +440,7 @@
 <!-- DEMO CHAT -->
 <section class="demo" id="demo-section">
   <div class="section-label">Live demo</div>
-  <div class="section-title">Ask Billi anything</div>
+  <div class="section-title">Ask Billi anything about your finances</div>
   <div class="chat-container">
     <div class="chat-header">
       <img src="icon-only_billsource_orange.png" alt="Billi" width="32" height="32"
@@ -326,24 +456,24 @@
         <img src="icon-only_billsource_orange.png" alt="Billi" width="28" height="28"
           style="border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid #1565C0"
           onerror="this.outerHTML='<div style=width:28px;height:28px;border-radius:50%;background:#1565C0;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;font-weight:700>B</div>'"/>
-        <div class="msg-bubble ai">Hi! I'm Billi, your BillSource AI assistant. I specialise in EBPP, debt collection, dunning strategies, financial ratios and business risk management. How can I help you today?</div>
+        <div class="msg-bubble ai">Hi, I&rsquo;m Billi. I specialise in financial health analysis, cash flow risk, debt collection, and business rescue options. Upload a statement above for a full analysis &mdash; or ask me anything right now.</div>
       </div>
     </div>
     <div class="chat-suggestions" id="suggestions">
-      <button class="suggestion" onclick="sendSuggestion(this)">What is EBPP?</button>
-      <button class="suggestion" onclick="sendSuggestion(this)">Best dunning sequence for overdue accounts?</button>
-      <button class="suggestion" onclick="sendSuggestion(this)">Key financial ratios for credit risk?</button>
-      <button class="suggestion" onclick="sendSuggestion(this)">Debt collection law in South Africa</button>
+      <button class="suggestion" onclick="sendSuggestion(this)">My biggest client hasn&rsquo;t paid in 60 days</button>
+      <button class="suggestion" onclick="sendSuggestion(this)">What does my current ratio mean?</button>
+      <button class="suggestion" onclick="sendSuggestion(this)">Am I at risk of a cash flow gap?</button>
+      <button class="suggestion" onclick="sendSuggestion(this)">What options do I have if I can&rsquo;t pay a supplier?</button>
     </div>
     <div class="chat-input-area" id="chat-input-area">
-      <input class="chat-input" id="chat-input" placeholder="Ask Billi a billing question..." onkeydown="if(event.key==='Enter')sendMessage()"/>
+      <input class="chat-input" id="chat-input" placeholder="Ask Billi about your cash flow, debtors, or risk..." onkeydown="if(event.key==='Enter')sendMessage()"/>
       <button class="send-btn" onclick="sendMessage()">&#8594;</button>
     </div>
   </div>
   <p style="font-size:12px;color:var(--muted);margin-top:10px;text-align:center;font-family:var(--font)">
     Demo limited to 3 messages &middot;
     <a style="color:var(--orange);cursor:pointer;text-decoration:none" onclick="openLogin()">Sign up free</a>
-    for 10 messages &middot; No card required
+    for unlimited access &middot; No card required
   </p>
 </section>
 
@@ -357,15 +487,10 @@
       <div>&copy; 2026 AnyABEX (Pty) Ltd &middot; All rights reserved &middot; Registered trademark</div>
     </div>
   </div>
-  <div style="font-size:11px;color:var(--muted);line-height:1.8">
-    <div>International: <a href="tel:+27126610385" style="color:var(--muted)">+27 12 661 0385</a></div>
-    <div>Technical: <a href="tel:0126610385" style="color:var(--muted)">012 661 0385</a></div>
-  </div>
   <div class="footer-links">
-    <a href="privacy.html" target="_blank" rel="noopener">Privacy</a>
-    <a href="terms.html" target="_blank" rel="noopener">Terms</a>
-    <a href="trust.html" target="_blank" rel="noopener">Trust Centre</a>
-    <a href="mailto:support@billsource.ai">Support</a>
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Support</a>
     <a href="https://billsource.com" target="_blank" rel="noopener">billsource.com</a>
   </div>
 </footer>
@@ -435,19 +560,19 @@
   var demoCount = 0, maxDemo = 3, isTyping = false;
 
   var fb = {
-    ebpp: 'EBPP (Electronic Bill Payment and Presentment) allows businesses to deliver bills electronically and receive payments digitally — replacing paper with email, web portals or apps. It reduces billing costs by up to 70% and dramatically shortens your DSO (Days Sales Outstanding).',
-    dunning: 'An effective dunning sequence: Day 1 — friendly reminder, Day 7 — polite follow-up with amount outstanding, Day 14 — firm notice with late fee warning, Day 21 — formal demand letter, Day 30 — final notice before collections, Day 45+ — refer to collections or legal.',
-    ratio: 'Key credit risk ratios: Current Ratio (>1.5 healthy), Quick Ratio (>1.0 preferred), Debt-to-Equity (<2.0 acceptable), Days Sales Outstanding (lower = better), Interest Coverage Ratio (>3.0 safe). Watch DSO closely — above 45 days signals collection risk.',
-    debt: 'SA debt collection is governed by the National Credit Act (34 of 2005) and Debt Collectors Act (114 of 1998). Collectors must register with the Council for Debt Collectors. The in duplum rule limits interest to 100% of outstanding capital. Always serve a Section 129 notice before legal action.',
-    def: 'Great question. Sign up for a free account to access my full knowledge base — 597 chunks of specialised billing, dunning, EBPP and financial risk expertise ready to help your business.'
+    debtor: 'A client unpaid at 60 days needs immediate escalation. Send a firm payment request today referencing the specific invoice number and amount. If no response in 7 days, issue a formal letter of demand. Under South African law, you must serve a Section 129 notice before legal action. Want me to draft the letter for you?',
+    ratio: 'Your current ratio compares what you own short-term to what you owe short-term. Above 1.5 means you\'re comfortably liquid. Between 1.0 and 1.5 — watch closely. Below 1.0 means your short-term debts exceed your short-term assets, which is a cash flow danger signal. Upload your balance sheet and I\'ll calculate yours precisely.',
+    cashflow: 'Cash flow gap risk usually shows up in your Cash Conversion Cycle — how many days between paying suppliers and collecting from customers. If you\'re paying in 22 days but collecting in 58, that\'s a 36-day gap you need to fund. Upload your income statement and I\'ll calculate your exact gap and what to do about it.',
+    supplier: 'When cash is tight on supplier payments, you have several options: negotiate extended terms (ask for 45-60 days instead of 30), offer partial payment to maintain the relationship, look at invoice factoring on your receivables to generate immediate cash, or explore a short-term credit facility. Upload your financials and I\'ll assess which option suits your situation.',
+    def: 'Great question. Upload your income statement above for a full 12-ratio analysis — or sign up free for full access to my knowledge base covering collections law, financial ratios, debt management, and business rescue options.'
   };
 
   function getFallback(msg) {
     var l = msg.toLowerCase();
-    if (l.includes('ebpp') || l.includes('electronic bill')) return fb.ebpp;
-    if (l.includes('dunning') || l.includes('overdue') || l.includes('sequence')) return fb.dunning;
-    if (l.includes('ratio') || l.includes('credit risk')) return fb.ratio;
-    if (l.includes('debt') || l.includes('collection') || l.includes('legal')) return fb.debt;
+    if (l.includes('paid') || l.includes('debtor') || l.includes('invoice') || l.includes('60 days') || l.includes('overdue')) return fb.debtor;
+    if (l.includes('current ratio') || l.includes('ratio') || l.includes('what does')) return fb.ratio;
+    if (l.includes('cash flow') || l.includes('gap') || l.includes('cashflow')) return fb.cashflow;
+    if (l.includes('supplier') || l.includes('can\'t pay') || l.includes('options')) return fb.supplier;
     return fb.def;
   }
 
@@ -523,7 +648,38 @@
       '<div class="login-sub" style="margin-top:0.5rem">You will be authenticated via Google OAuth and redirected to your BillSource account at billsource.ai</div>';
   }
 
-  function emailSignIn() {
+
+  /* ═══════════════════════════════════════════
+     UPLOAD HANDLERS
+     ═══════════════════════════════════════════ */
+  function triggerUpload() {
+    document.getElementById('file-input').click();
+  }
+
+  function handleFileSelect(input) {
+    if (input.files && input.files[0]) showUploadResult(input.files[0].name);
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('upload-zone').style.borderColor = '';
+    var file = e.dataTransfer.files[0];
+    if (file) showUploadResult(file.name);
+  }
+
+  function showUploadResult(filename) {
+    var zone = document.getElementById('upload-zone');
+    zone.innerHTML = '<span class="upload-icon">&#10003;</span>' +
+      '<div class="upload-title" style="color:var(--orange)">' + filename + ' uploaded</div>' +
+      '<div class="upload-sub">Analysing your financials&hellip; Sign up to get your full health report.</div>';
+    var preview = document.getElementById('score-preview');
+    preview.classList.add('visible');
+    setTimeout(function() {
+      document.getElementById('risk-fill').style.width = '42%';
+    }, 300);
+    setTimeout(function() { openLogin(); }, 2800);
+  }
+
     var email = document.getElementById('email-input').value;
     if (!email) return;
     document.getElementById('login-box').innerHTML =
