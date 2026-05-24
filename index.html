@@ -538,19 +538,24 @@
     if (body.classList.contains('dark')) {
       body.classList.replace('dark', 'light');
       btn.innerHTML = '&#9790;';
-      localStorage.setItem('bs-theme', 'light');
+      try { localStorage.setItem('bs-theme', 'light'); } catch(e) {}
     } else {
       body.classList.replace('light', 'dark');
       btn.innerHTML = '&#9788;';
-      localStorage.setItem('bs-theme', 'dark');
+      try { localStorage.setItem('bs-theme', 'dark'); } catch(e) {}
     }
   }
-  /* Restore saved preference */
+  /* Restore saved preference or detect system preference */
   (function() {
-    var saved = localStorage.getItem('bs-theme');
-    if (saved === 'light') {
-      document.body.classList.replace('dark', 'light');
+    var saved = '';
+    try { saved = localStorage.getItem('bs-theme') || ''; } catch(e) {}
+    var preferLight = saved === 'light' || (saved === '' && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches);
+    if (preferLight) {
+      document.body.className = 'light';
       document.getElementById('theme-btn').innerHTML = '&#9790;';
+    } else {
+      document.body.className = 'dark';
+      document.getElementById('theme-btn').innerHTML = '&#9788;';
     }
   })();
 
