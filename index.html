@@ -141,7 +141,7 @@
 
     /* ── PLANS ── */
     .plans{padding:3.5rem 2.5rem;max-width:960px;margin:0 auto;width:100%}
-    .plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+    .plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
     .plan-card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:1.5rem;position:relative;transition:border-color 0.2s,box-shadow 0.2s}
     .plan-card:hover{border-color:var(--orange)}
     body.light .plan-card{box-shadow:0 1px 6px var(--shadow)}
@@ -161,7 +161,7 @@
 
     /* ── TRUST CENTRE ── */
     .trust{padding:3rem 2.5rem;max-width:960px;margin:0 auto;width:100%;border-top:0.5px solid var(--border)}
-    .trust-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-top:1.5rem}
+    .trust-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;margin-top:1.5rem}
     .trust-card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:1.25rem;transition:border-color 0.2s}
     body.light .trust-card{box-shadow:0 1px 4px var(--shadow)}
     .trust-card:hover{border-color:var(--orange-border)}
@@ -428,17 +428,18 @@
     <div class="plan-card">
       <div class="plan-name">Free</div>
       <div class="plan-price">R0 <span>/mo</span></div>
-      <div class="plan-msgs">1 analysis &middot; try Billi</div>
+      <div class="plan-msgs">1 report &middot; 20 messages &middot; try Billi</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Upload 1 income statement</div>
       <div class="plan-feature"><span class="check">&#10003;</span> 12-ratio health report</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Risk score &amp; classification</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> 20 chat messages with Billi</div>
       <button class="plan-btn outlined" onclick="document.getElementById('upload-section').scrollIntoView({behavior:'smooth'})">Try free now</button>
     </div>
     <div class="plan-card featured">
       <div class="plan-badge">Most popular</div>
       <div class="plan-name" style="color:var(--orange)">Solo</div>
       <div class="plan-price">R199 <span>/mo</span></div>
-      <div class="plan-msgs">Unlimited analyses &middot; 1 person</div>
+      <div class="plan-msgs">Unlimited reports &middot; 2,000 messages &middot; 1 user</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Financial health score (NHS + RS)</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Document upload &mdash; all formats</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Full action plan &amp; recommendations</div>
@@ -447,10 +448,21 @@
       <button class="plan-btn filled" onclick="openLogin()">Get started</button>
     </div>
     <div class="plan-card">
+      <div class="plan-name" style="color:var(--orange)">Pro</div>
+      <div class="plan-price">R399 <span>/mo</span></div>
+      <div class="plan-msgs">Unlimited reports &middot; 5,000 messages &middot; 3 users</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Everything in Solo</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Up to 5 client profiles</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> 3 user seats</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Comparative multi-entity reporting</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Email report delivery to clients</div>
+      <button class="plan-btn outlined" onclick="openLogin()">Choose Pro</button>
+    </div>
+    <div class="plan-card">
       <div class="plan-name">Accountant</div>
       <div class="plan-price">R799 <span>/mo</span></div>
-      <div class="plan-msgs">Up to 20 client reports &middot; 1 user</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> Everything in Solo</div>
+      <div class="plan-msgs">20 client reports &middot; 10,000 messages &middot; 1 user</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Everything in Pro</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Client portfolio dashboard</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Branded client reports</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Priority support</div>
@@ -458,12 +470,12 @@
     </div>
     <div class="plan-card">
       <div class="plan-name">Business</div>
-      <div class="plan-price">R999 <span>/mo</span></div>
-      <div class="plan-msgs">Unlimited &middot; unlimited users</div>
+      <div class="plan-price">R1,299 <span>/mo</span></div>
+      <div class="plan-msgs">Unlimited reports &middot; 20,000 messages &middot; unlimited users</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Everything in Accountant</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Unlimited users</div>
       <div class="plan-feature"><span class="check">&#10003;</span> BillSource.com live data sync</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> API access</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> Ecosystem risk scoring</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> API access &amp; ecosystem risk scoring</div>
       <button class="plan-btn outlined" onclick="openLogin()">Choose Business</button>
     </div>
   </div>
