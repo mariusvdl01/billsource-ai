@@ -7,9 +7,9 @@
   <link rel="icon" type="image/png" href="logo2.png"/>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    :root{--orange:#FF6600;--blue:#1E88E5;--font:Helvetica,Arial,sans-serif}
-    body.dark{--bg:#0D0D0D;--card:#1A1A1A;--border:#2A2A2A;--text:#F5F5F0;--muted:#888880;--nav-bg:rgba(13,13,13,0.95)}
-    body.light{--bg:#FFFFFF;--card:#FFFFFF;--border:#E0E0E0;--text:#111111;--muted:#666660;--nav-bg:rgba(255,255,255,0.95)}
+    :root{--orange:#E8621A;--blue:#1E88E5;--font:Helvetica,Arial,sans-serif}
+    body.dark{--bg:#1C1C1E;--card:#2A2A2C;--border:#3A3A3C;--text:#F0EDE8;--muted:#8A8784;--nav-bg:rgba(28,28,30,0.96)}
+    body.light{--bg:#F5F0EB;--card:#FAF7F4;--border:#D8D0C8;--text:#1A1614;--muted:#6B6460;--nav-bg:rgba(245,240,235,0.96)}
     body{font-family:var(--font);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background 0.3s,color 0.3s}
     nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2.5rem;border-bottom:0.5px solid var(--border);background:var(--nav-bg);position:sticky;top:0;z-index:100}
     .logo{display:flex;align-items:center;gap:10px;text-decoration:none}
@@ -28,7 +28,7 @@
     li{font-size:14px;line-height:1.8;color:var(--text);opacity:0.9;margin-bottom:0.25rem}
     a{color:var(--blue);text-decoration:none}
     a:hover{text-decoration:underline}
-    .highlight{background:rgba(255,102,0,0.06);border:0.5px solid rgba(255,102,0,0.2);border-radius:8px;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:13px;line-height:1.7}
+    .highlight{background:rgba(232,98,26,0.06);border:0.5px solid rgba(232,98,26,0.2);border-radius:8px;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:13px;line-height:1.7}
     footer{padding:1.5rem 2.5rem;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-top:3rem}
     .footer-brand-text{font-size:11px;color:var(--muted);line-height:1.6}
     .footer-links{display:flex;gap:1.25rem;flex-wrap:wrap}
@@ -41,7 +41,7 @@
 <nav>
   <a class="logo" href="index.html">
     <img src="logo2.png" alt="BillSource" height="32" style="object-fit:contain;max-width:140px" onerror="this.style.display='none'"/>
-    <span class="logo-sub">AI Billing Intelligence &middot; billsource.ai</span>
+    <span class="logo-sub">Financial Intelligence &middot; billsource.ai</span>
   </a>
   <div class="nav-right">
     <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">&#9788;</button>
@@ -169,8 +169,8 @@ li>Request deletion of your personal information (subject to legal retention req
   </div>
 </footer>
 <script>
-  function toggleTheme(){var b=document.body,btn=document.getElementById('theme-btn');if(b.classList.contains('dark')){b.classList.replace('dark','light');btn.innerHTML='&#9790;';localStorage.setItem('bs-theme','light')}else{b.classList.replace('light','dark');btn.innerHTML='&#9788;';localStorage.setItem('bs-theme','dark')}}
-  (function(){var s=localStorage.getItem('bs-theme');if(s==='light'){document.body.classList.replace('dark','light');document.getElementById('theme-btn').innerHTML='&#9790;'}})();
+  function toggleTheme(){var isDark=document.body.classList.contains('dark');document.body.className=isDark?'light':'dark';document.getElementById('theme-btn').innerHTML=isDark?'☽':'☀';try{localStorage.setItem('bs-theme',isDark?'light':'dark');}catch(e){}}
+  (function(){var s='';try{s=localStorage.getItem('bs-theme')||'';}catch(e){}var pl=s==='light'||(s===''&&window.matchMedia&&window.matchMedia('(prefers-color-scheme:light)').matches);document.body.className=pl?'light':'dark';document.getElementById('theme-btn').innerHTML=pl?'☽':'☀';})();
 </script>
 </body>
 </html>
