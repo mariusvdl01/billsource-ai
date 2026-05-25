@@ -7,9 +7,9 @@
   <link rel="icon" type="image/png" href="favicon.png"/>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    :root{--orange:#FF6600;--blue:#1E88E5;--font:Helvetica,Arial,sans-serif}
-    body.dark{--bg:#0D0D0D;--bg2:#111;--card:#1A1A1A;--border:#2A2A2A;--text:#F5F5F0;--muted:#888880;--input-bg:#111;--msg-ai:#1F1F1F;--nav-bg:#111;--sidebar-bg:#111}
-    body.light{--bg:#F5F5F3;--bg2:#FFF;--card:#FFF;--border:#E0E0E0;--text:#111;--muted:#666;--input-bg:#F0F0EE;--msg-ai:#F2F2F0;--nav-bg:#FFF;--sidebar-bg:#FAFAFA}
+    :root{--orange:#E8621A;--blue:#1E88E5;--font:Helvetica,Arial,sans-serif}
+    body.dark{--bg:#1C1C1E;--bg2:#232325;--card:#2C2C2E;--border:#3A3A3C;--text:#F5F0EB;--muted:#8E8E93;--input-bg:#1C1C1E;--msg-ai:#2C2C2E;--nav-bg:#1C1C1E;--sidebar-bg:#232325}
+    body.light{--bg:#F5F0EB;--bg2:#FFFFFF;--card:#FFFFFF;--border:#DDD8D0;--text:#1C1C1E;--muted:#6C6C70;--input-bg:#EDE8E3;--msg-ai:#EDE8E3;--nav-bg:#FFF;--sidebar-bg:#EDE8E3}
     body{font-family:var(--font);background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;transition:background 0.3s,color 0.3s;overflow:hidden}
 
     /* ── LAYOUT ── */
@@ -422,7 +422,7 @@
     const pct = Math.min(100, (currentUser.messagesUsed / currentUser.messagesLimit) * 100);
     const fill = document.getElementById('usage-fill');
     fill.style.width = pct + '%';
-    fill.style.background = pct < 60 ? '#2ecc71' : pct < 85 ? '#FF6600' : '#e74c3c';
+    fill.style.background = pct < 60 ? '#2ecc71' : pct < 85 ? '#E8621A' : '#e74c3c';
     document.getElementById('usage-count').textContent =
       currentUser.messagesUsed + ' / ' + currentUser.messagesLimit;
 
