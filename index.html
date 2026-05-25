@@ -6,8 +6,8 @@
   <title>Billi — BillSource AI · Know your financial health score in 60 seconds</title>
   <meta name="description" content="Upload your income statement. Billi analyses 12 financial ratios, scores your business health, and tells you exactly what to do — before the cash flow crisis hits."/>
   <meta name="theme-color" content="#E8621A"/>
-  <link rel="icon" type="image/png" href="icon-only_billsource_orange.png"/>
-  <link rel="apple-touch-icon" href="icon-only_billsource_orange.png"/>
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="apple-touch-icon" href="favicon.png"/>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
 
@@ -265,7 +265,7 @@
 <!-- NAV -->
 <nav>
   <a class="logo" href="#">
-    <img src="icon-only_billsource_orange.png" alt="BillSource" width="38" height="38"
+    <img src="favicon.png" alt="BillSource" width="38" height="38"
       style="border-radius:50%;border:2px solid #2D7DD2;object-fit:cover"
       onerror="this.style.display='none';document.getElementById('logo-fb').style.display='flex'"/>
     <div id="logo-fb" style="display:none;width:38px;height:38px;border-radius:50%;background:#1A5FA8;border:2px solid #2D7DD2;align-items:center;justify-content:center;flex-shrink:0">
@@ -296,6 +296,18 @@
     </button>
     <button class="btn-lg secondary" onclick="document.getElementById('demo-section').scrollIntoView({behavior:'smooth'})">Ask Billi a question &#8595;</button>
   </div>
+  <div style="margin-top:1.25rem;display:flex;justify-content:center">
+    <a href="/auth/google" style="display:inline-flex;align-items:center;gap:10px;background:#fff;border:0.5px solid #D8D0C8;color:#333;padding:11px 22px;border-radius:8px;font-size:14px;font-weight:600;font-family:Helvetica,Arial,sans-serif;text-decoration:none;transition:opacity 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.1)" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
+        <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
+        <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+        <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+      </svg>
+      Sign in with Google — it&rsquo;s free
+    </a>
+  </div>
+  <p style="margin-top:0.75rem;font-size:11px;color:var(--muted);text-align:center;font-family:Helvetica,Arial,sans-serif">No card required &middot; 1 report &middot; 20 messages &middot; try Billi</p>
 </section>
 
 <!-- TRADEMARK -->
@@ -439,7 +451,7 @@
       <div class="plan-feature"><span class="check">&#10003;</span> Full action plan &amp; recommendations</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Debt collection letter drafts</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Report history &amp; trend tracking</div>
-      <button class="plan-btn filled" onclick="openLogin()">Get started</button>
+      <button class="plan-btn filled" onclick="window.location.href='/auth/google'">Get started</button>
     </div>
     <div class="plan-card">
       <div class="plan-name" style="color:var(--orange)">Pro</div>
@@ -519,7 +531,7 @@
   <div class="section-title">Ask Billi anything about your finances</div>
   <div class="chat-container">
     <div class="chat-header">
-      <img src="icon-only_billsource_orange.png" alt="Billi" width="32" height="32"
+      <img src="favicon.png" alt="Billi" width="32" height="32"
         style="border-radius:50%;object-fit:cover;border:1.5px solid #2D7DD2;flex-shrink:0"
         onerror="this.style.display='none'"/>
       <div>
@@ -529,7 +541,7 @@
     </div>
     <div class="chat-messages" id="chat-messages">
       <div class="msg">
-        <img src="icon-only_billsource_orange.png" alt="Billi" width="28" height="28"
+        <img src="favicon.png" alt="Billi" width="28" height="28"
           style="border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid #1A5FA8"
           onerror="this.outerHTML='<div class=msg-avatar-user style=background:#1A5FA8;color:#fff>B</div>'"/>
         <div class="msg-bubble ai">Hi, I&rsquo;m Billi. I specialise in financial health analysis, cash flow risk, debt collection, and business rescue options. Upload a statement above for a full analysis &mdash; or ask me anything right now.</div>
@@ -556,7 +568,7 @@
 <!-- FOOTER -->
 <footer>
   <div class="footer-brand">
-    <img src="icon-only_billsource_orange.png" alt="BillSource" width="28" height="28"
+    <img src="favicon.png" alt="BillSource" width="28" height="28"
       style="border-radius:50%;object-fit:cover" onerror="this.style.display='none'"/>
     <div class="footer-brand-text">
       <div class="footer-brand-name">billsource<sup style="font-size:8px">&#174;</sup> &middot; Billi AI</div>
@@ -575,7 +587,7 @@
 <!-- LOGIN MODAL -->
 <div class="modal-overlay" id="login-modal" onclick="if(event.target===this)this.classList.remove('open')">
   <div class="login-box" id="login-box">
-    <img src="icon-only_billsource_orange.png" alt="BillSource" width="64" height="64"
+    <img src="favicon.png" alt="BillSource" width="64" height="64"
       style="border-radius:50%;border:2px solid #2D7DD2;object-fit:cover;display:block;margin:0 auto"
       onerror="this.style.display='none'"/>
     <div class="login-title">Sign in to BillSource</div>
@@ -638,7 +650,7 @@
 
   /* ── CHAT ── */
   function billiAv(){
-    return '<img src="icon-only_billsource_orange.png" alt="Billi" width="28" height="28" style="border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid #1A5FA8" onerror="this.outerHTML=\'<div class=msg-avatar-user style=background:#1A5FA8;color:#fff>B</div>\'">';
+    return '<img src="favicon.png" alt="Billi" width="28" height="28" style="border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid #1A5FA8" onerror="this.outerHTML=\'<div class=msg-avatar-user style=background:#1A5FA8;color:#fff>B</div>\'">';
   }
   function addMsg(text,role){
     var msgs=document.getElementById('chat-messages');
@@ -677,9 +689,7 @@
 
   /* ── AUTH ── */
   function openLogin(){document.getElementById('login-modal').classList.add('open');}
-  function googleSignIn(){
-    document.getElementById('login-box').innerHTML='<div style="font-size:3rem;margin-bottom:1rem">&#10003;</div><div class="login-title">Redirecting to Google...</div><div class="login-sub" style="margin-top:0.5rem">You will be authenticated via Google OAuth and redirected to your BillSource account.</div>';
-  }
+  function googleSignIn(){ window.location.href = '/auth/google'; }
   function emailSignIn(){
     var email=document.getElementById('email-input').value;if(!email)return;
     document.getElementById('login-box').innerHTML='<div style="font-size:3rem;margin-bottom:1rem">&#9993;</div><div class="login-title">Check your inbox</div><div class="login-sub" style="margin-top:0.5rem">Magic link sent to <strong>'+email+'</strong><br>Click it to access Billi — no password needed.</div>';
