@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Billi — BillSource AI</title>
+  <link rel="icon" type="image/png" href="logo2.png"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--orange:#FF6600;--blue:#1E88E5;--font:Helvetica,Arial,sans-serif}
+    body.dark{--bg:#0D0D0D;--bg2:#111;--card:#1A1A1A;--border:#2A2A2A;--text:#F5F5F0;--muted:#888880;--input-bg:#0D0D0D;--msg-ai:#1F1F1F;--nav-bg:rgba(13,13,13,0.97)}
+    body.light{--bg:#F7F7F5;--bg2:#FFFFFF;--card:#FFFFFF;--border:#E0E0E0;--text:#111;--muted:#666;--input-bg:#F0F0EE;--msg-ai:#F2F2F0;--nav-bg:rgba(255,255,255,0.97)}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;transition:background 0.3s,color 0.3s}
+
+    /* NAV */
+    nav{display:flex;justify-content:space-between;align-items:center;padding:0.75rem 1.5rem;border-bottom:0.5px solid var(--border);background:var(--nav-bg);flex-shrink:0}
+    .nav-left{display:flex;align-items:center;gap:12px}
+    .nav-right{display:flex;align-items:center;gap:10px}
+    .user-pill{display:flex;align-items:center;gap:8px;background:var(--card);border:0.5px solid var(--border);border-radius:20px;padding:5px 12px 5px 6px}
+    .user-avatar{width:26px;height:26px;border-radius:50%;object-fit:cover}
+    .user-name{font-size:13px;font-weight:500;color:var(--text)}
+    .plan-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:0.05em}
+    .plan-free{background:rgba(136,136,128,0.15);color:var(--muted)}
+    .plan-solo{background:rgba(255,102,0,0.12);color:var(--orange)}
+    .plan-team{background:rgba(30,136,229,0.12);color:var(--blue)}
+    .plan-business{background:rgba(46,204,113,0.12);color:#1a9a52}
+    .theme-btn{background:transparent;border:0.5px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:6px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+    .btn-upgrade{background:var(--orange);border:none;color:#fff;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font)}
+    .btn-upgrade:hover{opacity:0.88}
+    .btn-logout{background:transparent;border:0.5px solid var(--border);color:var(--muted);padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--font);text-decoration:none}
+    .btn-logout:hover{border-color:var(--orange);color:var(--orange)}
+
+    /* USAGE BAR */
+    .usage-bar{padding:0.5rem 1.5rem;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--bg2);flex-shrink:0}
+    .usage-label{font-size:11px;color:var(--muted);white-space:nowrap}
+    .usage-track{flex:1;height:4px;background:var(--border);border-radius:2px;max-width:200px}
+    .usage-fill{height:4px;border-radius:2px;background:var(--orange);transition:width 0.3s}
+    .usage-fill.safe{background:#2ecc71}
+    .usage-fill.warn{background:var(--orange)}
+    .usage-fill.danger{background:#e74c3c}
+    .usage-count{font-size:11px;color:var(--muted);white-space:nowrap}
+
+    /* CHAT LAYOUT */
+    .chat-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;max-width:860px;width:100%;margin:0 auto;padding:0 1rem}
+    .chat-messages{flex:1;overflow-y:auto;padding:1.25rem 0;display:flex;flex-direction:column;gap:14px}
+    .msg{display:flex;gap:10px;align-items:flex-start}
+    .msg.user{flex-direction:row-reverse}
+    .msg-avatar-user{width:30px;height:30px;border-radius:50%;background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+    .msg-bubble{max-width:78%;padding:11px 15px;border-radius:12px;font-size:14px;line-height:1.65}
+    .msg-bubble.ai{background:var(--msg-ai);border:0.5px solid var(--border);color:var(--text)}
+    .msg-bubble.user{background:var(--orange);color:#fff}
+    .typing{display:flex;gap:4px;align-items:center;padding:4px 0}
+    .dot{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite}
+    .dot:nth-child(2){animation-delay:0.2s}
+    .dot:nth-child(3){animation-delay:0.4s}
+    @keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+
+    /* SUGGESTIONS */
+    .suggestions{display:flex;gap:8px;flex-wrap:wrap;padding:0.5rem 0}
+    .suggestion{background:transparent;border:0.5px solid var(--border);color:var(--muted);padding:7px 13px;border-radius:20px;font-size:12px;cursor:pointer;font-family:var(--font);transition:all 0.2s}
+    .suggestion:hover{border-color:var(--orange);color:var(--orange)}
+
+    /* INPUT */
+    .input-area{padding:1rem 0 1.25rem;flex-shrink:0}
+    .input-row{display:flex;gap:10px;align-items:center;background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:8px 8px 8px 16px;transition:border-color 0.2s}
+    .input-row:focus-within{border-color:var(--orange)}
+    .chat-input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:14px;font-family:var(--font);resize:none;max-height:120px;line-height:1.5}
+    .chat-input::placeholder{color:var(--muted)}
+    .send-btn{background:var(--orange);border:none;color:#fff;width:38px;height:38px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;transition:opacity 0.2s}
+    .send-btn:hover{opacity:0.85}
+    .send-btn:disabled{opacity:0.4;cursor:not-allowed}
+
+    /* UPGRADE MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:center;justify-content:center}
+    .modal-overlay.open{display:flex}
+    .modal-box{background:var(--card);border:0.5px solid var(--border);border-radius:16px;padding:2rem;width:520px;max-width:95vw}
+    .modal-title{font-size:1.25rem;font-weight:700;margin-bottom:0.5rem}
+    .modal-sub{font-size:13px;color:var(--muted);margin-bottom:1.5rem;line-height:1.6}
+    .plan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1.5rem}
+    .plan-opt{background:var(--bg);border:0.5px solid var(--border);border-radius:10px;padding:1rem;text-align:center;cursor:pointer;transition:all 0.2s}
+    .plan-opt:hover,.plan-opt.selected{border-color:var(--orange)}
+    .plan-opt-name{font-weight:700;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.25rem;color:var(--orange)}
+    .plan-opt-price{font-size:1.3rem;font-weight:700;margin-bottom:0.25rem}
+    .plan-opt-msgs{font-size:11px;color:var(--muted)}
+    .modal-btn{width:100%;padding:12px;background:var(--orange);border:none;color:#fff;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font)}
+    .modal-btn:hover{opacity:0.88}
+    .modal-close{float:right;background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1}
+
+    /* LIMIT MESSAGE */
+    .limit-banner{background:rgba(255,102,0,0.08);border:0.5px solid rgba(255,102,0,0.3);border-radius:10px;padding:1rem 1.25rem;text-align:center;margin:0.5rem 0}
+    .limit-banner p{font-size:13px;color:var(--text);margin-bottom:0.75rem}
+    .limit-banner strong{color:var(--orange)}
+
+    @media(max-width:640px){
+      nav{padding:0.75rem 1rem}
+      .chat-wrap{padding:0 0.75rem}
+      .plan-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body class="dark">
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <img src="logo2.png" alt="BillSource" height="28" style="object-fit:contain;max-width:110px" onerror="this.style.display='none'"/>
+    <span id="plan-badge" class="plan-badge plan-free">Free</span>
+  </div>
+  <div class="nav-right">
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">&#9788;</button>
+    <div class="user-pill">
+      <img id="user-avatar" class="user-avatar" src="" alt="" onerror="this.style.display='none'"/>
+      <span id="user-name" class="user-name">Loading...</span>
+    </div>
+    <button class="btn-upgrade" id="upgrade-btn" onclick="openUpgrade()" style="display:none">Upgrade &#8593;</button>
+    <a class="btn-logout" href="/auth/logout">Sign out</a>
+  </div>
+</nav>
+
+<!-- USAGE BAR -->
+<div class="usage-bar">
+  <span class="usage-label">Messages</span>
+  <div class="usage-track">
+    <div class="usage-fill safe" id="usage-fill" style="width:0%"></div>
+  </div>
+  <span class="usage-count" id="usage-count">Loading...</span>
+  <span style="font-size:11px;color:var(--muted);margin-left:auto">
+    <a href="/" style="color:var(--muted);text-decoration:none;font-size:11px">&#8592; Home</a>
+  </span>
+</div>
+
+<!-- CHAT -->
+<div class="chat-wrap">
+  <div class="chat-messages" id="chat-messages">
+    <div class="msg">
+      <img src="logo2.png" alt="Billi" height="22" style="object-fit:contain;max-width:80px;flex-shrink:0;margin-top:6px" onerror="this.style.display='none'"/>
+      <div class="msg-bubble ai">Hi! I'm Billi, your BillSource AI assistant. I specialise in EBPP, debt collection, dunning strategies, financial ratios and business risk management.<br><br>How can I help you today?</div>
+    </div>
+  </div>
+
+  <div class="suggestions" id="suggestions">
+    <button class="suggestion" onclick="sendSuggestion(this)">What is EBPP?</button>
+    <button class="suggestion" onclick="sendSuggestion(this)">Best dunning sequence for overdue accounts?</button>
+    <button class="suggestion" onclick="sendSuggestion(this)">Key financial ratios for credit risk?</button>
+    <button class="suggestion" onclick="sendSuggestion(this)">SA debt collection legal requirements</button>
+  </div>
+
+  <div class="input-area">
+    <div class="input-row">
+      <textarea class="chat-input" id="chat-input" placeholder="Ask Billi a billing question..." rows="1"
+        onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="send-btn" id="send-btn" onclick="sendMessage()">&#8594;</button>
+    </div>
+  </div>
+</div>
+
+<!-- UPGRADE MODAL -->
+<div class="modal-overlay" id="upgrade-modal" onclick="if(event.target===this)closeUpgrade()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeUpgrade()">&#215;</button>
+    <div class="modal-title">Upgrade your plan</div>
+    <div class="modal-sub" id="modal-sub">Choose a plan to continue using Billi.</div>
+    <div class="plan-grid">
+      <div class="plan-opt selected" onclick="selectPlan('solo',this)">
+        <div class="plan-opt-name">Solo</div>
+        <div class="plan-opt-price">R199</div>
+        <div class="plan-opt-msgs">500 msg/month</div>
+      </div>
+      <div class="plan-opt" onclick="selectPlan('team',this)">
+        <div class="plan-opt-name">Team</div>
+        <div class="plan-opt-price">R499</div>
+        <div class="plan-opt-msgs">2 000 msg/month</div>
+      </div>
+      <div class="plan-opt" onclick="selectPlan('business',this)">
+        <div class="plan-opt-name">Business</div>
+        <div class="plan-opt-price">R999</div>
+        <div class="plan-opt-msgs">10 000 msg/month</div>
+      </div>
+    </div>
+    <button class="modal-btn" onclick="subscribePlan()">Pay with Paystack &#8594;</button>
+  </div>
+</div>
+
+<script>
+  var currentUser = null;
+  var selectedPlan = 'solo';
+  var isTyping = false;
+
+  // ── INIT ──
+  async function init() {
+    await loadUser();
+    restoreTheme();
+  }
+
+  async function loadUser() {
+    try {
+      const res = await fetch('/api/me');
+      const data = await res.json();
+      if (!data.authenticated) {
+        window.location.href = '/auth/google';
+        return;
+      }
+      currentUser = data.user;
+      updateUI();
+    } catch(e) {
+      console.error('Failed to load user:', e);
+    }
+  }
+
+  function updateUI() {
+    if (!currentUser) return;
+    // Name and avatar
+    document.getElementById('user-name').textContent = currentUser.name.split(' ')[0];
+    const av = document.getElementById('user-avatar');
+    if (currentUser.avatar) { av.src = currentUser.avatar; av.style.display = 'block'; }
+
+    // Plan badge
+    const badge = document.getElementById('plan-badge');
+    badge.textContent = currentUser.plan.charAt(0).toUpperCase() + currentUser.plan.slice(1);
+    badge.className = `plan-badge plan-${currentUser.plan}`;
+
+    // Usage bar
+    const pct = Math.min(100, (currentUser.messagesUsed / currentUser.messagesLimit) * 100);
+    const fill = document.getElementById('usage-fill');
+    fill.style.width = pct + '%';
+    fill.className = 'usage-fill ' + (pct < 60 ? 'safe' : pct < 85 ? 'warn' : 'danger');
+    document.getElementById('usage-count').textContent =
+      `${currentUser.messagesUsed} / ${currentUser.messagesLimit} used`;
+
+    // Show upgrade button if on free plan or near limit
+    if (currentUser.plan === 'free' || currentUser.messagesRemaining <= 5) {
+      document.getElementById('upgrade-btn').style.display = 'block';
+    }
+  }
+
+  // ── CHAT ──
+  function billiAv() {
+    return '<img src="logo2.png" alt="Billi" height="22" style="object-fit:contain;max-width:80px;flex-shrink:0;margin-top:6px" onerror="this.style.display=\'none\'">';
+  }
+
+  function addMessage(text, role) {
+    document.getElementById('suggestions').style.display = 'none';
+    const msgs = document.getElementById('chat-messages');
+    const d = document.createElement('div');
+    d.className = 'msg' + (role === 'user' ? ' user' : '');
+    const initials = currentUser ? currentUser.name.charAt(0).toUpperCase() : 'U';
+    const av = role === 'user'
+      ? `<div class="msg-avatar-user">${initials}</div>`
+      : billiAv();
+    d.innerHTML = av + `<div class="msg-bubble ${role}">${text}</div>`;
+    msgs.appendChild(d);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function showTyping() {
+    const msgs = document.getElementById('chat-messages');
+    const d = document.createElement('div');
+    d.className = 'msg'; d.id = 'typing-indicator';
+    d.innerHTML = billiAv() + '<div class="msg-bubble ai"><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>';
+    msgs.appendChild(d);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function removeTyping() { const t = document.getElementById('typing-indicator'); if (t) t.remove(); }
+
+  async function sendMessage() {
+    if (isTyping) return;
+    const input = document.getElementById('chat-input');
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    if (currentUser && currentUser.messagesRemaining <= 0) {
+      openUpgrade(true);
+      return;
+    }
+
+    input.value = '';
+    input.style.height = 'auto';
+    addMessage(msg, 'user');
+    isTyping = true;
+    document.getElementById('send-btn').disabled = true;
+    showTyping();
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: msg })
+      });
+      const data = await res.json();
+      removeTyping();
+
+      if (res.status === 403 && data.error === 'limit_reached') {
+        openUpgrade(true);
+        return;
+      }
+      if (res.status === 401) {
+        window.location.href = '/auth/google';
+        return;
+      }
+
+      addMessage(data.answer || data.error || 'Something went wrong.', 'ai');
+
+      // Update usage
+      if (data.messagesRemaining !== undefined) {
+        currentUser.messagesUsed = data.messagesUsed || currentUser.messagesUsed + 1;
+        currentUser.messagesRemaining = data.messagesRemaining;
+        updateUI();
+      }
+
+    } catch(e) {
+      removeTyping();
+      addMessage('Billi is temporarily unavailable. Please try again.', 'ai');
+    }
+
+    isTyping = false;
+    document.getElementById('send-btn').disabled = false;
+  }
+
+  function sendSuggestion(el) {
+    document.getElementById('chat-input').value = el.textContent;
+    sendMessage();
+  }
+
+  function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  }
+
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  }
+
+  // ── UPGRADE ──
+  function openUpgrade(limitReached) {
+    const sub = document.getElementById('modal-sub');
+    sub.textContent = limitReached
+      ? `You've used all your messages. Upgrade to keep using Billi.`
+      : 'Choose a plan that fits your usage.';
+    document.getElementById('upgrade-modal').classList.add('open');
+  }
+
+  function closeUpgrade() {
+    document.getElementById('upgrade-modal').classList.remove('open');
+  }
+
+  function selectPlan(plan, el) {
+    selectedPlan = plan;
+    document.querySelectorAll('.plan-opt').forEach(p => p.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  async function subscribePlan() {
+    try {
+      const res = await fetch('/api/pay/initialize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: selectedPlan })
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else alert('Payment initialization failed. Please try again.');
+    } catch(e) {
+      alert('Payment error. Please try again.');
+    }
+  }
+
+  // ── THEME ──
+  function toggleTheme() {
+    const b = document.body;
+    const btn = document.getElementById('theme-btn');
+    if (b.classList.contains('dark')) {
+      b.classList.replace('dark', 'light');
+      btn.innerHTML = '&#9790;';
+      localStorage.setItem('bs-theme', 'light');
+    } else {
+      b.classList.replace('light', 'dark');
+      btn.innerHTML = '&#9788;';
+      localStorage.setItem('bs-theme', 'dark');
+    }
+  }
+
+  function restoreTheme() {
+    const saved = localStorage.getItem('bs-theme');
+    if (saved === 'light') {
+      document.body.classList.replace('dark', 'light');
+      document.getElementById('theme-btn').innerHTML = '&#9790;';
+    }
+  }
+
+  // Check payment success
+  if (window.location.search.includes('payment=success')) {
+    setTimeout(() => loadUser(), 2000);
+  }
+
+  init();
+</script>
+</body>
+</html>
