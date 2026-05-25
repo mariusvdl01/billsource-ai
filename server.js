@@ -366,22 +366,36 @@ const server = http.createServer(async (req, res) => {
         { 'Content-Type': 'application/json' }
       );
 
+      console.log('Flowise response keys:', Object.keys(flowiseResponse || {}));
+      console.log('Flowise response sample:', JSON.stringify(flowiseResponse).slice(0, 400));
+
       // Increment usage
       user.messagesUsed++;
       sessions[session.sid].user = user;
       users[user.email] = user;
 
-      const answer = flowiseResponse.text || flowiseResponse.answer || 'Billi is thinking — please try again.';
+      // Handle all known Flowise response formats
+      const answer =
+        (typeof flowiseResponse === 'string' ? flowiseResponse : null) ||
+        flowiseResponse.text ||
+        flowiseResponse.answer ||
+        flowiseResponse.output ||
+        flowiseResponse.message ||
+        flowiseResponse.result ||
+        flowiseResponse.response ||
+        (Array.isArray(flowiseResponse.outputs) && flowiseResponse.outputs[0] && flowiseResponse.outputs[0].text) ||
+        null;
+      const finalAnswer = answer || 'Billi received your question but could not generate a response. Please check the Flowise agent is running and try again.';
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({
-        answer,
+        answer: finalAnswer,
         messagesUsed: user.messagesUsed,
         messagesRemaining: Math.max(0, user.messagesLimit - user.messagesUsed)
       }));
     } catch (err) {
-      console.error('Chat error:', err);
+      console.error('Chat error:', err.message, err.stack);
       res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Billi is temporarily unavailable. Please try again.' }));
+      res.end(JSON.stringify({ error: 'Billi is temporarily unavailable. Please try again.', detail: err.message }));
     }
     return;
   }
