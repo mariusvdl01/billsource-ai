@@ -1,7 +1,12 @@
 {
   "name": "billsource-ai",
   "version": "1.0.0",
+  "description": "BillSource AI - Billi billing intelligence",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
