@@ -411,7 +411,7 @@ const server = http.createServer(async (req, res) => {
     try {
       const body = await readBody(req);
       const { plan } = JSON.parse(body);
-      const planMap = { solo: 19900, team: 49900, business: 99900 }; // in cents
+      const planMap = { professional: 14900, business: 29900, enterprise: 59900 }; // in cents
       const amount = planMap[plan];
       if (!amount) throw new Error('Invalid plan');
       const user = session.data.user;
