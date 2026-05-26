@@ -431,6 +431,7 @@
   <div class="section-label">Pricing</div>
   <div class="section-title">Simple, transparent plans</div>
   <div class="plans-grid">
+
     <div class="plan-card">
       <div class="plan-name">Starter</div>
       <div class="plan-price">R0 <span>/mo</span></div>
@@ -439,13 +440,14 @@
       <div class="plan-feature"><span class="check">&#10003;</span> 12-ratio health report</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Risk score &amp; classification</div>
       <div class="plan-feature"><span class="check">&#10003;</span> 20 chat messages with Billi</div>
-      <button class="plan-btn outlined" onclick="document.getElementById('upload-section').scrollIntoView({behavior:'smooth'})">Try free now</button>
+      <button class="plan-btn outlined" onclick="window.location.href='/auth/google'">Try free now</button>
     </div>
+
     <div class="plan-card featured">
-      <div class="plan-badge">Most popular</div>
+      <div class="plan-badge-tag">Most popular</div>
       <div class="plan-name" style="color:var(--orange)">Professional</div>
       <div class="plan-price">R149 <span>/mo</span></div>
-      <div class="plan-msgs">20 reports &middot; 1 000 messages &middot; 1 user</div>
+      <div class="plan-msgs">5 reports &middot; 300 messages &middot; 1 named user</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Financial health score (NHS + RS)</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Document upload &mdash; all formats</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Full action plan &amp; recommendations</div>
@@ -453,77 +455,34 @@
       <div class="plan-feature"><span class="check">&#10003;</span> Report history &amp; trend tracking</div>
       <button class="plan-btn filled" onclick="window.location.href='/auth/google'">Get started</button>
     </div>
+
     <div class="plan-card">
-      <div class="plan-name" style="color:var(--orange)">Pro</div>
+      <div class="plan-name">Business</div>
       <div class="plan-price">R299 <span>/mo</span></div>
-      <div class="plan-msgs">Unlimited reports &middot; 5,000 messages &middot; 3 users</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> Everything in Solo</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> Up to 5 client profiles</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> 3 user seats</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> Comparative multi-entity reporting</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> Email report delivery to clients</div>
-      <button class="plan-btn outlined" onclick="openLogin()">Choose Pro</button>
+      <div class="plan-msgs">20 reports &middot; 1 000 messages &middot; 1 named user</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Everything in Professional</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Debtor ageing analysis</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Cash flow gap forecasting</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Chat history 12 months</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> billsource.com SSO ready</div>
+      <button class="plan-btn outlined" onclick="window.location.href='/auth/google'">Choose Business</button>
     </div>
-    <div class="plan-card">
-      <div class="plan-name">Accountant</div>
-      <div class="plan-price">R599 <span>/mo</span></div>
-      <div class="plan-msgs">20 client reports &middot; 10,000 messages &middot; 1 user</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> Everything in Pro</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> Client portfolio dashboard</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> Branded client reports</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> Priority support</div>
-      <button class="plan-btn outlined" onclick="openLogin()">Choose Accountant</button>
-    </div>
+
     <div class="plan-card">
       <div class="plan-name">Enterprise</div>
-      <div class="plan-price">R1,299 <span>/mo</span></div>
-      <div class="plan-msgs">Unlimited reports &middot; 20,000 messages &middot; unlimited users</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> Everything in Accountant</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> Unlimited users</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> BillSource.com live data sync</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> API access · top-ups available &amp; ecosystem risk scoring</div>
-      <button class="plan-btn outlined" onclick="openLogin()">Choose Business</button>
+      <div class="plan-price">R599 <span>/mo</span></div>
+      <div class="plan-msgs">Unlimited reports &middot; 5 000 messages &middot; 1 named user</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Everything in Business</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> API access</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Custom knowledge base</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Top-up packs available</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> Priority support</div>
+      <button class="plan-btn outlined" onclick="window.location.href='/auth/google'">Choose Enterprise</button>
     </div>
-  </div>
-</section>
 
-<!-- TRUST CENTRE -->
-<section class="trust">
-  <div class="section-label">Trust &amp; assurance</div>
-  <div class="section-title">Your data. Your privacy. Our promise.</div>
-  <div class="trust-grid">
-    <div class="trust-card">
-      <span class="trust-icon">&#128274;</span>
-      <div class="trust-title">Private by design</div>
-      <div class="trust-desc">Your financial documents are processed in-session and never stored permanently without your consent. We do not sell or share your data with third parties.</div>
-    </div>
-    <div class="trust-card">
-      <span class="trust-icon">&#129302;</span>
-      <div class="trust-title">Not used for AI training</div>
-      <div class="trust-desc">Your conversations and uploaded documents are never used to train AI models &mdash; by us or our providers. What you share stays between you and Billi.</div>
-    </div>
-    <div class="trust-card">
-      <span class="trust-icon">&#127470;&#127462;</span>
-      <div class="trust-title">South African law</div>
-      <div class="trust-desc">Billi operates under POPIA (Protection of Personal Information Act) compliance. Your rights as a data subject are protected under South African law.</div>
-    </div>
-    <div class="trust-card">
-      <span class="trust-icon">&#128202;</span>
-      <div class="trust-title">AI-assisted, human-reviewed</div>
-      <div class="trust-desc">Billi&rsquo;s analysis is AI-generated and should be reviewed by a qualified advisor before major financial decisions. Every report carries this reminder.</div>
-    </div>
-    <div class="trust-card">
-      <span class="trust-icon">&#127959;</span>
-      <div class="trust-title">Registered &amp; incorporated</div>
-      <div class="trust-desc">BillSource is operated by AnyABEX (Pty) Ltd, a registered South African company. billsource&reg; is a registered trademark. &copy; 2026 all rights reserved.</div>
-    </div>
-    <div class="trust-card">
-      <span class="trust-icon">&#128591;</span>
-      <div class="trust-title">No hard sell</div>
-      <div class="trust-desc">When Billi recommends a financial product &mdash; factoring, credit, or a lender &mdash; it is because your data supports it. We never push products that don&rsquo;t fit your situation.</div>
-    </div>
   </div>
-</section>
+
+  </section>
 
 <!-- DEMO CHAT -->
 <section class="demo" id="demo-section">
