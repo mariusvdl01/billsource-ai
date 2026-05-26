@@ -231,20 +231,20 @@
     <div class="modal-title">Upgrade your plan</div>
     <div class="modal-sub" id="upgrade-sub">Get more messages and unlock Billi's full potential.</div>
     <div class="plan-grid">
-      <div class="plan-opt sel" onclick="selectPlan('solo',this)">
+      <div class="plan-opt sel" onclick="selectPlan('professional',this)">
         <div class="plan-opt-name">Professional</div>
         <div class="plan-opt-price">R149</div>
-        <div class="plan-opt-msgs">5 reports · 300 msg / month</div>
-      </div>
-      <div class="plan-opt" onclick="selectPlan('team',this)">
-        <div class="plan-opt-name">Enterprise</div>
-        <div class="plan-opt-price">R299</div>
-        <div class="plan-opt-msgs">20 reports · 1 000 msg / month</div>
+        <div class="plan-opt-msgs">5 reports · 300 msg/mo · 1 user</div>
       </div>
       <div class="plan-opt" onclick="selectPlan('business',this)">
+        <div class="plan-opt-name">Business</div>
+        <div class="plan-opt-price">R299</div>
+        <div class="plan-opt-msgs">20 reports · 1 000 msg/mo · 1 user</div>
+      </div>
+      <div class="plan-opt" onclick="selectPlan('enterprise',this)">
         <div class="plan-opt-name">Enterprise</div>
         <div class="plan-opt-price">R599</div>
-        <div class="plan-opt-msgs">Unlimited reports · 5 000 msg</div>
+        <div class="plan-opt-msgs">Unlimited reports · 5 000 msg/mo</div>
       </div>
     </div>
     <button class="modal-btn" onclick="subscribePlan()">Pay with Paystack &#8594;</button>
@@ -394,9 +394,10 @@
 
 <script>
   var currentUser = null;
-  var selectedPlan = 'solo';
+  var selectedPlan = 'professional';
   var isTyping = false;
-  var chats = JSON.parse(localStorage.getItem('billi_chats') || '[]');
+  var chats = [];
+  var chatKey = 'billi_chats_anonymous';
   var activeChat = null;
 
   // ── INIT ──
@@ -413,12 +414,20 @@
       const data = await res.json();
       if (!data.authenticated) { window.location.href = '/auth/google'; return; }
       currentUser = data.user;
+      // Isolate chat history per user
+      chatKey = 'billi_chats_' + currentUser.email.replace(/[^a-z0-9]/gi,'_');
+      chats = JSON.parse(localStorage.getItem(chatKey) || '[]');
       updateUI();
     } catch(e) { console.error(e); }
   }
 
   function updateUI() {
     if (!currentUser) return;
+    // Reload chats for this user in case it wasn't loaded yet
+    if (chatKey === 'billi_chats_anonymous') {
+      chatKey = 'billi_chats_' + currentUser.email.replace(/[^a-z0-9]/gi,'_');
+      chats = JSON.parse(localStorage.getItem(chatKey) || '[]');
+    }
     const first = currentUser.name.split(' ')[0];
     document.getElementById('sb-name').textContent = currentUser.name;
     document.getElementById('sb-email').textContent = currentUser.email;
@@ -554,7 +563,7 @@
 
   // ── HISTORY ──
   function saveHistory() {
-    try { localStorage.setItem('billi_chats', JSON.stringify(chats.slice(0, 50))); } catch(e) {}
+    try { localStorage.setItem(chatKey, JSON.stringify(chats.slice(0, 50))); } catch(e) {}
   }
 
   function renderHistory() {

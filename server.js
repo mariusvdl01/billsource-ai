@@ -164,6 +164,7 @@ async function getGoogleUserInfo(accessToken) {
 function getOrCreateUser(googleProfile) {
   const email = googleProfile.email;
   if (!users[email]) {
+    // New user — create fresh record
     users[email] = {
       email,
       name: googleProfile.name,
@@ -172,10 +173,16 @@ function getOrCreateUser(googleProfile) {
       plan: 'free',
       messagesUsed: 0,
       messagesLimit: PLANS.free.messages,
+      messagesRemaining: PLANS.free.messages,
       createdAt: new Date().toISOString(),
       billingCycle: new Date().toISOString()
     };
-    console.log(`New user: ${email}`);
+    console.log(`New user registered: ${email}`);
+  } else {
+    // Returning user — update name/avatar but preserve usage
+    users[email].name = googleProfile.name;
+    users[email].avatar = googleProfile.picture;
+    console.log(`Returning user: ${email} — used ${users[email].messagesUsed}/${users[email].messagesLimit}`);
   }
   return users[email];
 }
