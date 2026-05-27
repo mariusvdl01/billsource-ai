@@ -228,10 +228,10 @@
       <div class="chat-messages" id="chat-messages"></div>
 
       <div class="suggestions" id="suggestions">
-        <button class="suggestion" onclick="sendSuggestion(this)">My biggest client hasn't paid in 60 days — what do I do?</button>
-        <button class="suggestion" onclick="sendSuggestion(this)">Draft a 90-day marketing plan for my business</button>
-        <button class="suggestion" onclick="sendSuggestion(this)">Am I POPIA compliant? Walk me through the checklist</button>
-        <button class="suggestion" onclick="sendSuggestion(this)">What are my top 3 operational risks right now?</button>
+        <button class="suggestion" onclick="sendSuggestion(this)">My biggest client hasn't paid in 60 days — help!</button>
+        <button class="suggestion" onclick="sendSuggestion(this)">How do I get more customers this month?</button>
+        <button class="suggestion" onclick="sendSuggestion(this)">Am I breaking any rules I don't know about?</button>
+        <button class="suggestion" onclick="sendSuggestion(this)">My business feels chaotic — where do I start fixing it?</button>
       </div>
 
       <div class="input-area">
@@ -283,12 +283,12 @@
     <!-- Role tabs -->
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:0.75rem;flex-shrink:0" id="pb-tabs">
       <button class="pb-tab active" onclick="switchTab('all',this)" data-roles="all">All</button>
-      <button class="pb-tab" onclick="switchTab('cfo',this)" data-roles="starter,professional,business,enterprise">&#128200; CFO</button>
-      <button class="pb-tab" onclick="switchTab('cgo',this)" data-roles="professional,business,enterprise">&#9878; CGO</button>
-      <button class="pb-tab" onclick="switchTab('cmo',this)" data-roles="business,enterprise">&#128227; CMO</button>
-      <button class="pb-tab" onclick="switchTab('cso',this)" data-roles="enterprise">&#127919; CSO</button>
-      <button class="pb-tab" onclick="switchTab('coo',this)" data-roles="enterprise">&#9881; COO</button>
-      <button class="pb-tab" onclick="switchTab('tech',this)" data-roles="enterprise">&#128187; Tech</button>
+      <button class="pb-tab" onclick="switchTab('cfo',this)" data-roles="starter,professional,business,enterprise">&#128200; Bean Counter</button>
+      <button class="pb-tab" onclick="switchTab('cgo',this)" data-roles="professional,business,enterprise">&#9878; The Rule Book</button>
+      <button class="pb-tab" onclick="switchTab('cmo',this)" data-roles="business,enterprise">&#128227; Brand Guru</button>
+      <button class="pb-tab" onclick="switchTab('cso',this)" data-roles="enterprise">&#127919; Deal Maker</button>
+      <button class="pb-tab" onclick="switchTab('coo',this)" data-roles="enterprise">&#9881; The Fixer</button>
+      <button class="pb-tab" onclick="switchTab('tech',this)" data-roles="enterprise">&#128187; Tech Advisor</button>
     </div>
 
     <!-- Plan notice -->
@@ -305,7 +305,7 @@
 
     <div class="prompt-grid" id="prompt-grid" style="flex:1;overflow-y:auto;max-height:440px">
 
-      <div class="prompt-cat">&#128200; CFO &mdash; Cash Flow &amp; Financial Health</div>
+      <div class="prompt-cat">&#128200; Bean Counter &mdash; Cash Flow &amp; Financial Health</div>
       <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
         <div class="prompt-item-title">Monthly cash flow health check</div>
         <div class="prompt-item-desc">Analyse my business cash flow position and flag any gaps or risks for the next 30 days.</div>
@@ -323,7 +323,7 @@
         <div class="prompt-item-desc">How can I optimise my working capital to improve cash flow without taking on more debt?</div>
       </div>
 
-      <div class="prompt-cat">&#128239; CFO &mdash; Debt Collection &amp; Dunning</div>
+      <div class="prompt-cat">&#128239; Bean Counter &mdash; Debt Collection &amp; Dunning</div>
       <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
         <div class="prompt-item-title">30-day overdue dunning letter</div>
         <div class="prompt-item-desc">Draft a professional but firm dunning letter for an account that is 30 days overdue.</div>
@@ -341,7 +341,7 @@
         <div class="prompt-item-desc">Walk me through how to prepare and interpret a debtor ageing analysis.</div>
       </div>
 
-      <div class="prompt-cat">&#9878; CGO &mdash; Governance &amp; Compliance</div>
+      <div class="prompt-cat">&#9878; The Rule Book &mdash; Governance &amp; Compliance</div>
       <div class="prompt-item" data-role="cgo" onclick="usePrompt(this)">
         <div class="prompt-item-title">POPIA compliance checklist</div>
         <div class="prompt-item-desc">Walk me through a POPIA compliance checklist for my South African business and flag any gaps.</div>
@@ -363,7 +363,7 @@
         <div class="prompt-item-desc">Help me draft a simple POPIA-aligned data privacy policy for my business website.</div>
       </div>
 
-      <div class="prompt-cat">&#128227; CMO &mdash; Marketing &amp; Brand</div>
+      <div class="prompt-cat">&#128227; Brand Guru &mdash; Marketing &amp; Brand</div>
       <div class="prompt-item" data-role="cmo" onclick="usePrompt(this)">
         <div class="prompt-item-title">90-day marketing plan</div>
         <div class="prompt-item-desc">Draft a practical 90-day marketing plan for my business type and target market in South Africa.</div>
@@ -385,7 +385,7 @@
         <div class="prompt-item-desc">Help me calculate and reduce my customer acquisition cost for my main marketing channel.</div>
       </div>
 
-      <div class="prompt-cat">&#127919; CSO &mdash; Sales &amp; Growth</div>
+      <div class="prompt-cat">&#127919; Deal Maker &mdash; Sales &amp; Growth</div>
       <div class="prompt-item" data-role="cso" onclick="usePrompt(this)">
         <div class="prompt-item-title">Sales pipeline health review</div>
         <div class="prompt-item-desc">Review my sales pipeline and identify the biggest risks and opportunities this month.</div>
@@ -407,7 +407,7 @@
         <div class="prompt-item-desc">What strategies can I implement to improve client retention and increase lifetime value?</div>
       </div>
 
-      <div class="prompt-cat">&#9881; COO &mdash; Operations &amp; Efficiency</div>
+      <div class="prompt-cat">&#9881; The Fixer &mdash; Operations &amp; Efficiency</div>
       <div class="prompt-item" data-role="coo" onclick="usePrompt(this)">
         <div class="prompt-item-title">Business process mapping</div>
         <div class="prompt-item-desc">Map my core business process, identify the bottlenecks and suggest how to streamline it.</div>
@@ -429,7 +429,7 @@
         <div class="prompt-item-desc">Identify my top 3 operational risks and give me a practical mitigation plan for each.</div>
       </div>
 
-      <div class="prompt-cat">&#128187; Technical Advisory &mdash; IT &amp; Digital Transformation</div>
+      <div class="prompt-cat">&#128187; Tech Advisor &mdash; IT &amp; Digital Transformation</div>
       <div class="prompt-item" data-role="tech" onclick="usePrompt(this)">
         <div class="prompt-item-title">Digital transformation readiness</div>
         <div class="prompt-item-desc">Assess my business digital transformation readiness and recommend the right next steps.</div>
@@ -582,7 +582,7 @@
     const msgs = document.getElementById('chat-messages');
     msgs.innerHTML = '';
     const first = currentUser ? currentUser.name.split(' ')[0] : 'there';
-    addBubble(`Hi ${first}! I'm Billi, your BillSource Business Associate Team.<br><br>I operate as your <strong>CFO, CMO, CSO, CGO and COO</strong> &mdash; five C-suite advisors in one conversation. Ask me about finance, marketing, sales, governance, operations or how to grow your business sustainably.<br><br>What would you like to work on today?`, 'ai');
+    addBubble(`Hi ${first}! I'm Billi, your BillSource Business Associate Team.<br><br>I'm your <strong>Bean Counter, Brand Guru, Deal Maker, The Rule Book and The Fixer</strong> &mdash; five business advisors in one conversation. Ask me about money, marketing, sales, compliance or how to run your business better.<br><br>What would you like to work on today?`, 'ai');
   }
 
   // ── CHAT ──

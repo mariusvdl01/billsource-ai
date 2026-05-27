@@ -258,6 +258,20 @@
       text-transform:uppercase;
       margin-bottom:0.75rem;
     }
+
+    .logo-slider-section{padding:1.75rem 0;border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border);overflow:hidden;position:relative}
+    .logo-slider-label{text-align:center;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1.25rem}
+    .logo-track-wrap{overflow:hidden;position:relative}
+    .logo-track-wrap::before,.logo-track-wrap::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none}
+    .logo-track-wrap::before{left:0;background:linear-gradient(to right,var(--bg),transparent)}
+    .logo-track-wrap::after{right:0;background:linear-gradient(to left,var(--bg),transparent)}
+    .logo-track{display:flex;gap:40px;align-items:center;animation:scroll-logos 28s linear infinite;width:max-content}
+    .logo-track:hover{animation-play-state:paused}
+    @keyframes scroll-logos{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .logo-item{display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0;opacity:0.55;transition:opacity 0.2s;cursor:default}
+    .logo-item:hover{opacity:0.9}
+    .logo-svg{width:52px;height:52px}
+    .logo-name{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:0.04em;white-space:nowrap;text-transform:uppercase}
   </style>
 </head>
 <!-- Theme set immediately to avoid flash -->
@@ -301,7 +315,7 @@
 <section class="hero">
   <div class="badge"><span class="badge-dot"></span>Live now &mdash; free to try, no card required</div>
   <h1>Meet <span>Billi</span> &mdash; your business associate team</h1>
-  <p class="hero-sub">CFO &middot; CMO &middot; CSO &middot; CGO &middot; COO &mdash; five C-suite minds in one conversation. Financial intelligence, marketing strategy, sales growth, governance compliance and operational excellence. Built for South African SMEs.</p>
+  <p class="hero-sub">Bean Counter &middot; Brand Guru &middot; Deal Maker &middot; The Rule Book &middot; The Fixer &mdash; five business advisors in one conversation. Built for the business owner who says <em>"the sales are kak, what do I do?"</em></p>
   <div class="hero-cta">
     <button class="btn-lg primary" onclick="document.getElementById('upload-section').scrollIntoView({behavior:'smooth'})">
       &#8593; Upload a statement &mdash; it&rsquo;s free
@@ -344,6 +358,96 @@
     <div class="tm-desc">Billi is the AI intelligence layer built on the BillSource platform. Your financial data stays private &mdash; never used for AI training, never shared.</div>
   </div>
 </section>
+
+<!-- LOGO SLIDER -->
+<div class="logo-slider-section">
+  <div class="logo-slider-label">Trusted by businesses on the BillSource platform</div>
+  <div class="logo-track-wrap">
+    <div class="logo-track">
+      <div class="logo-item" title="WinesRUs">
+        <svg class="logo-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="color:var(--text)"><circle cx="26" cy="20" r="10" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M26 30 L26 44" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M18 44 L34 44" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+        <span class="logo-name">WinesRUs</span>
+      </div>
+      <div class="logo-item" title="JB Used Spares">
+        <svg class="logo-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="color:var(--text)"><circle cx="26" cy="26" r="12" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="26" cy="26" r="4" fill="currentColor"/><path d="M26 8L26 14M26 38L26 44M8 26L14 26M38 26L44 26" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+        <span class="logo-name">JB</span>
+      </div>
+      <div class="logo-item" title="CMart Retail">
+        <svg class="logo-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="color:var(--text)"><rect x="10" y="20" width="32" height="24" rx="2" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M17 20V16Q17 8 26 8Q35 8 35 16V20" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>
+        <span class="logo-name">CMart</span>
+      </div>
+      <div class="logo-item" title="Freshmedia">
+        <svg class="logo-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="color:var(--text)"><rect x="6" y="14" width="40" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="2.5"/><polygon points="20,20 36,28 20,36" fill="currentColor"/></svg>
+        <span class="logo-name">Freshmedia</span>
+      </div>
+      <div class="logo-item" title="Nano Tech">
+        <svg class="logo-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="color:var(--text)"><rect x="10" y="10" width="32" height="32" rx="4" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M18 26L22 22L26 28L30 20L34 26" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="logo-name">Nano</span>
+      </div>
+      <div class="logo-item" title="Jill Photo">
+        <svg class="logo-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="color:var(--text)"><circle cx="26" cy="28" r="10" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="26" cy="28" r="4" fill="currentColor"/><path d="M10 20L16 20L19 14L33 14L36 20L42 20L42 40L10 40Z" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>
+        <span class="logo-name">Jill</span>
+      </div>
+      <div class="logo-item" title="Greys Import">
+        <svg class="logo-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="color:var(--text)"><path d="M8 26L44 26M34 18L44 26L34 34" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 14L8 14L8 38L18 38" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+        <span class="logo-name">Greys</span>
+      </div>
+      <div class="logo-item" title="Sporadify">
+        <svg class="logo-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="color:var(--text)"><circle cx="26" cy="26" r="16" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="26" cy="26" r="6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="26" cy="26" r="2" fill="currentColor"/></svg>
+        <span class="logo-name">Sporadify</span>
+      </div>
+      <div class="logo-item" title="Frugago">
+        <svg class="logo-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="color:var(--text)"><path d="M14 12Q14 24 20 28L20 44" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M26 12L26 44" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M26 12Q38 12 38 22Q38 30 26 30" stroke="currentColor" stroke-width="2.5" fill="none"/></svg>
+        <span class="logo-name">Frugago</span>
+      </div>
+      <div class="logo-item" title="MartUGo">
+        <svg class="logo-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="color:var(--text)"><path d="M8 18L12 8L40 8L44 18L44 24Q44 28 40 28Q36 28 36 24Q36 28 32 28Q28 28 28 24Q28 28 24 28Q20 28 20 24Q20 28 16 28Q12 28 12 24L8 18Z" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M18 28L18 44L34 44L34 28" stroke="currentColor" stroke-width="2.5"/><path d="M22 44L22 34L30 34L30 44" stroke="currentColor" stroke-width="2.5"/></svg>
+        <span class="logo-name">MartUGo</span>
+      </div>
+      <div class="logo-item" title="WinesRUs">
+        <svg class="logo-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="color:var(--text)"><circle cx="26" cy="20" r="10" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M26 30 L26 44" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M18 44 L34 44" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+        <span class="logo-name">WinesRUs</span>
+      </div>
+      <div class="logo-item" title="JB Used Spares">
+        <svg class="logo-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="color:var(--text)"><circle cx="26" cy="26" r="12" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="26" cy="26" r="4" fill="currentColor"/><path d="M26 8L26 14M26 38L26 44M8 26L14 26M38 26L44 26" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+        <span class="logo-name">JB</span>
+      </div>
+      <div class="logo-item" title="CMart Retail">
+        <svg class="logo-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="color:var(--text)"><rect x="10" y="20" width="32" height="24" rx="2" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M17 20V16Q17 8 26 8Q35 8 35 16V20" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>
+        <span class="logo-name">CMart</span>
+      </div>
+      <div class="logo-item" title="Freshmedia">
+        <svg class="logo-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="color:var(--text)"><rect x="6" y="14" width="40" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="2.5"/><polygon points="20,20 36,28 20,36" fill="currentColor"/></svg>
+        <span class="logo-name">Freshmedia</span>
+      </div>
+      <div class="logo-item" title="Nano Tech">
+        <svg class="logo-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="color:var(--text)"><rect x="10" y="10" width="32" height="32" rx="4" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M18 26L22 22L26 28L30 20L34 26" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="logo-name">Nano</span>
+      </div>
+      <div class="logo-item" title="Jill Photo">
+        <svg class="logo-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="color:var(--text)"><circle cx="26" cy="28" r="10" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="26" cy="28" r="4" fill="currentColor"/><path d="M10 20L16 20L19 14L33 14L36 20L42 20L42 40L10 40Z" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>
+        <span class="logo-name">Jill</span>
+      </div>
+      <div class="logo-item" title="Greys Import">
+        <svg class="logo-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="color:var(--text)"><path d="M8 26L44 26M34 18L44 26L34 34" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 14L8 14L8 38L18 38" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+        <span class="logo-name">Greys</span>
+      </div>
+      <div class="logo-item" title="Sporadify">
+        <svg class="logo-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="color:var(--text)"><circle cx="26" cy="26" r="16" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="26" cy="26" r="6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="26" cy="26" r="2" fill="currentColor"/></svg>
+        <span class="logo-name">Sporadify</span>
+      </div>
+      <div class="logo-item" title="Frugago">
+        <svg class="logo-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="color:var(--text)"><path d="M14 12Q14 24 20 28L20 44" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M26 12L26 44" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M26 12Q38 12 38 22Q38 30 26 30" stroke="currentColor" stroke-width="2.5" fill="none"/></svg>
+        <span class="logo-name">Frugago</span>
+      </div>
+      <div class="logo-item" title="MartUGo">
+        <svg class="logo-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="color:var(--text)"><path d="M8 18L12 8L40 8L44 18L44 24Q44 28 40 28Q36 28 36 24Q36 28 32 28Q28 28 28 24Q28 28 24 28Q20 28 20 24Q20 28 16 28Q12 28 12 24L8 18Z" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M18 28L18 44L34 44L34 28" stroke="currentColor" stroke-width="2.5"/><path d="M22 44L22 34L30 34L30 44" stroke="currentColor" stroke-width="2.5"/></svg>
+        <span class="logo-name">MartUGo</span>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <!-- STATS -->
 <div class="stat-row">
@@ -447,7 +551,7 @@
     <div class="plan-card">
       <div class="plan-name">Starter</div>
       <div class="plan-price">R0 <span>/mo</span></div>
-      <div class="plan-msgs">CFO basics &middot; 1 report &middot; 20 messages</div>
+      <div class="plan-msgs">Bean Counter basics &middot; 1 report &middot; 20 messages</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Upload 1 income statement</div>
       <div class="plan-feature"><span class="check">&#10003;</span> 12-ratio health report</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Risk score &amp; classification</div>
@@ -459,7 +563,7 @@
       <div class="plan-badge-tag">Most popular</div>
       <div class="plan-name" style="color:var(--orange)">Professional</div>
       <div class="plan-price">R149 <span>/mo</span></div>
-      <div class="plan-msgs">CFO + CGO &middot; 5 reports &middot; 300 messages</div>
+      <div class="plan-msgs">Bean Counter + Rule Book &middot; 5 reports &middot; 300 messages</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Financial health score (NHS + RS)</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Document upload &mdash; all formats</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Full action plan &amp; recommendations</div>
@@ -471,7 +575,7 @@
     <div class="plan-card">
       <div class="plan-name">Business</div>
       <div class="plan-price">R299 <span>/mo</span></div>
-      <div class="plan-msgs">CFO + CMO + CGO &middot; 20 reports &middot; 1 000 messages</div>
+      <div class="plan-msgs">Bean Counter + Brand Guru + Rule Book &middot; 20 reports &middot; 1 000 messages</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Everything in Professional</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Debtor ageing analysis</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Cash flow gap forecasting</div>
@@ -483,7 +587,7 @@
     <div class="plan-card">
       <div class="plan-name">Enterprise</div>
       <div class="plan-price">R599 <span>/mo</span></div>
-      <div class="plan-msgs">All 5 roles &middot; Unlimited reports &middot; 5 000 messages</div>
+      <div class="plan-msgs">Full team &middot; Unlimited reports &middot; 5 000 messages</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Everything in Business</div>
       <div class="plan-feature"><span class="check">&#10003;</span> API access</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Custom knowledge base</div>
@@ -520,8 +624,8 @@
     </div>
     <div class="chat-suggestions" id="suggestions">
       <button class="suggestion" onclick="sendSuggestion(this)">My biggest client hasn&rsquo;t paid in 60 days</button>
-      <button class="suggestion" onclick="sendSuggestion(this)">Draft a 90-day marketing plan for my business</button>
-      <button class="suggestion" onclick="sendSuggestion(this)">Am I POPIA compliant? Walk me through the checklist</button>
+      <button class="suggestion" onclick="sendSuggestion(this)">How do I get more customers this month?</button>
+      <button class="suggestion" onclick="sendSuggestion(this)">Am I breaking any rules I don't know about?</button>
       <button class="suggestion" onclick="sendSuggestion(this)">What options do I have if I can&rsquo;t pay a supplier?</button>
     </div>
     <div class="chat-input-area" id="chat-input-area">
