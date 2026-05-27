@@ -149,6 +149,22 @@
         width:100%;
       }
     }
+
+    .pb-tab{
+      background:var(--card);
+      border:0.5px solid var(--border);
+      color:var(--muted);
+      padding:5px 12px;
+      border-radius:20px;
+      font-size:12px;
+      font-weight:600;
+      cursor:pointer;
+      font-family:var(--font);
+      transition:all 0.2s;
+    }
+    .pb-tab:hover{border-color:var(--orange);color:var(--orange)}
+    .pb-tab.active{background:var(--orange);border-color:var(--orange);color:#fff}
+    .prompt-item.hidden{display:none}
   </style>
 </head>
 <body class="dark">
@@ -260,75 +276,75 @@
     <div class="prompt-grid">
 
       <div class="prompt-cat">&#128200; Cash Flow &amp; Financial Health</div>
-      <div class="prompt-item" onclick="usePrompt(this)">
+      <div class="prompt-item" data-role="all" onclick="usePrompt(this)">
         <div class="prompt-item-title">Monthly cash flow health check</div>
         <div class="prompt-item-desc">Analyse my business cash flow position and flag any gaps or risks for the next 30 days.</div>
       </div>
-      <div class="prompt-item" onclick="usePrompt(this)">
+      <div class="prompt-item" data-role="all" onclick="usePrompt(this)">
         <div class="prompt-item-title">Current ratio interpretation</div>
         <div class="prompt-item-desc">Explain what my current ratio means and whether my short-term liquidity is healthy.</div>
       </div>
-      <div class="prompt-item" onclick="usePrompt(this)">
+      <div class="prompt-item" data-role="all" onclick="usePrompt(this)">
         <div class="prompt-item-title">12 key financial ratios report</div>
         <div class="prompt-item-desc">Give me a complete analysis of the 12 most important financial ratios for my business health.</div>
       </div>
-      <div class="prompt-item" onclick="usePrompt(this)">
+      <div class="prompt-item" data-role="all" onclick="usePrompt(this)">
         <div class="prompt-item-title">Days Sales Outstanding (DSO) review</div>
         <div class="prompt-item-desc">Calculate and interpret my DSO and tell me what it means for my cash flow cycle.</div>
       </div>
 
       <div class="prompt-cat">&#128239; Debt Collection &amp; Dunning</div>
-      <div class="prompt-item" onclick="usePrompt(this)">
+      <div class="prompt-item" data-role="all" onclick="usePrompt(this)">
         <div class="prompt-item-title">30-day overdue dunning letter</div>
         <div class="prompt-item-desc">Draft a professional but firm dunning letter for an account that is 30 days overdue.</div>
       </div>
-      <div class="prompt-item" onclick="usePrompt(this)">
+      <div class="prompt-item" data-role="all" onclick="usePrompt(this)">
         <div class="prompt-item-title">60-day escalation notice</div>
         <div class="prompt-item-desc">Draft a formal escalation notice for a debtor 60 days overdue, referencing legal consequences.</div>
       </div>
-      <div class="prompt-item" onclick="usePrompt(this)">
+      <div class="prompt-item" data-role="all" onclick="usePrompt(this)">
         <div class="prompt-item-title">Final demand before legal action</div>
         <div class="prompt-item-desc">Write a final demand letter compliant with South African debt collection law before referring to attorneys.</div>
       </div>
-      <div class="prompt-item" onclick="usePrompt(this)">
+      <div class="prompt-item" data-role="all" onclick="usePrompt(this)">
         <div class="prompt-item-title">Section 129 NCA notice guidance</div>
         <div class="prompt-item-desc">Explain the Section 129 notice requirements under the National Credit Act before legal action.</div>
       </div>
 
       <div class="prompt-cat">&#9888; Business Risk Management</div>
-      <div class="prompt-item" onclick="usePrompt(this)">
+      <div class="prompt-item" data-role="all" onclick="usePrompt(this)">
         <div class="prompt-item-title">Client credit risk assessment</div>
         <div class="prompt-item-desc">Help me assess the credit risk of a new client before extending payment terms.</div>
       </div>
-      <div class="prompt-item" onclick="usePrompt(this)">
+      <div class="prompt-item" data-role="all" onclick="usePrompt(this)">
         <div class="prompt-item-title">Supplier dependency risk review</div>
         <div class="prompt-item-desc">Identify risks in my supplier relationships and suggest mitigation strategies.</div>
       </div>
-      <div class="prompt-item" onclick="usePrompt(this)">
+      <div class="prompt-item" data-role="all" onclick="usePrompt(this)">
         <div class="prompt-item-title">Business continuity risk check</div>
         <div class="prompt-item-desc">What are the top 5 business continuity risks for a South African SME and how do I address them?</div>
       </div>
 
       <div class="prompt-cat">&#128181; Invoicing &amp; EBPP</div>
-      <div class="prompt-item" onclick="usePrompt(this)">
+      <div class="prompt-item" data-role="all" onclick="usePrompt(this)">
         <div class="prompt-item-title">Invoice payment terms best practice</div>
         <div class="prompt-item-desc">What payment terms should I set on my invoices to protect my cash flow?</div>
       </div>
-      <div class="prompt-item" onclick="usePrompt(this)">
+      <div class="prompt-item" data-role="all" onclick="usePrompt(this)">
         <div class="prompt-item-title">Electronic billing implementation guide</div>
         <div class="prompt-item-desc">How do I implement electronic bill presentment and payment (EBPP) for my business?</div>
       </div>
 
       <div class="prompt-cat">&#127891; Business Growth &amp; Best Practices</div>
-      <div class="prompt-item" onclick="usePrompt(this)">
+      <div class="prompt-item" data-role="all" onclick="usePrompt(this)">
         <div class="prompt-item-title">Monthly management report template</div>
         <div class="prompt-item-desc">Give me a template for a monthly management report covering financial health, debtors and risk.</div>
       </div>
-      <div class="prompt-item" onclick="usePrompt(this)">
+      <div class="prompt-item" data-role="all" onclick="usePrompt(this)">
         <div class="prompt-item-title">Working capital optimisation</div>
         <div class="prompt-item-desc">How can I optimise my working capital to improve cash flow without taking on more debt?</div>
       </div>
-      <div class="prompt-item" onclick="usePrompt(this)">
+      <div class="prompt-item" data-role="all" onclick="usePrompt(this)">
         <div class="prompt-item-title">Debtor ageing analysis guide</div>
         <div class="prompt-item-desc">Walk me through how to prepare and interpret a debtor ageing analysis.</div>
       </div>
@@ -688,144 +704,203 @@
 
   if (window.location.search.includes('payment=success')) setTimeout(loadUser, 2000);
   init();
+
+  function switchTab(role, el) {
+    // Update tab buttons
+    document.querySelectorAll('.pb-tab').forEach(function(t){ t.classList.remove('active'); });
+    el.classList.add('active');
+    // Clear search
+    document.getElementById('prompt-search').value = '';
+    // Show/hide items and categories
+    var items = document.querySelectorAll('.prompt-item');
+    var cats = document.querySelectorAll('.prompt-cat');
+    items.forEach(function(item){
+      if (role === 'all' || item.dataset.role === role) {
+        item.classList.remove('hidden');
+      } else {
+        item.classList.add('hidden');
+      }
+    });
+    // Hide empty categories
+    cats.forEach(function(cat){
+      var next = cat.nextElementSibling;
+      var hasVisible = false;
+      while(next && !next.classList.contains('prompt-cat')){
+        if(!next.classList.contains('hidden')) hasVisible = true;
+        next = next.nextElementSibling;
+      }
+      cat.style.display = hasVisible ? '' : 'none';
+    });
+    // Scroll to top
+    document.getElementById('prompt-grid').scrollTop = 0;
+  }
+
+  function filterPrompts(query) {
+    query = query.toLowerCase();
+    var items = document.querySelectorAll('.prompt-item');
+    var cats = document.querySelectorAll('.prompt-cat');
+    // Reset tab buttons
+    document.querySelectorAll('.pb-tab').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelector('.pb-tab').classList.add('active');
+    items.forEach(function(item){
+      var title = item.querySelector('.prompt-item-title').textContent.toLowerCase();
+      var desc = item.querySelector('.prompt-item-desc').textContent.toLowerCase();
+      if(!query || title.includes(query) || desc.includes(query)){
+        item.classList.remove('hidden');
+      } else {
+        item.classList.add('hidden');
+      }
+    });
+    // Hide empty categories
+    cats.forEach(function(cat){
+      var next = cat.nextElementSibling;
+      var hasVisible = false;
+      while(next && !next.classList.contains('prompt-cat')){
+        if(next.classList && !next.classList.contains('hidden')) hasVisible = true;
+        next = next.nextElementSibling;
+      }
+      cat.style.display = hasVisible ? '' : 'none';
+    });
+  }
+
 </script>
 </body>
 </html>      <div class="prompt-grid">
 
         <div class="prompt-cat">&#128200; CFO &mdash; Cash Flow &amp; Financial Health</div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
           <div class="prompt-item-title">Monthly cash flow health check</div>
           <div class="prompt-item-desc">Analyse my business cash flow position and flag any gaps or risks for the next 30 days.</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
           <div class="prompt-item-title">12 key financial ratios report</div>
           <div class="prompt-item-desc">Give me a complete analysis of the 12 most important financial ratios for my business health.</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
           <div class="prompt-item-title">Days Sales Outstanding review</div>
           <div class="prompt-item-desc">Calculate and interpret my DSO and tell me what it means for my cash flow cycle.</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
           <div class="prompt-item-title">Working capital optimisation</div>
           <div class="prompt-item-desc">How can I optimise my working capital to improve cash flow without taking on more debt?</div>
         </div>
 
         <div class="prompt-cat">&#128239; CFO &mdash; Debt Collection &amp; Dunning</div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
           <div class="prompt-item-title">30-day overdue dunning letter</div>
           <div class="prompt-item-desc">Draft a professional but firm dunning letter for an account that is 30 days overdue.</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
           <div class="prompt-item-title">60-day escalation notice</div>
           <div class="prompt-item-desc">Draft a formal escalation notice for a debtor 60 days overdue, referencing legal consequences.</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
           <div class="prompt-item-title">Final demand before legal action</div>
           <div class="prompt-item-desc">Write a final demand letter compliant with South African debt collection law before referring to attorneys.</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
           <div class="prompt-item-title">Debtor ageing analysis guide</div>
           <div class="prompt-item-desc">Walk me through how to prepare and interpret a debtor ageing analysis.</div>
         </div>
 
         <div class="prompt-cat">&#128227; CMO &mdash; Marketing &amp; Brand</div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="cmo" onclick="usePrompt(this)">
           <div class="prompt-item-title">90-day marketing plan</div>
           <div class="prompt-item-desc">Draft a practical 90-day marketing plan for my business type and target market in South Africa.</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="cmo" onclick="usePrompt(this)">
           <div class="prompt-item-title">Social media content calendar</div>
           <div class="prompt-item-desc">Create a 2-week social media content calendar for Facebook and Instagram for my business.</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="cmo" onclick="usePrompt(this)">
           <div class="prompt-item-title">Brand positioning statement</div>
           <div class="prompt-item-desc">Help me craft a clear brand positioning statement that differentiates me from my competitors.</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="cmo" onclick="usePrompt(this)">
           <div class="prompt-item-title">Promotional email campaign</div>
           <div class="prompt-item-desc">Write a compelling promotional email for my latest offer or product launch.</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="cmo" onclick="usePrompt(this)">
           <div class="prompt-item-title">Customer acquisition cost analysis</div>
           <div class="prompt-item-desc">Help me calculate and reduce my customer acquisition cost for my main marketing channel.</div>
         </div>
 
         <div class="prompt-cat">&#127919; CSO &mdash; Sales &amp; Growth</div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="cso" onclick="usePrompt(this)">
           <div class="prompt-item-title">Sales pipeline health review</div>
           <div class="prompt-item-desc">Review my sales pipeline and identify the biggest risks and opportunities this month.</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="cso" onclick="usePrompt(this)">
           <div class="prompt-item-title">Winning client proposal</div>
           <div class="prompt-item-desc">Draft a compelling proposal for a new client that addresses their pain points and presents my value clearly.</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="cso" onclick="usePrompt(this)">
           <div class="prompt-item-title">Objection handling scripts</div>
           <div class="prompt-item-desc">Give me 5 professional responses to the most common sales objections including price pushback.</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="cso" onclick="usePrompt(this)">
           <div class="prompt-item-title">Pricing strategy review</div>
           <div class="prompt-item-desc">Help me build a pricing strategy for my market segment that balances competitiveness and margin.</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="cso" onclick="usePrompt(this)">
           <div class="prompt-item-title">Client retention improvement plan</div>
           <div class="prompt-item-desc">What strategies can I implement to improve client retention and increase lifetime value?</div>
         </div>
 
         <div class="prompt-cat">&#9878; CGO &mdash; Governance &amp; Compliance</div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="cgo" onclick="usePrompt(this)">
           <div class="prompt-item-title">POPIA compliance checklist</div>
           <div class="prompt-item-desc">Walk me through a POPIA compliance checklist for my South African business and flag any gaps.</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="cgo" onclick="usePrompt(this)">
           <div class="prompt-item-title">NCA credit extension guidance</div>
           <div class="prompt-item-desc">What does the National Credit Act mean for how I extend credit terms to my clients?</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="cgo" onclick="usePrompt(this)">
           <div class="prompt-item-title">B-BBEE level assessment</div>
           <div class="prompt-item-desc">Help me understand what B-BBEE level my business is likely at and how I can improve it.</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="cgo" onclick="usePrompt(this)">
           <div class="prompt-item-title">King IV governance principles</div>
           <div class="prompt-item-desc">Walk me through the King IV governance principles that apply to an SME like mine.</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="cgo" onclick="usePrompt(this)">
           <div class="prompt-item-title">Data privacy policy draft</div>
           <div class="prompt-item-desc">Help me draft a simple POPIA-aligned data privacy policy for my business website.</div>
         </div>
 
         <div class="prompt-cat">&#9881; COO &mdash; Operations &amp; Efficiency</div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="coo" onclick="usePrompt(this)">
           <div class="prompt-item-title">Business process mapping</div>
           <div class="prompt-item-desc">Map my core business process, identify the bottlenecks and suggest how to streamline it.</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="coo" onclick="usePrompt(this)">
           <div class="prompt-item-title">SOP for my key task</div>
           <div class="prompt-item-desc">Write a standard operating procedure for my most frequently repeated business task.</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="coo" onclick="usePrompt(this)">
           <div class="prompt-item-title">Business continuity plan</div>
           <div class="prompt-item-desc">Build a practical business continuity plan covering load shedding, key person risk and supply chain disruption.</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="coo" onclick="usePrompt(this)">
           <div class="prompt-item-title">Supplier negotiation strategy</div>
           <div class="prompt-item-desc">How do I negotiate better payment terms and pricing with my key suppliers?</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="coo" onclick="usePrompt(this)">
           <div class="prompt-item-title">Top 3 operational risks</div>
           <div class="prompt-item-desc">Identify my top 3 operational risks and give me a practical mitigation plan for each.</div>
         </div>
 
         <div class="prompt-cat">&#128187; Technical Advisory &mdash; IT &amp; Digital Transformation</div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="tech" onclick="usePrompt(this)">
           <div class="prompt-item-title">Digital transformation readiness</div>
           <div class="prompt-item-desc">Assess my business digital transformation readiness and recommend the right next steps for my size and sector.</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="tech" onclick="usePrompt(this)">
           <div class="prompt-item-title">IT governance framework</div>
           <div class="prompt-item-desc">What IT governance framework should a South African SME like mine be following and where do I start?</div>
         </div>
-        <div class="prompt-item" onclick="usePrompt(this)">
+        <div class="prompt-item" data-role="tech" onclick="usePrompt(this)">
           <div class="prompt-item-title">Cybersecurity basics checklist</div>
           <div class="prompt-item-desc">Give me a practical cybersecurity checklist for my business to protect against the most common threats.</div>
         </div>
@@ -1187,6 +1262,65 @@
 
   if (window.location.search.includes('payment=success')) setTimeout(loadUser, 2000);
   init();
+
+  function switchTab(role, el) {
+    // Update tab buttons
+    document.querySelectorAll('.pb-tab').forEach(function(t){ t.classList.remove('active'); });
+    el.classList.add('active');
+    // Clear search
+    document.getElementById('prompt-search').value = '';
+    // Show/hide items and categories
+    var items = document.querySelectorAll('.prompt-item');
+    var cats = document.querySelectorAll('.prompt-cat');
+    items.forEach(function(item){
+      if (role === 'all' || item.dataset.role === role) {
+        item.classList.remove('hidden');
+      } else {
+        item.classList.add('hidden');
+      }
+    });
+    // Hide empty categories
+    cats.forEach(function(cat){
+      var next = cat.nextElementSibling;
+      var hasVisible = false;
+      while(next && !next.classList.contains('prompt-cat')){
+        if(!next.classList.contains('hidden')) hasVisible = true;
+        next = next.nextElementSibling;
+      }
+      cat.style.display = hasVisible ? '' : 'none';
+    });
+    // Scroll to top
+    document.getElementById('prompt-grid').scrollTop = 0;
+  }
+
+  function filterPrompts(query) {
+    query = query.toLowerCase();
+    var items = document.querySelectorAll('.prompt-item');
+    var cats = document.querySelectorAll('.prompt-cat');
+    // Reset tab buttons
+    document.querySelectorAll('.pb-tab').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelector('.pb-tab').classList.add('active');
+    items.forEach(function(item){
+      var title = item.querySelector('.prompt-item-title').textContent.toLowerCase();
+      var desc = item.querySelector('.prompt-item-desc').textContent.toLowerCase();
+      if(!query || title.includes(query) || desc.includes(query)){
+        item.classList.remove('hidden');
+      } else {
+        item.classList.add('hidden');
+      }
+    });
+    // Hide empty categories
+    cats.forEach(function(cat){
+      var next = cat.nextElementSibling;
+      var hasVisible = false;
+      while(next && !next.classList.contains('prompt-cat')){
+        if(next.classList && !next.classList.contains('hidden')) hasVisible = true;
+        next = next.nextElementSibling;
+      }
+      cat.style.display = hasVisible ? '' : 'none';
+    });
+  }
+
 </script>
 </body>
 </html>
