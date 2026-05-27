@@ -482,6 +482,62 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+
+  // ══════════════════════════════════════════
+  // ANALYSIS & RATING ENGINE — Protected API
+  // Your proprietary formulas live here only
+  // Accessible only via authenticated + authorized calls
+  // ══════════════════════════════════════════
+  if (pathname === '/api/engine/analyse' && method === 'POST') {
+    // 1. Verify session (must be logged in)
+    const session = getSession(req);
+    if (!session) {
+      res.writeHead(401, {'Content-Type':'application/json'});
+      res.end(JSON.stringify({error:'Authentication required'}));
+      return;
+    }
+
+    // 2. Verify plan authorisation (Business or Enterprise only)
+    const user = session.data.user;
+    const authorisedPlans = ['business','enterprise'];
+    if (!authorisedPlans.includes(user.plan)) {
+      res.writeHead(403, {'Content-Type':'application/json'});
+      res.end(JSON.stringify({
+        error:'plan_required',
+        message:'Financial analysis engine requires Business or Enterprise plan.',
+        upgrade: true
+      }));
+      return;
+    }
+
+    // 3. Verify API token for server-to-server calls
+    const apiToken = req.headers['x-engine-token'];
+    const validToken = process.env.ENGINE_API_TOKEN;
+    if (validToken && apiToken !== validToken) {
+      res.writeHead(403, {'Content-Type':'application/json'});
+      res.end(JSON.stringify({error:'Invalid engine token'}));
+      return;
+    }
+
+    try {
+      const body = await readBody(req);
+      const input = JSON.parse(body);
+
+      // ══ PROPRIETARY ANALYSIS ENGINE ══
+      // All formulas computed server-side only
+      // Never exposed to client
+      const result = runAnalysisEngine(input);
+
+      res.writeHead(200, {'Content-Type':'application/json'});
+      res.end(JSON.stringify(result));
+    } catch(err) {
+      console.error('Engine error:', err.message);
+      res.writeHead(500, {'Content-Type':'application/json'});
+      res.end(JSON.stringify({error:'Analysis engine error'}));
+    }
+    return;
+  }
+
   // ══════════════════════════════════════════
   // STATIC FILE SERVING
   // ══════════════════════════════════════════
@@ -497,6 +553,114 @@ const server = http.createServer(async (req, res) => {
 
   serveFile(res, filePath);
 });
+
+
+// ══════════════════════════════════════════
+// PROPRIETARY ANALYSIS & RATING ENGINE
+// Server-side only — never sent to client
+// ══════════════════════════════════════════
+function runAnalysisEngine(data) {
+  const {
+    revenue, costOfSales, operatingExpenses, currentAssets,
+    currentLiabilities, totalDebt, equity, accountsReceivable,
+    accountsPayable, inventory, netProfit, annualRevenue
+  } = data;
+
+  const results = {};
+
+  // ── LIQUIDITY RATIOS ──
+  results.currentRatio = currentAssets / currentLiabilities;
+  results.quickRatio = (currentAssets - inventory) / currentLiabilities;
+  results.cashRatio = (currentAssets - inventory - accountsReceivable) / currentLiabilities;
+
+  // ── PROFITABILITY RATIOS ──
+  const grossProfit = revenue - costOfSales;
+  results.grossMargin = (grossProfit / revenue) * 100;
+  results.netMargin = (netProfit / revenue) * 100;
+  results.operatingMargin = ((grossProfit - operatingExpenses) / revenue) * 100;
+  results.returnOnEquity = (netProfit / equity) * 100;
+
+  // ── EFFICIENCY RATIOS ──
+  results.dso = (accountsReceivable / annualRevenue) * 365; // Days Sales Outstanding
+  results.dpo = (accountsPayable / costOfSales) * 365;      // Days Payable Outstanding
+  results.cashConversionCycle = results.dso - results.dpo;
+
+  // ── LEVERAGE RATIOS ──
+  results.debtToEquity = totalDebt / equity;
+  results.debtToAssets = totalDebt / (totalDebt + equity);
+
+  // ── PROPRIETARY NHS (National Health Score) ──
+  // Weighted composite score — your secret sauce
+  const weights = {
+    liquidity: 0.30,
+    profitability: 0.25,
+    efficiency: 0.25,
+    leverage: 0.20
+  };
+
+  const liquidityScore = Math.min(100, Math.max(0,
+    (results.currentRatio >= 2 ? 100 :
+     results.currentRatio >= 1.5 ? 80 :
+     results.currentRatio >= 1.0 ? 60 :
+     results.currentRatio >= 0.75 ? 40 : 20)
+  ));
+
+  const profitabilityScore = Math.min(100, Math.max(0,
+    results.netMargin >= 20 ? 100 :
+    results.netMargin >= 10 ? 80 :
+    results.netMargin >= 5 ? 60 :
+    results.netMargin >= 0 ? 40 : 20
+  ));
+
+  const efficiencyScore = Math.min(100, Math.max(0,
+    results.dso <= 30 ? 100 :
+    results.dso <= 45 ? 80 :
+    results.dso <= 60 ? 60 :
+    results.dso <= 90 ? 40 : 20
+  ));
+
+  const leverageScore = Math.min(100, Math.max(0,
+    results.debtToEquity <= 0.5 ? 100 :
+    results.debtToEquity <= 1.0 ? 80 :
+    results.debtToEquity <= 1.5 ? 60 :
+    results.debtToEquity <= 2.0 ? 40 : 20
+  ));
+
+  results.nationalHealthScore = Math.round(
+    (liquidityScore * weights.liquidity) +
+    (profitabilityScore * weights.profitability) +
+    (efficiencyScore * weights.efficiency) +
+    (leverageScore * weights.leverage)
+  );
+
+  // ── RISK CLASSIFICATION ──
+  results.riskRating =
+    results.nationalHealthScore >= 80 ? 'GREEN — Low Risk' :
+    results.nationalHealthScore >= 60 ? 'AMBER — Moderate Risk' :
+    results.nationalHealthScore >= 40 ? 'ORANGE — Elevated Risk' :
+    'RED — Critical Risk';
+
+  results.riskColour =
+    results.nationalHealthScore >= 80 ? 'green' :
+    results.nationalHealthScore >= 60 ? 'amber' :
+    results.nationalHealthScore >= 40 ? 'orange' : 'red';
+
+  // Round all numbers for clean output
+  Object.keys(results).forEach(k => {
+    if (typeof results[k] === 'number') {
+      results[k] = Math.round(results[k] * 100) / 100;
+    }
+  });
+
+  return {
+    score: results.nationalHealthScore,
+    rating: results.riskRating,
+    colour: results.riskColour,
+    ratios: results,
+    generatedAt: new Date().toISOString(),
+    version: '1.0.0'
+  };
+}
 
 server.listen(PORT, () => {
   console.log(`BillSource AI running on port ${PORT}`);
