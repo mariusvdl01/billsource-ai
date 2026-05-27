@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Billi — BillSource AI</title>
   <link rel="icon" type="image/png" href="favicon.png"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     :root{--orange:#E8621A;--blue:#1E88E5;--font:Helvetica,Arial,sans-serif}
@@ -72,6 +73,14 @@
     .msg-bubble{max-width:78%;padding:11px 15px;border-radius:12px;font-size:14px;line-height:1.65}
     .msg-bubble.ai{background:var(--msg-ai);border:0.5px solid var(--border);color:var(--text)}
     .msg-bubble.user{background:var(--orange);color:#fff}
+    .msg-bubble.ai p{margin:0 0 0.6em 0;text-align:left}
+    .msg-bubble.ai p:last-child{margin-bottom:0}
+    .msg-bubble.ai ul,.msg-bubble.ai ol{margin:0.4em 0 0.6em 1.2em;padding:0;text-align:left}
+    .msg-bubble.ai li{margin-bottom:0.3em;text-align:left}
+    .msg-bubble.ai strong{font-weight:700}
+    .msg-bubble.ai h1,.msg-bubble.ai h2,.msg-bubble.ai h3{font-size:14px;font-weight:700;margin:0.7em 0 0.3em 0;text-align:left}
+    .msg-bubble.ai hr{border:none;border-top:0.5px solid var(--border);margin:0.6em 0}
+    .msg-bubble.ai code{background:var(--border);border-radius:3px;padding:1px 4px;font-size:12px}
     .typing{display:flex;gap:4px;align-items:center;padding:4px 0}
     .dot{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite}
     .dot:nth-child(2){animation-delay:0.2s}
@@ -587,7 +596,14 @@
 
   // ── CHAT ──
   function billiAv() {
-    return '<img src="logo2.png" alt="Billi" height="20" style="object-fit:contain;max-width:72px;flex-shrink:0;margin-top:6px" onerror="this.style.display:none">';
+    return '<img src="favicon.png" alt="Billi" height="28" style="object-fit:contain;width:28px;height:28px;border-radius:6px;flex-shrink:0;margin-top:6px" onerror="this.style.display=\'none\'">';
+  }
+
+  function renderText(text, role) {
+    if (role !== 'ai') return text;
+    try {
+      return marked.parse(text, { breaks: true, gfm: true });
+    } catch(e) { return text; }
   }
 
   function addBubble(text, role) {
@@ -598,7 +614,7 @@
     const av = role === 'user'
       ? `<div class="msg-av-user">${init}</div>`
       : billiAv();
-    d.innerHTML = av + `<div class="msg-bubble ${role}">${text}</div>`;
+    d.innerHTML = av + `<div class="msg-bubble ${role}">${renderText(text, role)}</div>`;
     msgs.appendChild(d);
     msgs.scrollTop = msgs.scrollHeight;
     return d;
