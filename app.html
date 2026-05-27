@@ -110,7 +110,7 @@
     .plan-opt:hover,.plan-opt.sel{border-color:var(--orange)}
     .plan-opt-name{font-weight:700;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--orange);margin-bottom:0.25rem}
     .plan-opt-price{font-size:1.2rem;font-weight:700;margin-bottom:0.2rem}
-    .plan-opt-msgs{font-size:10px;color:var(--muted)}
+    .plan-opt-msgs{font-size:11px;color:var(--muted)}
     .modal-btn{width:100%;padding:11px;background:var(--orange);border:none;color:#fff;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font)}
     .modal-btn:hover{opacity:0.88}
 
@@ -260,22 +260,22 @@
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal('upgrade-modal')">&#215;</button>
     <div class="modal-title">Upgrade your plan</div>
-    <div class="modal-sub" id="upgrade-sub">Get more messages and unlock Billi's full potential.</div>
+    <div class="modal-sub" id="upgrade-sub">More associates, more power. Unlock the full Billi team.</div>
     <div class="plan-grid">
       <div class="plan-opt sel" onclick="selectPlan('professional',this)">
         <div class="plan-opt-name">Professional</div>
         <div class="plan-opt-price">R149</div>
-        <div class="plan-opt-msgs">5 reports · 300 msg/mo · 1 user</div>
+        <div class="plan-opt-msgs" style="line-height:1.6">🔵 Bean Counter<br>🟣 The Rule Book<br><br>5 reports · 300 msg/mo</div>
       </div>
       <div class="plan-opt" onclick="selectPlan('business',this)">
         <div class="plan-opt-name">Business</div>
         <div class="plan-opt-price">R299</div>
-        <div class="plan-opt-msgs">20 reports · 1 000 msg/mo · 1 user</div>
+        <div class="plan-opt-msgs" style="line-height:1.6">🔵 Bean Counter<br>🟣 The Rule Book<br>🟠 Brand Guru<br><br>20 reports · 1 000 msg/mo</div>
       </div>
       <div class="plan-opt" onclick="selectPlan('enterprise',this)">
         <div class="plan-opt-name">Enterprise</div>
         <div class="plan-opt-price">R599</div>
-        <div class="plan-opt-msgs">Unlimited reports · 5 000 msg/mo</div>
+        <div class="plan-opt-msgs" style="line-height:1.6">🔵 Bean Counter<br>🟣 The Rule Book<br>🟠 Brand Guru<br>🟢 Deal Maker<br>🟡 The Fixer<br><br>Unlimited · 5 000 msg/mo</div>
       </div>
     </div>
     <button class="modal-btn" onclick="subscribePlan()">Pay with Paystack &#8594;</button>
