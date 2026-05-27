@@ -106,11 +106,13 @@
     .modal-title{font-size:1.15rem;font-weight:700;margin-bottom:0.4rem}
     .modal-sub{font-size:13px;color:var(--muted);margin-bottom:1.5rem;line-height:1.6}
     .plan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.25rem}
-    .plan-opt{background:var(--bg);border:0.5px solid var(--border);border-radius:10px;padding:1rem;text-align:center;cursor:pointer;transition:all 0.2s}
+    .plan-opt{background:var(--bg);border:0.5px solid var(--border);border-radius:10px;padding:1rem;text-align:left;cursor:pointer;transition:all 0.2s}
     .plan-opt:hover,.plan-opt.sel{border-color:var(--orange)}
     .plan-opt-name{font-weight:700;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--orange);margin-bottom:0.25rem}
-    .plan-opt-price{font-size:1.2rem;font-weight:700;margin-bottom:0.2rem}
-    .plan-opt-msgs{font-size:11px;color:var(--muted)}
+    .plan-opt-price{font-size:1.2rem;font-weight:700;margin-bottom:0.5rem;padding-bottom:0.5rem;border-bottom:0.5px solid var(--border)}
+    .plan-opt-msgs{font-size:11px;color:var(--muted);line-height:1.7}
+    .plan-opt-msgs .role{display:block;color:var(--text);font-weight:500}
+    .plan-opt-msgs .meta{display:block;margin-top:0.4rem;color:var(--muted)}
     .modal-btn{width:100%;padding:11px;background:var(--orange);border:none;color:#fff;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font)}
     .modal-btn:hover{opacity:0.88}
 
@@ -265,17 +267,33 @@
       <div class="plan-opt sel" onclick="selectPlan('professional',this)">
         <div class="plan-opt-name">Professional</div>
         <div class="plan-opt-price">R149</div>
-        <div class="plan-opt-msgs" style="line-height:1.6">🔵 Bean Counter<br>🟣 The Rule Book<br><br>5 reports · 300 msg/mo</div>
+        <div class="plan-opt-msgs">
+          <span class="role">Bean Counter</span>
+          <span class="role">The Rule Book</span>
+          <span class="meta">5 reports · 300 msg/mo</span>
+        </div>
       </div>
       <div class="plan-opt" onclick="selectPlan('business',this)">
         <div class="plan-opt-name">Business</div>
         <div class="plan-opt-price">R299</div>
-        <div class="plan-opt-msgs" style="line-height:1.6">🔵 Bean Counter<br>🟣 The Rule Book<br>🟠 Brand Guru<br><br>20 reports · 1 000 msg/mo</div>
+        <div class="plan-opt-msgs">
+          <span class="role">Bean Counter</span>
+          <span class="role">The Rule Book</span>
+          <span class="role">Brand Guru</span>
+          <span class="meta">20 reports · 1 000 msg/mo</span>
+        </div>
       </div>
       <div class="plan-opt" onclick="selectPlan('enterprise',this)">
         <div class="plan-opt-name">Enterprise</div>
         <div class="plan-opt-price">R599</div>
-        <div class="plan-opt-msgs" style="line-height:1.6">🔵 Bean Counter<br>🟣 The Rule Book<br>🟠 Brand Guru<br>🟢 Deal Maker<br>🟡 The Fixer<br><br>Unlimited · 5 000 msg/mo</div>
+        <div class="plan-opt-msgs">
+          <span class="role">Bean Counter</span>
+          <span class="role">The Rule Book</span>
+          <span class="role">Brand Guru</span>
+          <span class="role">Deal Maker</span>
+          <span class="role">The Fixer</span>
+          <span class="meta">Unlimited · 5 000 msg/mo</span>
+        </div>
       </div>
     </div>
     <button class="modal-btn" onclick="subscribePlan()">Pay with Paystack &#8594;</button>
