@@ -68,7 +68,14 @@
     .theme-toggle:hover{border-color:var(--orange);color:var(--orange)}
 
     /* ── HERO ── */
-    .hero{padding:5rem 2.5rem 3rem;text-align:center;position:relative;overflow:hidden}
+    .hero{padding:4rem 2.5rem 3rem;position:relative;overflow:hidden}
+    .hero-inner{display:flex;align-items:center;gap:3rem;max-width:1000px;margin:0 auto}
+    .hero-logo-col{flex-shrink:0;display:flex;align-items:center;justify-content:center}
+    .hero-text-col{flex:1;text-align:left}
+    .hero-text-col h1{margin-left:0;margin-right:0;text-align:left}
+    .hero-text-col .hero-sub{text-align:left;margin-left:0;margin-right:0}
+    .hero-text-col .hero-cta{justify-content:flex-start}
+    @media(max-width:740px){.hero-inner{flex-direction:column;text-align:center}.hero-text-col{text-align:center}.hero-text-col h1,.hero-text-col .hero-sub{text-align:center}.hero-text-col .hero-cta{justify-content:center}}
     .hero::before{content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:700px;height:350px;background:radial-gradient(ellipse,var(--orange-dim) 0%,transparent 70%);pointer-events:none}
     .badge{display:inline-flex;align-items:center;gap:6px;background:var(--orange-dim);border:0.5px solid var(--orange-border);color:var(--orange);font-size:12px;padding:5px 14px;border-radius:20px;margin-bottom:1.5rem}
     .badge-dot{width:6px;height:6px;background:var(--orange);border-radius:50%;animation:pulse 2s infinite}
@@ -245,6 +252,7 @@
     .merch-size-price{font-weight:700;color:var(--orange)}
     .merch-btn{width:100%;padding:9px;background:var(--orange);border:none;color:#fff;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:Helvetica,Arial,sans-serif}
     .merch-btn:hover{opacity:0.88}
+    .merch-product-img{display:flex;justify-content:center;align-items:center;margin-bottom:1rem;background:var(--bg);border-radius:10px;padding:0.5rem}
     .merch-badge{position:absolute;top:-10px;right:16px;background:#92400E;color:#FEF3C7;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:0.06em}
     @media(max-width:640px){
       nav{padding:1rem 1.25rem}
@@ -328,19 +336,21 @@
 
 <!-- HERO -->
 <section class="hero">
-  <div style="display:flex;justify-content:center;margin-bottom:1.25rem">
-    <img src="billi-logo.svg" alt="Billi" width="120" height="120"/>
-  </div>
-  <div class="badge"><span class="badge-dot"></span>Live now &mdash; free to try, no card required</div>
-  <h1>Meet <span>Billi</span> &mdash; the AI that has your back</h1>
-  <p class="hero-sub">Bean Counter &middot; Brand Guru &middot; Deal Maker &middot; The Rule Book &middot; The Fixer &mdash; five business advisors in one conversation. Built for the business owner who says <em>"the sales are kak, what do I do?"</em></p>
-  <div class="hero-cta">
-    <button class="btn-lg primary" onclick="document.getElementById('upload-section').scrollIntoView({behavior:'smooth'})">
-      &#8593; Upload a statement &mdash; it&rsquo;s free
-    </button>
-    <button class="btn-lg secondary" onclick="document.getElementById('demo-section').scrollIntoView({behavior:'smooth'})">See Billi in action &#8595;</button>
-  </div>
-  <div style="margin-top:1.25rem;display:flex;justify-content:center">
+  <div class="hero-inner">
+    <div class="hero-logo-col">
+      <img src="billi-logo.svg" alt="Billi" width="320" height="320" style="filter:drop-shadow(0 8px 32px rgba(245,158,11,0.25))"/>
+    </div>
+    <div class="hero-text-col">
+      <div class="badge" style="display:inline-flex;margin-bottom:1.25rem"><span class="badge-dot"></span>Live now &mdash; free to try, no card required</div>
+      <h1>Meet <span>Billi</span> &mdash; the AI that has your back</h1>
+      <p class="hero-sub">Bean Counter &middot; Brand Guru &middot; Deal Maker &middot; The Rule Book &middot; The Fixer &mdash; five business advisors in one conversation. Built for the business owner who says <em>"the sales are kak, what do I do?"</em></p>
+      <div class="hero-cta">
+        <button class="btn-lg primary" onclick="document.getElementById('upload-section').scrollIntoView({behavior:'smooth'})">
+          &#8593; Upload a statement &mdash; it&rsquo;s free
+        </button>
+        <button class="btn-lg secondary" onclick="document.getElementById('demo-section').scrollIntoView({behavior:'smooth'})">See Billi in action &#8595;</button>
+      </div>
+      <div style="margin-top:1.25rem;display:flex;">
     <a href="/auth/google" style="display:inline-flex;align-items:center;gap:10px;background:#fff;border:0.5px solid #D8D0C8;color:#333;padding:11px 22px;border-radius:8px;font-size:14px;font-weight:600;font-family:Helvetica,Arial,sans-serif;text-decoration:none;transition:opacity 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.1)" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
         <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
@@ -351,7 +361,9 @@
       Sign in with Google — it&rsquo;s free
     </a>
   </div>
-  <p style="margin-top:0.75rem;font-size:11px;color:var(--muted);text-align:center;font-family:Helvetica,Arial,sans-serif">No card required &middot; Bean Counter basics free &middot; Top-up packs R50 = 200 messages</p>
+      <p style="margin-top:0.75rem;font-size:11px;color:var(--muted);font-family:Helvetica,Arial,sans-serif">No card required &middot; Bean Counter basics free &middot; Top-up packs R50 = 200 messages</p>
+    </div><!-- end hero-text-col -->
+  </div><!-- end hero-inner -->
 </section>
 
 <!-- TRADEMARK -->
@@ -666,9 +678,38 @@
   <p style="color:var(--muted);font-size:0.95rem;max-width:480px;margin:0.75rem auto 0;line-height:1.7">Limited run. Real quality. Paystack checkout drops this afternoon.</p>
   <div class="merch-grid">
 
+    <!-- HOODIE -->
     <div class="merch-card">
       <span class="merch-badge">LIMITED</span>
-      <span class="merch-icon">&#128084;</span>
+      <div class="merch-product-img">
+        <svg viewBox="0 0 260 240" width="260" height="240" xmlns="http://www.w3.org/2000/svg">
+          <!-- hoodie body -->
+          <path d="M40,80 L10,200 H250 L220,80 L185,60 Q170,100 130,100 Q90,100 75,60 Z" fill="#1a1a2e" stroke="#111" stroke-width="2"/>
+          <!-- left sleeve -->
+          <path d="M40,80 L10,80 L0,160 L35,165 L50,110 Z" fill="#1a1a2e" stroke="#111" stroke-width="2"/>
+          <!-- right sleeve -->
+          <path d="M220,80 L250,80 L260,160 L225,165 L210,110 Z" fill="#1a1a2e" stroke="#111" stroke-width="2"/>
+          <!-- hood left -->
+          <path d="M75,60 Q70,20 130,15 Q190,20 185,60 Q170,100 130,100 Q90,100 75,60 Z" fill="#1a1a2e" stroke="#111" stroke-width="2"/>
+          <!-- hood opening -->
+          <ellipse cx="130" cy="62" rx="30" ry="36" fill="#2d2d4e"/>
+          <!-- front pocket -->
+          <rect x="90" y="155" width="80" height="35" rx="4" fill="#111" opacity="0.4"/>
+          <!-- Billi face on chest -->
+          <g transform="translate(130,125) scale(0.22)">
+            <circle cx="0" cy="0" r="170" fill="#F59E0B" stroke="#92400E" stroke-width="12"/>
+            <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(-18,-87,-160)"/>
+            <rect x="-16" y="-230" width="52" height="124" rx="26" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(5,10,-168)"/>
+            <rect x="72" y="-208" width="42" height="96" rx="21" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(22,93,-160)"/>
+            <ellipse cx="0" cy="50" rx="144" ry="96" fill="#FEF3C7" stroke="#92400E" stroke-width="10"/>
+            <rect x="-118" y="32" width="96" height="22" rx="11" fill="#92400E"/>
+            <rect x="-108" y="14" width="72" height="10" rx="5" fill="#92400E" opacity="0.2"/>
+            <circle cx="72" cy="46" r="46" fill="#92400E"/>
+            <circle cx="88" cy="28" r="15" fill="#FEF3C7"/>
+            <circle cx="66" cy="58" r="5" fill="#FEF3C7" opacity="0.55"/>
+          </g>
+        </svg>
+      </div>
       <div class="merch-name">Billi Hoodie</div>
       <div class="merch-desc">Premium 320gsm cotton fleece. Billi wink front centre, &ldquo;The AI that has your back&rdquo; on the back. Unisex fit.</div>
       <div class="merch-sizes">
@@ -679,8 +720,36 @@
       <button class="merch-btn" onclick="alert('Paystack checkout coming this afternoon!')">Add to cart</button>
     </div>
 
+    <!-- CAP -->
     <div class="merch-card">
-      <span class="merch-icon">&#127913;</span>
+      <div class="merch-product-img">
+        <svg viewBox="0 0 260 240" width="260" height="240" xmlns="http://www.w3.org/2000/svg">
+          <!-- cap brim -->
+          <ellipse cx="130" cy="170" rx="115" ry="22" fill="#1a1a2e" stroke="#111" stroke-width="2"/>
+          <ellipse cx="130" cy="165" rx="115" ry="12" fill="#111" opacity="0.3"/>
+          <!-- cap body -->
+          <path d="M20,165 Q25,80 130,60 Q235,80 240,165 Z" fill="#1a1a2e" stroke="#111" stroke-width="2"/>
+          <!-- cap panels seams -->
+          <line x1="130" y1="62" x2="130" y2="165" stroke="#111" stroke-width="1.5" opacity="0.5"/>
+          <line x1="75" y1="75" x2="85" y2="165" stroke="#111" stroke-width="1.5" opacity="0.5"/>
+          <line x1="185" y1="75" x2="175" y2="165" stroke="#111" stroke-width="1.5" opacity="0.5"/>
+          <!-- snapback -->
+          <rect x="95" y="163" width="70" height="10" rx="3" fill="#333"/>
+          <!-- button top -->
+          <circle cx="130" cy="63" r="7" fill="#F59E0B" stroke="#92400E" stroke-width="1.5"/>
+          <!-- Billi face on front panel -->
+          <g transform="translate(130,118) scale(0.18)">
+            <circle cx="0" cy="0" r="170" fill="#F59E0B" stroke="#92400E" stroke-width="12"/>
+            <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(-18,-87,-160)"/>
+            <rect x="-16" y="-230" width="52" height="124" rx="26" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(5,10,-168)"/>
+            <rect x="72" y="-208" width="42" height="96" rx="21" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(22,93,-160)"/>
+            <ellipse cx="0" cy="50" rx="144" ry="96" fill="#FEF3C7" stroke="#92400E" stroke-width="10"/>
+            <rect x="-118" y="32" width="96" height="22" rx="11" fill="#92400E"/>
+            <circle cx="72" cy="46" r="46" fill="#92400E"/>
+            <circle cx="88" cy="28" r="15" fill="#FEF3C7"/>
+          </g>
+        </svg>
+      </div>
       <div class="merch-name">Billi Cap</div>
       <div class="merch-desc">Structured 6-panel cap. Embroidered Billi wink on the front. Adjustable snapback. One size fits most.</div>
       <div class="merch-sizes">
@@ -689,9 +758,38 @@
       <button class="merch-btn" onclick="alert('Paystack checkout coming this afternoon!')">Add to cart</button>
     </div>
 
+    <!-- MUG -->
     <div class="merch-card">
       <span class="merch-badge">BESTSELLER</span>
-      <span class="merch-icon">&#9749;</span>
+      <div class="merch-product-img">
+        <svg viewBox="0 0 260 240" width="260" height="240" xmlns="http://www.w3.org/2000/svg">
+          <!-- mug body -->
+          <rect x="45" y="60" width="155" height="145" rx="14" fill="#fff" stroke="#ddd" stroke-width="2"/>
+          <!-- mug taper bottom -->
+          <path d="M45,170 Q45,205 60,205 H200 Q215,205 215,170" fill="#fff" stroke="#ddd" stroke-width="2"/>
+          <!-- mug handle -->
+          <path d="M215,90 Q260,90 260,130 Q260,170 215,170" fill="none" stroke="#ddd" stroke-width="14" stroke-linecap="round"/>
+          <!-- mug rim top -->
+          <ellipse cx="122" cy="60" rx="77" ry="10" fill="#eee" stroke="#ddd" stroke-width="1.5"/>
+          <!-- orange accent stripe -->
+          <rect x="45" y="60" width="155" height="8" rx="4" fill="#F59E0B" opacity="0.7"/>
+          <!-- Billi face on mug -->
+          <g transform="translate(122,140) scale(0.26)">
+            <circle cx="0" cy="0" r="170" fill="#F59E0B" stroke="#92400E" stroke-width="12"/>
+            <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(-18,-87,-160)"/>
+            <rect x="-16" y="-230" width="52" height="124" rx="26" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(5,10,-168)"/>
+            <rect x="72" y="-208" width="42" height="96" rx="21" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(22,93,-160)"/>
+            <ellipse cx="0" cy="50" rx="144" ry="96" fill="#FEF3C7" stroke="#92400E" stroke-width="10"/>
+            <rect x="-118" y="32" width="96" height="22" rx="11" fill="#92400E"/>
+            <rect x="-108" y="14" width="72" height="10" rx="5" fill="#92400E" opacity="0.2"/>
+            <circle cx="72" cy="46" r="46" fill="#92400E"/>
+            <circle cx="88" cy="28" r="15" fill="#FEF3C7"/>
+            <circle cx="66" cy="58" r="5" fill="#FEF3C7" opacity="0.55"/>
+          </g>
+          <!-- text below face -->
+          <text x="122" y="218" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#92400E" font-weight="700" letter-spacing="1">THE AI THAT HAS YOUR BACK</text>
+        </svg>
+      </div>
       <div class="merch-name">Billi Mug</div>
       <div class="merch-desc">Ceramic mug. Billi winks at you every morning. Dishwasher safe. Your Bean Counter deserves a good coffee.</div>
       <div class="merch-sizes">
@@ -701,8 +799,51 @@
       <button class="merch-btn" onclick="alert('Paystack checkout coming this afternoon!')">Add to cart</button>
     </div>
 
+    <!-- STICKERS -->
     <div class="merch-card">
-      <span class="merch-icon">&#127991;</span>
+      <div class="merch-product-img">
+        <svg viewBox="0 0 260 240" width="260" height="240" xmlns="http://www.w3.org/2000/svg">
+          <!-- background suggestion -->
+          <rect x="0" y="0" width="260" height="240" fill="none"/>
+          <!-- large sticker 90mm -->
+          <circle cx="75" cy="115" r="68" fill="#fff" stroke="#e0e0e0" stroke-width="2" stroke-dasharray="4 3"/>
+          <g transform="translate(75,115) scale(0.37)">
+            <circle cx="0" cy="0" r="170" fill="#F59E0B" stroke="#92400E" stroke-width="12"/>
+            <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(-18,-87,-160)"/>
+            <rect x="-16" y="-230" width="52" height="124" rx="26" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(5,10,-168)"/>
+            <rect x="72" y="-208" width="42" height="96" rx="21" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(22,93,-160)"/>
+            <ellipse cx="0" cy="50" rx="144" ry="96" fill="#FEF3C7" stroke="#92400E" stroke-width="10"/>
+            <rect x="-118" y="32" width="96" height="22" rx="11" fill="#92400E"/>
+            <circle cx="72" cy="46" r="46" fill="#92400E"/>
+            <circle cx="88" cy="28" r="15" fill="#FEF3C7"/>
+          </g>
+          <!-- medium sticker 60mm -->
+          <circle cx="178" cy="82" r="46" fill="#fff" stroke="#e0e0e0" stroke-width="2" stroke-dasharray="4 3"/>
+          <g transform="translate(178,82) scale(0.25)">
+            <circle cx="0" cy="0" r="170" fill="#F59E0B" stroke="#92400E" stroke-width="12"/>
+            <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(-18,-87,-160)"/>
+            <rect x="-16" y="-230" width="52" height="124" rx="26" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(5,10,-168)"/>
+            <rect x="72" y="-208" width="42" height="96" rx="21" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(22,93,-160)"/>
+            <ellipse cx="0" cy="50" rx="144" ry="96" fill="#FEF3C7" stroke="#92400E" stroke-width="10"/>
+            <rect x="-118" y="32" width="96" height="22" rx="11" fill="#92400E"/>
+            <circle cx="72" cy="46" r="46" fill="#92400E"/>
+            <circle cx="88" cy="28" r="15" fill="#FEF3C7"/>
+          </g>
+          <!-- small sticker 35mm -->
+          <circle cx="200" cy="175" r="28" fill="#fff" stroke="#e0e0e0" stroke-width="2" stroke-dasharray="4 3"/>
+          <g transform="translate(200,175) scale(0.15)">
+            <circle cx="0" cy="0" r="170" fill="#F59E0B" stroke="#92400E" stroke-width="12"/>
+            <ellipse cx="0" cy="50" rx="144" ry="96" fill="#FEF3C7" stroke="#92400E" stroke-width="10"/>
+            <rect x="-118" y="32" width="96" height="22" rx="11" fill="#92400E"/>
+            <circle cx="72" cy="46" r="46" fill="#92400E"/>
+            <circle cx="88" cy="28" r="15" fill="#FEF3C7"/>
+          </g>
+          <!-- size labels -->
+          <text x="75" y="194" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#92400E" font-weight="600">90mm</text>
+          <text x="178" y="136" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#92400E" font-weight="600">60mm</text>
+          <text x="200" y="210" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#92400E" font-weight="600">35mm</text>
+        </svg>
+      </div>
       <div class="merch-name">Billi Sticker Pack</div>
       <div class="merch-desc">Waterproof vinyl. Three sizes &mdash; laptop, bottle, notebook. 5 stickers per pack, open and wink mix.</div>
       <div class="merch-sizes">
