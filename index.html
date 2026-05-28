@@ -252,6 +252,20 @@
     .merch-size-price{font-weight:700;color:var(--orange)}
     .merch-btn{width:100%;padding:9px;background:var(--orange);border:none;color:#fff;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:Helvetica,Arial,sans-serif}
     .merch-btn:hover{opacity:0.88}
+    .cart-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:600;align-items:center;justify-content:center}
+    .cart-overlay.open{display:flex}
+    .cart-box{background:var(--card);border:0.5px solid var(--border);border-radius:16px;padding:2rem;width:420px;max-width:94vw;position:relative}
+    .cart-title{font-size:1.1rem;font-weight:700;margin-bottom:0.25rem;font-family:Helvetica,Arial,sans-serif}
+    .cart-sub{font-size:12px;color:var(--muted);margin-bottom:1.25rem}
+    .cart-field{width:100%;padding:10px 12px;border:0.5px solid var(--border);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);font-family:Helvetica,Arial,sans-serif;margin-bottom:10px;box-sizing:border-box}
+    .cart-field:focus{outline:none;border-color:var(--orange)}
+    .cart-select{width:100%;padding:10px 12px;border:0.5px solid var(--border);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);font-family:Helvetica,Arial,sans-serif;margin-bottom:1.25rem;box-sizing:border-box;cursor:pointer}
+    .cart-btn{width:100%;padding:12px;background:var(--orange);border:none;color:#fff;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:Helvetica,Arial,sans-serif}
+    .cart-btn:hover{opacity:0.88}
+    .cart-btn:disabled{opacity:0.5;cursor:not-allowed}
+    .cart-close{position:absolute;top:1rem;right:1rem;background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1}
+    .cart-error{font-size:12px;color:#e53e3e;margin-bottom:8px;display:none}
+
     .merch-product-img{display:flex;justify-content:center;align-items:center;margin-bottom:1rem;border-radius:10px;overflow:hidden;background:var(--bg)}
     .merch-product-img img{width:100%;height:240px;object-fit:cover;object-position:center;border-radius:10px;transition:transform 0.3s}
     .merch-card:hover .merch-product-img img{transform:scale(1.04)}
@@ -583,12 +597,25 @@
     <div class="plan-card">
       <div class="plan-name">Starter</div>
       <div class="plan-price">R0 <span>/mo</span></div>
-      <div class="plan-msgs">Bean Counter basics &middot; 1 report &middot; 20 messages</div>
+      <div class="plan-msgs">Bean Counter basics &middot; 10 messages</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Upload 1 income statement</div>
       <div class="plan-feature"><span class="check">&#10003;</span> 12-ratio health report</div>
       <div class="plan-feature"><span class="check">&#10003;</span> Risk score &amp; classification</div>
-      <div class="plan-feature"><span class="check">&#10003;</span> 20 chat messages with Billi</div>
+      <div class="plan-feature"><span class="check">&#10003;</span> 10 chat messages with Billi</div>
       <button class="plan-btn outlined" onclick="window.location.href='/auth/google'">Try free now</button>
+    </div>
+
+    <div class="plan-card" style="border-color:#3b82f6">
+      <div class="plan-badge-tag" style="background:#3b82f6">For students</div>
+      <div class="plan-name" style="color:#3b82f6">Student</div>
+      <div class="plan-price">R39 <span>/mo</span></div>
+      <div class="plan-msgs">Bean Counter + Deal Maker &middot; 2 reports &middot; 100 messages</div>
+      <div class="plan-feature"><span class="check" style="color:#3b82f6">&#10003;</span> Requires .ac.za university email</div>
+      <div class="plan-feature"><span class="check" style="color:#3b82f6">&#10003;</span> Financial literacy tools</div>
+      <div class="plan-feature"><span class="check" style="color:#3b82f6">&#10003;</span> Business planning &amp; pitching</div>
+      <div class="plan-feature"><span class="check" style="color:#3b82f6">&#10003;</span> Side hustle &amp; startup guidance</div>
+      <div class="plan-feature"><span class="check" style="color:#3b82f6">&#10003;</span> Sales &amp; proposal writing</div>
+      <button class="plan-btn outlined" style="border-color:#3b82f6;color:#3b82f6" onclick="window.location.href='/auth/google'">Student sign up</button>
     </div>
 
     <div class="plan-card featured">
@@ -677,7 +704,7 @@
 <section class="merch-section">
   <div class="section-label">Billi Merch</div>
   <div class="section-title">Wear the team that has your back</div>
-  <p style="color:var(--muted);font-size:0.95rem;max-width:480px;margin:0.75rem auto 0;line-height:1.7">Limited run. Real quality. Paystack checkout drops this afternoon.</p>
+  <p style="color:var(--muted);font-size:0.95rem;max-width:480px;margin:0.75rem auto 0;line-height:1.7">Limited run. Real quality. Secure Paystack checkout.</p>
   <div class="merch-grid">
 
     <div class="merch-card">
@@ -692,7 +719,7 @@
         <div class="merch-size-row"><span class="merch-size-label">XL / XXL</span><span class="merch-size-price">R599</span></div>
         <div class="merch-size-row"><span class="merch-size-label">3XL</span><span class="merch-size-price">R649</span></div>
       </div>
-      <button class="merch-btn" onclick="alert('Paystack checkout coming this afternoon!')">Add to cart</button>
+      <button class="merch-btn" onclick="openCart('Billi Hoodie','hoodie',{sml:'S/M/L — R549',xl:'XL/XXL — R599','3xl':'3XL — R649'})">Add to cart</button>
     </div>
 
     <div class="merch-card">
@@ -705,7 +732,7 @@
         <div class="merch-size-row"><span class="merch-size-label">Black — one size</span><span class="merch-size-price">R299</span></div>
         <div class="merch-size-row"><span class="merch-size-label">White — one size</span><span class="merch-size-price">R299</span></div>
       </div>
-      <button class="merch-btn" onclick="alert('Paystack checkout coming this afternoon!')">Add to cart</button>
+      <button class="merch-btn" onclick="openCart('Billi Cap','cap',{black:'Black — R299',white:'White — R299'})">Add to cart</button>
     </div>
 
     <div class="merch-card">
@@ -719,7 +746,7 @@
         <div class="merch-size-row"><span class="merch-size-label">330ml standard</span><span class="merch-size-price">R199</span></div>
         <div class="merch-size-row"><span class="merch-size-label">470ml jumbo</span><span class="merch-size-price">R249</span></div>
       </div>
-      <button class="merch-btn" onclick="alert('Paystack checkout coming this afternoon!')">Add to cart</button>
+      <button class="merch-btn" onclick="openCart('Billi Mug','mug',{'330':'330ml — R199','470':'470ml — R249'})">Add to cart</button>
     </div>
 
     <div class="merch-card">
@@ -733,11 +760,25 @@
         <div class="merch-size-row"><span class="merch-size-label">XL / XXL</span><span class="merch-size-price">R349</span></div>
         <div class="merch-size-row"><span class="merch-size-label">3XL</span><span class="merch-size-price">R379</span></div>
       </div>
-      <button class="merch-btn" onclick="alert('Paystack checkout coming this afternoon!')">Add to cart</button>
+      <button class="merch-btn" onclick="openCart('Billi Tee','tee',{sml:'S/M/L — R299',xl:'XL/XXL — R349','3xl':'3XL — R379'})">Add to cart</button>
     </div>
 
   </div>
 </section>
+
+
+<!-- CART MODAL -->
+<div class="cart-overlay" id="cart-modal" onclick="if(event.target===this)closeCart()">
+  <div class="cart-box">
+    <button class="cart-close" onclick="closeCart()">&#x2715;</button>
+    <div class="cart-title" id="cart-product-name">Billi Hoodie</div>
+    <div class="cart-sub">Secure checkout via Paystack</div>
+    <div class="cart-error" id="cart-error"></div>
+    <input class="cart-field" id="cart-email" type="email" placeholder="Your email address" autocomplete="email"/>
+    <select class="cart-select" id="cart-size-select"></select>
+    <button class="cart-btn" id="cart-pay-btn" onclick="checkoutMerch()">Pay with Paystack &#8594;</button>
+  </div>
+</div>
 
 <!-- FOOTER -->
 <footer>
@@ -882,6 +923,66 @@
     var p=document.getElementById('score-preview');p.classList.add('visible');
     setTimeout(function(){document.getElementById('risk-fill').style.width='42%';},300);
     setTimeout(function(){openLogin();},3000);
+  }
+
+  /* ── MERCH CART ── */
+  var cartItem = '', cartSizes = {};
+  function openCart(name, item, sizes) {
+    cartItem = item;
+    cartSizes = sizes;
+    document.getElementById('cart-product-name').textContent = name;
+    document.getElementById('cart-error').style.display = 'none';
+    document.getElementById('cart-pay-btn').disabled = false;
+    document.getElementById('cart-pay-btn').textContent = 'Pay with Paystack →';
+    // Build size options
+    var sel = document.getElementById('cart-size-select');
+    sel.innerHTML = '';
+    Object.entries(sizes).forEach(function(entry) {
+      var opt = document.createElement('option');
+      opt.value = entry[0];
+      opt.textContent = entry[1];
+      sel.appendChild(opt);
+    });
+    document.getElementById('cart-modal').classList.add('open');
+    document.getElementById('cart-email').focus();
+  }
+  function closeCart() {
+    document.getElementById('cart-modal').classList.remove('open');
+  }
+  async function checkoutMerch() {
+    var email = document.getElementById('cart-email').value.trim();
+    var size  = document.getElementById('cart-size-select').value;
+    var errEl = document.getElementById('cart-error');
+    var btn   = document.getElementById('cart-pay-btn');
+    if (!email || !email.includes('@')) {
+      errEl.textContent = 'Please enter a valid email address.';
+      errEl.style.display = 'block';
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = 'Redirecting to Paystack...';
+    errEl.style.display = 'none';
+    try {
+      var res = await fetch('/api/merch-checkout', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ item: cartItem, size: size, email: email })
+      });
+      var data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        errEl.textContent = data.error || 'Checkout failed. Please try again.';
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Pay with Paystack →';
+      }
+    } catch(e) {
+      errEl.textContent = 'Network error. Please try again.';
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Pay with Paystack →';
+    }
   }
 </script>
 </body>
