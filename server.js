@@ -97,14 +97,17 @@ async function getSessionUser(req) {
 }
 
 function rowToUser(row) {
+  // Handles both PostgreSQL snake_case and in-memory camelCase
+  const used  = (row.messages_used  !== undefined) ? row.messages_used  : (row.messagesUsed  || 0);
+  const limit = (row.messages_limit !== undefined) ? row.messages_limit : (row.messagesLimit || 10);
   return {
     email:             row.email,
     name:              row.name,
     avatar:            row.avatar,
-    plan:              row.plan,
-    messagesUsed:      row.messages_used,
-    messagesLimit:     row.messages_limit,
-    messagesRemaining: Math.max(0, row.messages_limit - row.messages_used)
+    plan:              row.plan || 'free',
+    messagesUsed:      used,
+    messagesLimit:     limit,
+    messagesRemaining: Math.max(0, limit - used)
   };
 }
 
@@ -244,8 +247,8 @@ const server = http.createServer(async (req, res) => {
         'Set-Cookie':`bs_session=${sid}; Path=/; HttpOnly; Secure; SameSite=Lax; Expires=${expiry}`});
       res.end();
     } catch(err) {
-      console.error('OAuth error:', err);
-      res.writeHead(302, {Location:'/?error=auth_error'}); res.end();
+      console.error('OAuth error:', err.message, err.stack);
+      res.writeHead(302, {Location:'/?error=auth_error&detail=' + encodeURIComponent(err.message)}); res.end();
     }
     return;
   }
