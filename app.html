@@ -155,23 +155,31 @@
       .sidebar-overlay.open{display:block}
 
       /* Main area fills screen */
-      .main{width:100%;min-width:0}
+      .main{width:100%;min-width:0;display:flex;flex-direction:column;height:100%}
 
       /* Topbar — compact */
       .topbar{padding:8px 12px;gap:8px}
       .topbar-title{font-size:13px}
       .usage-track{width:80px}
 
-      /* Chat wrap — full height, no side padding */
-      .chat-wrap{padding:0 0.75rem}
+      /* Chat wrap — scrollable, input always at bottom */
+      .chat-wrap{
+        padding:0 0.75rem;
+        flex:1;
+        display:flex;
+        flex-direction:column;
+        overflow:hidden;
+        min-height:0;
+      }
 
-      /* Messages — scroll freely, leave room for input */
+      /* Messages — scrollable area above input */
       .chat-messages{
         flex:1;
         overflow-y:auto;
         -webkit-overflow-scrolling:touch;
-        padding:0.75rem 0;
+        padding:0.75rem 0 0.5rem;
         gap:10px;
+        min-height:0;
       }
 
       /* Bubbles — wider on mobile */
@@ -194,13 +202,14 @@
         padding:6px 11px;
       }
 
-      /* Input bar — sticky at bottom */
-      .chat-input-wrap{
-        position:sticky;
-        bottom:0;
+      /* Input area — always visible, never hidden */
+      .input-area{
+        flex-shrink:0;
+        padding:6px 0 env(safe-area-inset-bottom, 12px);
         background:var(--bg);
-        padding:8px 0 12px;
-        border-top:0.5px solid var(--border);
+      }
+      .input-row{
+        border-radius:10px;
       }
 
       /* Modals — full width on mobile */
