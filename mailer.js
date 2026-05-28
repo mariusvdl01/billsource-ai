@@ -1,43 +1,60 @@
 // ═══════════════════════════════════════════
-// MAILER — nodemailer via Gmail SMTP
+// MAILER — Resend API (HTTPS, works on Railway)
 // Railway vars needed:
-//   MAIL_USER     marius@billsource.co.za (or Gmail)
-//   MAIL_PASS     Gmail App Password (16 chars)
-//   MAIL_OWNER    marius@billsource.co.za
+//   RESEND_API_KEY   re_xxxxxxxxxxxx
+//   MAIL_FROM        Billi <billi@billsource.ai>
+//   MAIL_OWNER       marius@billsource.co.za
+// Get free key at resend.com — 3,000 emails/mo free
 // ═══════════════════════════════════════════
-const nodemailer = require('nodemailer');
 
-const MAIL_USER  = process.env.MAIL_USER  || '';
-const MAIL_PASS  = process.env.MAIL_PASS  || '';
-const MAIL_OWNER = process.env.MAIL_OWNER || 'marius@billsource.co.za';
-const BASE_URL   = process.env.BASE_URL   || 'https://billsource.ai';
+const https = require('https');
 
-let transporter = null;
+const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
+const MAIL_FROM      = process.env.MAIL_FROM      || 'Billi <onboarding@resend.dev>';
+const MAIL_OWNER     = process.env.MAIL_OWNER     || 'marius@billsource.co.za';
+const BASE_URL       = process.env.BASE_URL        || 'https://billsource.ai';
 
-function getTransporter() {
-  if (!MAIL_USER || !MAIL_PASS) return null;
-  if (!transporter) {
-    transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: { user: MAIL_USER, pass: MAIL_PASS }
+function resendPost(payload) {
+  return new Promise((resolve, reject) => {
+    const body = JSON.stringify(payload);
+    const req = https.request({
+      hostname: 'api.resend.com',
+      path:     '/emails',
+      method:   'POST',
+      headers: {
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
+        'Content-Type':  'application/json',
+        'Content-Length': Buffer.byteLength(body)
+      }
+    }, res => {
+      let d = '';
+      res.on('data', c => d += c);
+      res.on('end', () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve(JSON.parse(d));
+        } else {
+          reject(new Error(`Resend ${res.statusCode}: ${d}`));
+        }
+      });
     });
-  }
-  return transporter;
+    req.on('error', reject);
+    req.write(body);
+    req.end();
+  });
 }
 
 // ── Merch order — notify owner + confirm to customer ──
 async function sendMerchOrderEmails({ customerEmail, item, size, amount, reference }) {
-  const t = getTransporter();
-  if (!t) { console.log('Mailer not configured — skipping emails'); return; }
+  if (!RESEND_API_KEY) { console.log('RESEND_API_KEY not set — skipping emails'); return; }
 
-  const itemLabel = formatItem(item, size);
+  const itemLabel   = formatItem(item, size);
   const amountLabel = `R${(amount/100).toFixed(2)}`;
-  const orderDate = new Date().toLocaleString('en-ZA', {timeZone:'Africa/Johannesburg'});
+  const orderDate   = new Date().toLocaleString('en-ZA', {timeZone:'Africa/Johannesburg'});
 
-  // ── Email to Marius ──────────────────────
-  await t.sendMail({
-    from: `Billi Orders <${MAIL_USER}>`,
-    to: MAIL_OWNER,
+  // Email to Marius
+  await resendPost({
+    from:    MAIL_FROM,
+    to:      [MAIL_OWNER],
     subject: `🛒 New Billi merch order — ${itemLabel}`,
     html: `
       <div style="font-family:Helvetica,Arial,sans-serif;max-width:520px;margin:0 auto">
@@ -59,22 +76,21 @@ async function sendMerchOrderEmails({ customerEmail, item, size, amount, referen
           </table>
           <hr style="border:none;border-top:1px solid #eee;margin:20px 0"/>
           <p style="margin:0;color:#666;font-size:13px">
-            <strong>Action required:</strong> Fulfill this order and email the customer 
-            at <a href="mailto:${customerEmail}">${customerEmail}</a> with tracking/delivery details.
+            <strong>Action required:</strong> Fulfill this order and email
+            <a href="mailto:${customerEmail}">${customerEmail}</a> with tracking/delivery details.
           </p>
           <p style="margin:12px 0 0;font-size:12px;color:#999">
-            Verify payment: <a href="https://dashboard.paystack.com/#/transactions">Paystack Dashboard</a>
-            &nbsp;·&nbsp; Ref: ${reference}
+            Ref: ${reference} &nbsp;·&nbsp;
+            <a href="https://dashboard.paystack.com/#/transactions">Paystack Dashboard</a>
           </p>
         </div>
-      </div>
-    `
+      </div>`
   });
 
-  // ── Confirmation to customer ─────────────
-  await t.sendMail({
-    from: `Billi by BillSource <${MAIL_USER}>`,
-    to: customerEmail,
+  // Confirmation to customer
+  await resendPost({
+    from:    MAIL_FROM,
+    to:      [customerEmail],
     subject: `Order confirmed — ${itemLabel} 🧡`,
     html: `
       <div style="font-family:Helvetica,Arial,sans-serif;max-width:520px;margin:0 auto">
@@ -92,15 +108,14 @@ async function sendMerchOrderEmails({ customerEmail, item, size, amount, referen
             <div style="color:#999;font-size:12px;margin-top:4px">Ref: ${reference}</div>
           </div>
           <p style="color:#555;font-size:14px;line-height:1.6;margin:0 0 16px">
-            We'll send you delivery details and tracking as soon as your order ships. 
+            We'll send delivery details and tracking as soon as your order ships.
             Most orders ship within 3–5 business days.
           </p>
           <p style="color:#555;font-size:14px;margin:0 0 20px">
-            Questions? Reply to this email or contact 
-            <a href="mailto:support@billsource.ai" style="color:#F59E0B">support@billsource.ai</a>
+            Questions? <a href="mailto:support@billsource.ai" style="color:#F59E0B">support@billsource.ai</a>
           </p>
           <div style="text-align:center;margin-top:24px">
-            <a href="${BASE_URL}/app" 
+            <a href="${BASE_URL}/app"
                style="background:#F59E0B;color:#fff;padding:12px 28px;border-radius:8px;
                       text-decoration:none;font-weight:700;font-size:14px;display:inline-block">
               Chat with Billi →
@@ -110,25 +125,21 @@ async function sendMerchOrderEmails({ customerEmail, item, size, amount, referen
             BillSource · Billi AI · billsource.ai
           </p>
         </div>
-      </div>
-    `
+      </div>`
   });
 
-  console.log(`Merch emails sent: owner + ${customerEmail} — ${itemLabel}`);
+  console.log(`Merch emails sent: ${MAIL_OWNER} + ${customerEmail} — ${itemLabel}`);
 }
 
-// ── Plan upgrade confirmation to customer ──
+// ── Plan upgrade confirmation ──
 async function sendPlanUpgradeEmail({ customerEmail, planName, messagesLimit }) {
-  const t = getTransporter();
-  if (!t) return;
+  if (!RESEND_API_KEY) return;
 
-  const planEmoji = {
-    student:'🎓', professional:'💼', business:'🚀', enterprise:'⚡'
-  }[planName] || '✅';
+  const planEmoji = {student:'🎓',professional:'💼',business:'🚀',enterprise:'⚡'}[planName] || '✅';
 
-  await t.sendMail({
-    from: `Billi by BillSource <${MAIL_USER}>`,
-    to: customerEmail,
+  await resendPost({
+    from:    MAIL_FROM,
+    to:      [customerEmail],
     subject: `${planEmoji} You're on the ${capitalize(planName)} plan`,
     html: `
       <div style="font-family:Helvetica,Arial,sans-serif;max-width:520px;margin:0 auto">
@@ -145,7 +156,7 @@ async function sendPlanUpgradeEmail({ customerEmail, planName, messagesLimit }) 
             <div style="color:#666;font-size:13px;margin-top:4px">${messagesLimit} messages per month</div>
           </div>
           <p style="color:#555;font-size:14px;line-height:1.6;margin:0 0 20px">
-            Your full associate team is ready. Ask Billi anything — money, marketing, 
+            Your full associate team is ready. Ask Billi anything about money, marketing,
             sales, compliance or operations.
           </p>
           <div style="text-align:center">
@@ -156,19 +167,18 @@ async function sendPlanUpgradeEmail({ customerEmail, planName, messagesLimit }) 
             </a>
           </div>
         </div>
-      </div>
-    `
+      </div>`
   });
 
   console.log(`Plan upgrade email sent: ${customerEmail} → ${planName}`);
 }
 
 function formatItem(item, size) {
-  const names = {hoodie:'Billi Hoodie', cap:'Billi Cap', mug:'Billi Mug', tee:'Billi Tee'};
-  const sizes = {sml:'S/M/L', xl:'XL/XXL', '3xl':'3XL', black:'Black', white:'White', '330':'330ml', '470':'470ml'};
-  return `${names[item] || item}${size ? ' — ' + (sizes[size] || size) : ''}`;
+  const names = {hoodie:'Billi Hoodie',cap:'Billi Cap',mug:'Billi Mug',tee:'Billi Tee'};
+  const sizes  = {sml:'S/M/L',xl:'XL/XXL','3xl':'3XL',black:'Black',white:'White','330':'330ml','470':'470ml'};
+  return `${names[item]||item}${size?' — '+(sizes[size]||size):''}`;
 }
 
-function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+function capitalize(s) { return s ? s.charAt(0).toUpperCase()+s.slice(1) : s; }
 
 module.exports = { sendMerchOrderEmails, sendPlanUpgradeEmail };
