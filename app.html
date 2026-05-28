@@ -105,7 +105,10 @@
     .modal-close{position:absolute;top:1rem;right:1rem;background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer}
     .modal-title{font-size:1.15rem;font-weight:700;margin-bottom:0.4rem}
     .modal-sub{font-size:13px;color:var(--muted);margin-bottom:1.5rem;line-height:1.6}
-    .plan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.25rem}
+    .plan-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:1.25rem}
+    @media(min-width:540px){.plan-grid{grid-template-columns:repeat(4,1fr)}}
+    .plan-opt-student{border-color:#3b82f6}
+    .plan-opt-student .plan-opt-name{color:#3b82f6}
     .plan-opt{background:var(--bg);border:0.5px solid var(--border);border-radius:10px;padding:1rem;text-align:left;cursor:pointer;transition:all 0.2s}
     .plan-opt:hover,.plan-opt.sel{border-color:var(--orange)}
     .plan-opt-name{font-weight:700;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--orange);margin-bottom:0.25rem}
@@ -264,6 +267,15 @@
     <div class="modal-title">Upgrade your plan</div>
     <div class="modal-sub" id="upgrade-sub">More associates, more power. Unlock the full Billi team.</div>
     <div class="plan-grid">
+      <div class="plan-opt plan-opt-student" onclick="selectPlan('student',this)">
+        <div class="plan-opt-name">Student</div>
+        <div class="plan-opt-price">R39</div>
+        <div class="plan-opt-msgs">
+          <span class="role">Bean Counter</span>
+          <span class="role">Deal Maker</span>
+          <span class="meta">.ac.za email · 2 reports · 100 msg/mo</span>
+        </div>
+      </div>
       <div class="plan-opt sel" onclick="selectPlan('professional',this)">
         <div class="plan-opt-name">Professional</div>
         <div class="plan-opt-price">R149</div>
@@ -863,15 +875,27 @@
   }
 
   async function subscribePlan() {
+    const btn = document.querySelector('.modal-btn');
+    btn.textContent = 'Redirecting to Paystack...';
+    btn.disabled = true;
     try {
-      const res = await fetch('/api/pay/initialize', {
+      const res = await fetch('/api/subscribe', {
         method: 'POST', headers: {'Content-Type':'application/json'},
         body: JSON.stringify({ plan: selectedPlan })
       });
       const data = await res.json();
-      if (data.url) window.location.href = data.url;
-      else alert('Payment error. Please try again.');
-    } catch(e) { alert('Payment error. Please try again.'); }
+      if (data.url) {
+        window.location.href = data.url;
+      } else if (data.error) {
+        alert(data.error);
+        btn.textContent = 'Pay with Paystack →';
+        btn.disabled = false;
+      }
+    } catch(e) {
+      alert('Payment error. Please try again.');
+      btn.textContent = 'Pay with Paystack →';
+      btn.disabled = false;
+    }
   }
 
   function usePrompt(el) {
