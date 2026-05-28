@@ -12,28 +12,58 @@ const ROOT = '/app';
 // ═══════════════════════════════════════════
 // CONFIGURATION — set in Railway Variables
 // ═══════════════════════════════════════════
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_ID     = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const SESSION_SECRET = process.env.SESSION_SECRET || 'billsource-ai-2026-secret-key';
-const BASE_URL = process.env.BASE_URL || 'https://billsource.ai';
-const FLOWISE_URL = process.env.FLOWISE_URL || 'https://flowiseai-production-455f.up.railway.app';
-const FLOWISE_CHATFLOW_ID = process.env.FLOWISE_CHATFLOW_ID || '';
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || '';
+const SESSION_SECRET       = process.env.SESSION_SECRET || 'billsource-ai-2026-secret-key';
+const BASE_URL             = process.env.BASE_URL || 'https://billsource.ai';
+const FLOWISE_URL          = process.env.FLOWISE_URL || 'https://flowiseai-production-455f.up.railway.app';
+const FLOWISE_CHATFLOW_ID  = process.env.FLOWISE_CHATFLOW_ID || '';
+const PAYSTACK_SECRET_KEY  = process.env.PAYSTACK_SECRET_KEY || '';
 
-// Plan limits
+// ── Billi Plan definitions ──────────────────
 const PLANS = {
-  free:     { messages: 10,    label: 'Free' },
-  solo:     { messages: 500,   label: 'Solo' },
-  team:     { messages: 2000,  label: 'Team' },
-  business: { messages: 10000, label: 'Business' }
+  free:         { messages: 10,   label: 'Free',         roles: ['bean_counter'] },
+  student:      { messages: 100,  label: 'Student',      roles: ['bean_counter','deal_maker'] },
+  professional: { messages: 300,  label: 'Professional', roles: ['bean_counter','rule_book'] },
+  business:     { messages: 1000, label: 'Business',     roles: ['bean_counter','rule_book','brand_guru'] },
+  enterprise:   { messages: 5000, label: 'Enterprise',   roles: ['bean_counter','rule_book','brand_guru','deal_maker','the_fixer'] }
+};
+
+// ── Paystack plan codes ─────────────────────
+const PAYSTACK_PLANS = {
+  student:      process.env.PAYSTACK_PLAN_STUDENT       || 'PLN_u5uxr8t2tf0p64z',
+  professional: process.env.PAYSTACK_PLAN_PROFESSIONAL  || 'PLN_xep07lsxg5ug0di',
+  business:     process.env.PAYSTACK_PLAN_BUSINESS      || 'PLN_6ckkyszhatwstzq',
+  enterprise:   process.env.PAYSTACK_PLAN_ENTERPRISE    || 'PLN_7fri26iibfq1z34'
+};
+
+// ── Paystack plan code → tier reverse map ───
+const PLAN_CODE_MAP = {
+  'PLN_u5uxr8t2tf0p64z': 'student',
+  'PLN_xep07lsxg5ug0di': 'professional',
+  'PLN_6ckkyszhatwstzq': 'business',
+  'PLN_7fri26iibfq1z34': 'enterprise'
+};
+
+// ── Merch prices in kobo (ZAR cents) ────────
+const MERCH_PRICES = {
+  'hoodie-sml':  54900,
+  'hoodie-xl':   59900,
+  'hoodie-3xl':  64900,
+  'cap-black':   29900,
+  'cap-white':   29900,
+  'mug-330':     19900,
+  'mug-470':     24900,
+  'tee-sml':     29900,
+  'tee-xl':      34900,
+  'tee-3xl':     37900
 };
 
 // ═══════════════════════════════════════════
 // SIMPLE IN-MEMORY SESSION STORE
-// (replace with Redis or DB for production)
 // ═══════════════════════════════════════════
 const sessions = {};
-const users = {}; // email -> user data
+const users = {};
 
 function generateSessionId() {
   return crypto.randomBytes(32).toString('hex');
@@ -76,10 +106,7 @@ const MIME = {
 
 function serveFile(res, filePath) {
   fs.readFile(filePath, (err, data) => {
-    if (err) {
-      serveFile(res, path.join(ROOT, 'index.html'));
-      return;
-    }
+    if (err) { serveFile(res, path.join(ROOT, 'index.html')); return; }
     const ext = path.extname(filePath);
     res.writeHead(200, { 'Content-Type': MIME[ext] || 'text/plain' });
     res.end(data);
@@ -89,8 +116,8 @@ function serveFile(res, filePath) {
 // ═══════════════════════════════════════════
 // GOOGLE OAUTH HELPERS
 // ═══════════════════════════════════════════
-const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
-const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
+const GOOGLE_AUTH_URL     = 'https://accounts.google.com/o/oauth2/v2/auth';
+const GOOGLE_TOKEN_URL    = 'https://oauth2.googleapis.com/token';
 const GOOGLE_USERINFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
 
 function buildGoogleAuthUrl(state) {
@@ -164,25 +191,25 @@ async function getGoogleUserInfo(accessToken) {
 function getOrCreateUser(googleProfile) {
   const email = googleProfile.email;
   if (!users[email]) {
-    // New user — create fresh record
+    // Auto-detect student via .ac.za email
+    const isStudent = email.toLowerCase().endsWith('.ac.za');
+    const defaultPlan = isStudent ? 'student' : 'free';
     users[email] = {
       email,
       name: googleProfile.name,
       avatar: googleProfile.picture,
       googleId: googleProfile.id,
-      plan: 'free',
+      plan: defaultPlan,
       messagesUsed: 0,
-      messagesLimit: PLANS.free.messages,
-      messagesRemaining: PLANS.free.messages,
+      messagesLimit: PLANS[defaultPlan].messages,
       createdAt: new Date().toISOString(),
       billingCycle: new Date().toISOString()
     };
-    console.log(`New user registered: ${email}`);
+    console.log(`New user: ${email} — plan: ${defaultPlan}`);
   } else {
-    // Returning user — update name/avatar but preserve usage
     users[email].name = googleProfile.name;
     users[email].avatar = googleProfile.picture;
-    console.log(`Returning user: ${email} — used ${users[email].messagesUsed}/${users[email].messagesLimit}`);
+    console.log(`Returning user: ${email} — plan: ${users[email].plan}`);
   }
   return users[email];
 }
@@ -191,40 +218,40 @@ function resetMonthlyUsage() {
   const now = new Date();
   Object.values(users).forEach(user => {
     const cycle = new Date(user.billingCycle);
-    const daysDiff = (now - cycle) / (1000 * 60 * 60 * 24);
-    if (daysDiff >= 30) {
+    if ((now - cycle) / (1000 * 60 * 60 * 24) >= 30) {
       user.messagesUsed = 0;
       user.billingCycle = now.toISOString();
     }
   });
 }
-setInterval(resetMonthlyUsage, 60 * 60 * 1000); // check hourly
+setInterval(resetMonthlyUsage, 60 * 60 * 1000);
 
 // ═══════════════════════════════════════════
 // PAYSTACK HELPERS
 // ═══════════════════════════════════════════
-const PAYSTACK_PLANS = {
-  solo:     process.env.PAYSTACK_PLAN_SOLO     || '',
-  team:     process.env.PAYSTACK_PLAN_TEAM     || '',
-  business: process.env.PAYSTACK_PLAN_BUSINESS || ''
-};
-
-async function paystackInitialize(email, planCode, amount) {
-  const data = JSON.stringify({
-    email,
-    amount: amount * 100, // kobo/cents
-    plan: planCode,
-    callback_url: `${BASE_URL}/payment/success`,
-    metadata: { email }
+function paystackRequest(method, endpoint, data) {
+  return new Promise((resolve, reject) => {
+    const body = data ? JSON.stringify(data) : null;
+    const parsed = new URL('https://api.paystack.co' + endpoint);
+    const reqOpts = {
+      hostname: parsed.hostname,
+      path: parsed.pathname + parsed.search,
+      method,
+      headers: {
+        'Authorization': `Bearer ${PAYSTACK_SECRET_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    };
+    if (body) reqOpts.headers['Content-Length'] = Buffer.byteLength(body);
+    const req = https.request(reqOpts, res => {
+      let d = '';
+      res.on('data', c => d += c);
+      res.on('end', () => { try { resolve(JSON.parse(d)); } catch(e) { resolve(d); } });
+    });
+    req.on('error', reject);
+    if (body) req.write(body);
+    req.end();
   });
-  return httpsPost(
-    'https://api.paystack.co/transaction/initialize',
-    data,
-    {
-      'Authorization': `Bearer ${PAYSTACK_SECRET_KEY}`,
-      'Content-Type': 'application/json'
-    }
-  );
 }
 
 function verifyPaystackSignature(body, signature) {
@@ -233,6 +260,31 @@ function verifyPaystackSignature(body, signature) {
     .update(body)
     .digest('hex');
   return hash === signature;
+}
+
+function upgradeUser(email, planCode) {
+  const planName = PLAN_CODE_MAP[planCode];
+  if (!planName) { console.log(`Unknown plan code: ${planCode}`); return; }
+  if (!users[email]) { console.log(`Unknown user: ${email}`); return; }
+  users[email].plan = planName;
+  users[email].messagesLimit = PLANS[planName].messages;
+  users[email].messagesUsed = 0;
+  users[email].billingCycle = new Date().toISOString();
+  console.log(`Plan upgraded: ${email} → ${planName}`);
+  // Update all active sessions for this user
+  Object.values(sessions).forEach(s => {
+    if (s.user && s.user.email === email) s.user = users[email];
+  });
+}
+
+function downgradeUser(email) {
+  if (!users[email]) return;
+  users[email].plan = 'free';
+  users[email].messagesLimit = PLANS.free.messages;
+  console.log(`Plan downgraded: ${email} → free`);
+  Object.values(sessions).forEach(s => {
+    if (s.user && s.user.email === email) s.user = users[email];
+  });
 }
 
 // ═══════════════════════════════════════════
@@ -255,7 +307,6 @@ const server = http.createServer(async (req, res) => {
   const pathname = parsed.pathname;
   const method = req.method;
 
-  // ── CORS for API routes ──
   res.setHeader('Access-Control-Allow-Origin', BASE_URL);
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -264,45 +315,34 @@ const server = http.createServer(async (req, res) => {
   // ══════════════════════════════════════════
   // AUTH ROUTES
   // ══════════════════════════════════════════
-
-  // Start Google OAuth
   if (pathname === '/auth/google' && method === 'GET') {
     const state = crypto.randomBytes(16).toString('hex');
-    const authUrl = buildGoogleAuthUrl(state);
-    res.writeHead(302, { Location: authUrl });
-    res.end();
-    return;
+    res.writeHead(302, { Location: buildGoogleAuthUrl(state) });
+    res.end(); return;
   }
 
-  // Google OAuth callback
   if (pathname === '/auth/google/callback' && method === 'GET') {
     const { code, error } = parsed.query;
-    if (error || !code) {
-      res.writeHead(302, { Location: '/?error=auth_failed' });
-      res.end();
-      return;
-    }
+    if (error || !code) { res.writeHead(302, { Location: '/?error=auth_failed' }); res.end(); return; }
     try {
       const tokens = await exchangeCodeForTokens(code);
       if (!tokens.access_token) throw new Error('No access token');
       const profile = await getGoogleUserInfo(tokens.access_token);
       const user = getOrCreateUser(profile);
       const sid = createSession(user);
-      const cookieExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString();
+      const expiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString();
       res.writeHead(302, {
         Location: '/app',
-        'Set-Cookie': `bs_session=${sid}; Path=/; HttpOnly; Secure; SameSite=Lax; Expires=${cookieExpiry}`
+        'Set-Cookie': `bs_session=${sid}; Path=/; HttpOnly; Secure; SameSite=Lax; Expires=${expiry}`
       });
       res.end();
     } catch (err) {
       console.error('OAuth error:', err);
-      res.writeHead(302, { Location: '/?error=auth_error' });
-      res.end();
+      res.writeHead(302, { Location: '/?error=auth_error' }); res.end();
     }
     return;
   }
 
-  // Logout
   if (pathname === '/auth/logout' && method === 'GET') {
     const session = getSession(req);
     if (session) delete sessions[session.sid];
@@ -310,21 +350,19 @@ const server = http.createServer(async (req, res) => {
       Location: '/',
       'Set-Cookie': 'bs_session=; Path=/; HttpOnly; Secure; Expires=Thu, 01 Jan 1970 00:00:00 GMT'
     });
-    res.end();
-    return;
+    res.end(); return;
   }
 
   // ══════════════════════════════════════════
   // API ROUTES
   // ══════════════════════════════════════════
 
-  // Get current user
+  // Current user info
   if (pathname === '/api/me' && method === 'GET') {
     const session = getSession(req);
     if (!session) {
       res.writeHead(401, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ authenticated: false }));
-      return;
+      res.end(JSON.stringify({ authenticated: false })); return;
     }
     const user = session.data.user;
     res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -335,21 +373,20 @@ const server = http.createServer(async (req, res) => {
         email: user.email,
         avatar: user.avatar,
         plan: user.plan,
+        planLabel: PLANS[user.plan]?.label || 'Free',
         messagesUsed: user.messagesUsed,
         messagesLimit: user.messagesLimit,
         messagesRemaining: Math.max(0, user.messagesLimit - user.messagesUsed)
       }
-    }));
-    return;
+    })); return;
   }
 
-  // Chat with Billi — enforces usage limits
+  // Chat — enforces usage limits
   if (pathname === '/api/chat' && method === 'POST') {
     const session = getSession(req);
     if (!session) {
       res.writeHead(401, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Please sign in to continue.' }));
-      return;
+      res.end(JSON.stringify({ error: 'Please sign in to continue.' })); return;
     }
     const user = session.data.user;
     if (user.messagesUsed >= user.messagesLimit) {
@@ -358,84 +395,121 @@ const server = http.createServer(async (req, res) => {
         error: 'limit_reached',
         message: `You have used all ${user.messagesLimit} messages on your ${PLANS[user.plan].label} plan. Please upgrade to continue.`,
         plan: user.plan
-      }));
-      return;
+      })); return;
     }
     try {
       const body = await readBody(req);
       const { question } = JSON.parse(body);
-      if (!question) throw new Error('No question provided');
+      if (!question) throw new Error('No question');
 
-      // Call Flowise
       const flowiseResponse = await httpsPost(
         `${FLOWISE_URL}/api/v1/prediction/${FLOWISE_CHATFLOW_ID}`,
         JSON.stringify({ question }),
         { 'Content-Type': 'application/json' }
       );
 
-      console.log('Flowise response keys:', Object.keys(flowiseResponse || {}));
-      console.log('Flowise response sample:', JSON.stringify(flowiseResponse).slice(0, 400));
-
-      // Increment usage
       user.messagesUsed++;
       sessions[session.sid].user = user;
       users[user.email] = user;
 
-      // Handle all known Flowise response formats
       const answer =
         (typeof flowiseResponse === 'string' ? flowiseResponse : null) ||
-        flowiseResponse.text ||
-        flowiseResponse.answer ||
-        flowiseResponse.output ||
-        flowiseResponse.message ||
-        flowiseResponse.result ||
-        flowiseResponse.response ||
-        (Array.isArray(flowiseResponse.outputs) && flowiseResponse.outputs[0] && flowiseResponse.outputs[0].text) ||
-        null;
-      const finalAnswer = answer || 'Billi received your question but could not generate a response. Please check the Flowise agent is running and try again.';
+        flowiseResponse.text || flowiseResponse.answer ||
+        flowiseResponse.output || flowiseResponse.message ||
+        flowiseResponse.result || flowiseResponse.response ||
+        (Array.isArray(flowiseResponse.outputs) && flowiseResponse.outputs[0]?.text) ||
+        'Billi is temporarily unavailable. Please try again.';
+
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({
-        answer: finalAnswer,
+        answer,
         messagesUsed: user.messagesUsed,
         messagesRemaining: Math.max(0, user.messagesLimit - user.messagesUsed)
       }));
     } catch (err) {
-      console.error('Chat error:', err.message, err.stack);
+      console.error('Chat error:', err.message);
       res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Billi is temporarily unavailable. Please try again.', detail: err.message }));
+      res.end(JSON.stringify({ error: 'Billi is temporarily unavailable. Please try again.' }));
     }
     return;
   }
 
-  // Initialize Paystack payment
-  if (pathname === '/api/pay/initialize' && method === 'POST') {
+  // ── Subscription checkout (modal Pay button) ──
+  // Handles both /api/subscribe (new) and /api/pay/initialize (legacy)
+  if ((pathname === '/api/subscribe' || pathname === '/api/pay/initialize') && method === 'POST') {
     const session = getSession(req);
     if (!session) {
       res.writeHead(401, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Please sign in first.' }));
-      return;
+      res.end(JSON.stringify({ error: 'Please sign in first.' })); return;
     }
     try {
       const body = await readBody(req);
       const { plan } = JSON.parse(body);
-      const planMap = { professional: 14900, business: 29900, enterprise: 59900 }; // in cents
-      const amount = planMap[plan];
-      if (!amount) throw new Error('Invalid plan');
+      const planCode = PAYSTACK_PLANS[plan];
+      if (!planCode) throw new Error('Invalid plan: ' + plan);
+
       const user = session.data.user;
-      const result = await paystackInitialize(user.email, PAYSTACK_PLANS[plan], amount / 100);
-      if (!result.data?.authorization_url) throw new Error('Paystack error');
+
+      // Student plan — enforce .ac.za email
+      if (plan === 'student' && !user.email.toLowerCase().endsWith('.ac.za')) {
+        res.writeHead(403, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Student plan requires a .ac.za university email address.' }));
+        return;
+      }
+
+      const result = await paystackRequest('POST', '/transaction/initialize', {
+        email: user.email,
+        amount: 0,
+        plan: planCode,
+        callback_url: `${BASE_URL}/payment/success?plan=${plan}`,
+        metadata: { plan, user_email: user.email }
+      });
+
+      if (!result.data?.authorization_url) throw new Error(result.message || 'Paystack error');
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ url: result.data.authorization_url }));
     } catch (err) {
-      console.error('Payment error:', err);
+      console.error('Subscribe error:', err.message);
       res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Payment initialization failed.' }));
+      res.end(JSON.stringify({ error: err.message || 'Payment initialisation failed.' }));
     }
     return;
   }
 
-  // Paystack webhook — activates plan after payment
-  if (pathname === '/webhook/paystack' && method === 'POST') {
+  // ── Merch checkout ────────────────────────
+  if (pathname === '/api/merch-checkout' && method === 'POST') {
+    try {
+      const body = await readBody(req);
+      const { item, size, email } = JSON.parse(body);
+      const key = size ? `${item}-${size}` : item;
+      const amount = MERCH_PRICES[key];
+      if (!amount) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: `Unknown item: ${key}` })); return;
+      }
+      if (!email) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Email required for merch checkout.' })); return;
+      }
+      const result = await paystackRequest('POST', '/transaction/initialize', {
+        email,
+        amount,
+        callback_url: `${BASE_URL}/merch-success`,
+        metadata: { item, size, order_type: 'merch' }
+      });
+      if (!result.data?.authorization_url) throw new Error(result.message || 'Paystack error');
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ url: result.data.authorization_url }));
+    } catch (err) {
+      console.error('Merch checkout error:', err.message);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Checkout failed. Please try again.' }));
+    }
+    return;
+  }
+
+  // ── Paystack webhook ──────────────────────
+  if ((pathname === '/webhook/paystack' || pathname === '/api/paystack-webhook') && method === 'POST') {
     const rawBody = await readBody(req);
     const signature = req.headers['x-paystack-signature'];
     if (!verifyPaystackSignature(rawBody, signature)) {
@@ -443,29 +517,52 @@ const server = http.createServer(async (req, res) => {
     }
     try {
       const event = JSON.parse(rawBody);
-      if (event.event === 'charge.success' || event.event === 'subscription.create') {
-        const email = event.data.customer.email;
-        const planCode = event.data.plan?.plan_code || '';
-        let planName = 'solo';
-        if (planCode === PAYSTACK_PLANS.team) planName = 'team';
-        if (planCode === PAYSTACK_PLANS.business) planName = 'business';
-        if (users[email]) {
-          users[email].plan = planName;
-          users[email].messagesLimit = PLANS[planName].messages;
-          users[email].messagesUsed = 0;
-          console.log(`Plan activated: ${email} -> ${planName}`);
-        }
+      const email = event.data?.customer?.email;
+      const planCode = event.data?.plan?.plan_code || '';
+
+      switch (event.event) {
+        case 'charge.success':
+        case 'subscription.create':
+          if (email && planCode) upgradeUser(email, planCode);
+          break;
+        case 'subscription.disable':
+        case 'invoice.payment_failed':
+          if (email) downgradeUser(email);
+          break;
+        case 'subscription.enable':
+          if (email && planCode) upgradeUser(email, planCode);
+          break;
       }
-    } catch (err) { console.error('Webhook error:', err); }
-    res.writeHead(200); res.end('OK');
-    return;
+      console.log(`Webhook: ${event.event} — ${email}`);
+    } catch (err) { console.error('Webhook parse error:', err); }
+    res.writeHead(200); res.end('OK'); return;
   }
 
-  // Payment success redirect
+  // ── Payment success redirect ──────────────
   if (pathname === '/payment/success' && method === 'GET') {
-    res.writeHead(302, { Location: '/app?payment=success' });
-    res.end();
-    return;
+    const { reference, plan } = parsed.query;
+    // Verify and upgrade if not caught by webhook
+    if (reference && PAYSTACK_SECRET_KEY) {
+      try {
+        const verify = await paystackRequest('GET', `/transaction/verify/${reference}`, null);
+        if (verify.data?.status === 'success') {
+          const email = verify.data.customer.email;
+          const planCode = verify.data.plan?.plan_code;
+          if (planCode) upgradeUser(email, planCode);
+          // Update current session immediately
+          const session = getSession(req);
+          if (session && session.data.user.email === email) {
+            session.data.user = users[email];
+            sessions[session.sid] = session.data;
+          }
+        }
+      } catch (err) { console.error('Verify error:', err.message); }
+    }
+    res.writeHead(302, { Location: '/app?payment=success' }); res.end(); return;
+  }
+
+  if (pathname === '/merch-success' && method === 'GET') {
+    res.writeHead(302, { Location: '/?order=success' }); res.end(); return;
   }
 
   // ══════════════════════════════════════════
@@ -473,61 +570,39 @@ const server = http.createServer(async (req, res) => {
   // ══════════════════════════════════════════
   if (pathname === '/app' && method === 'GET') {
     const session = getSession(req);
-    if (!session) {
-      res.writeHead(302, { Location: '/auth/google' });
-      res.end();
-      return;
-    }
-    serveFile(res, path.join(ROOT, 'app.html'));
-    return;
+    if (!session) { res.writeHead(302, { Location: '/auth/google' }); res.end(); return; }
+    serveFile(res, path.join(ROOT, 'app.html')); return;
   }
-
 
   // ══════════════════════════════════════════
   // ANALYSIS & RATING ENGINE — Protected API
-  // Your proprietary formulas live here only
-  // Accessible only via authenticated + authorized calls
   // ══════════════════════════════════════════
   if (pathname === '/api/engine/analyse' && method === 'POST') {
-    // 1. Verify session (must be logged in)
     const session = getSession(req);
     if (!session) {
       res.writeHead(401, {'Content-Type':'application/json'});
-      res.end(JSON.stringify({error:'Authentication required'}));
-      return;
+      res.end(JSON.stringify({error:'Authentication required'})); return;
     }
-
-    // 2. Verify plan authorisation (Business or Enterprise only)
     const user = session.data.user;
-    const authorisedPlans = ['business','enterprise'];
+    const authorisedPlans = ['professional','business','enterprise'];
     if (!authorisedPlans.includes(user.plan)) {
       res.writeHead(403, {'Content-Type':'application/json'});
       res.end(JSON.stringify({
         error:'plan_required',
-        message:'Financial analysis engine requires Business or Enterprise plan.',
+        message:'Financial analysis engine requires Professional plan or above.',
         upgrade: true
-      }));
-      return;
+      })); return;
     }
-
-    // 3. Verify API token for server-to-server calls
     const apiToken = req.headers['x-engine-token'];
     const validToken = process.env.ENGINE_API_TOKEN;
     if (validToken && apiToken !== validToken) {
       res.writeHead(403, {'Content-Type':'application/json'});
-      res.end(JSON.stringify({error:'Invalid engine token'}));
-      return;
+      res.end(JSON.stringify({error:'Invalid engine token'})); return;
     }
-
     try {
       const body = await readBody(req);
       const input = JSON.parse(body);
-
-      // ══ PROPRIETARY ANALYSIS ENGINE ══
-      // All formulas computed server-side only
-      // Never exposed to client
       const result = runAnalysisEngine(input);
-
       res.writeHead(200, {'Content-Type':'application/json'});
       res.end(JSON.stringify(result));
     } catch(err) {
@@ -542,22 +617,13 @@ const server = http.createServer(async (req, res) => {
   // STATIC FILE SERVING
   // ══════════════════════════════════════════
   let filePath = path.join(ROOT, pathname === '/' ? 'index.html' : pathname);
-
-  // Add .html if no extension
   if (!path.extname(filePath)) filePath += '.html';
-
-  // Security: prevent directory traversal
-  if (!filePath.startsWith(ROOT)) {
-    res.writeHead(403); res.end('Forbidden'); return;
-  }
-
+  if (!filePath.startsWith(ROOT)) { res.writeHead(403); res.end('Forbidden'); return; }
   serveFile(res, filePath);
 });
 
-
 // ══════════════════════════════════════════
 // PROPRIETARY ANALYSIS & RATING ENGINE
-// Server-side only — never sent to client
 // ══════════════════════════════════════════
 function runAnalysisEngine(data) {
   const {
@@ -568,62 +634,48 @@ function runAnalysisEngine(data) {
 
   const results = {};
 
-  // ── LIQUIDITY RATIOS ──
-  results.currentRatio = currentAssets / currentLiabilities;
-  results.quickRatio = (currentAssets - inventory) / currentLiabilities;
-  results.cashRatio = (currentAssets - inventory - accountsReceivable) / currentLiabilities;
+  results.currentRatio  = currentAssets / currentLiabilities;
+  results.quickRatio    = (currentAssets - inventory) / currentLiabilities;
+  results.cashRatio     = (currentAssets - inventory - accountsReceivable) / currentLiabilities;
 
-  // ── PROFITABILITY RATIOS ──
   const grossProfit = revenue - costOfSales;
-  results.grossMargin = (grossProfit / revenue) * 100;
-  results.netMargin = (netProfit / revenue) * 100;
+  results.grossMargin     = (grossProfit / revenue) * 100;
+  results.netMargin       = (netProfit / revenue) * 100;
   results.operatingMargin = ((grossProfit - operatingExpenses) / revenue) * 100;
-  results.returnOnEquity = (netProfit / equity) * 100;
+  results.returnOnEquity  = (netProfit / equity) * 100;
 
-  // ── EFFICIENCY RATIOS ──
-  results.dso = (accountsReceivable / annualRevenue) * 365; // Days Sales Outstanding
-  results.dpo = (accountsPayable / costOfSales) * 365;      // Days Payable Outstanding
+  results.dso = (accountsReceivable / annualRevenue) * 365;
+  results.dpo = (accountsPayable / costOfSales) * 365;
   results.cashConversionCycle = results.dso - results.dpo;
 
-  // ── LEVERAGE RATIOS ──
   results.debtToEquity = totalDebt / equity;
   results.debtToAssets = totalDebt / (totalDebt + equity);
 
-  // ── PROPRIETARY NHS (National Health Score) ──
-  // Weighted composite score — your secret sauce
-  const weights = {
-    liquidity: 0.30,
-    profitability: 0.25,
-    efficiency: 0.25,
-    leverage: 0.20
-  };
+  const weights = { liquidity: 0.30, profitability: 0.25, efficiency: 0.25, leverage: 0.20 };
 
   const liquidityScore = Math.min(100, Math.max(0,
-    (results.currentRatio >= 2 ? 100 :
-     results.currentRatio >= 1.5 ? 80 :
-     results.currentRatio >= 1.0 ? 60 :
-     results.currentRatio >= 0.75 ? 40 : 20)
+    results.currentRatio >= 2   ? 100 :
+    results.currentRatio >= 1.5 ? 80  :
+    results.currentRatio >= 1.0 ? 60  :
+    results.currentRatio >= 0.75? 40  : 20
   ));
-
   const profitabilityScore = Math.min(100, Math.max(0,
     results.netMargin >= 20 ? 100 :
-    results.netMargin >= 10 ? 80 :
-    results.netMargin >= 5 ? 60 :
-    results.netMargin >= 0 ? 40 : 20
+    results.netMargin >= 10 ? 80  :
+    results.netMargin >= 5  ? 60  :
+    results.netMargin >= 0  ? 40  : 20
   ));
-
   const efficiencyScore = Math.min(100, Math.max(0,
     results.dso <= 30 ? 100 :
-    results.dso <= 45 ? 80 :
-    results.dso <= 60 ? 60 :
-    results.dso <= 90 ? 40 : 20
+    results.dso <= 45 ? 80  :
+    results.dso <= 60 ? 60  :
+    results.dso <= 90 ? 40  : 20
   ));
-
   const leverageScore = Math.min(100, Math.max(0,
     results.debtToEquity <= 0.5 ? 100 :
-    results.debtToEquity <= 1.0 ? 80 :
-    results.debtToEquity <= 1.5 ? 60 :
-    results.debtToEquity <= 2.0 ? 40 : 20
+    results.debtToEquity <= 1.0 ? 80  :
+    results.debtToEquity <= 1.5 ? 60  :
+    results.debtToEquity <= 2.0 ? 40  : 20
   ));
 
   results.nationalHealthScore = Math.round(
@@ -633,23 +685,18 @@ function runAnalysisEngine(data) {
     (leverageScore * weights.leverage)
   );
 
-  // ── RISK CLASSIFICATION ──
   results.riskRating =
     results.nationalHealthScore >= 80 ? 'GREEN — Low Risk' :
     results.nationalHealthScore >= 60 ? 'AMBER — Moderate Risk' :
-    results.nationalHealthScore >= 40 ? 'ORANGE — Elevated Risk' :
-    'RED — Critical Risk';
+    results.nationalHealthScore >= 40 ? 'ORANGE — Elevated Risk' : 'RED — Critical Risk';
 
   results.riskColour =
     results.nationalHealthScore >= 80 ? 'green' :
     results.nationalHealthScore >= 60 ? 'amber' :
     results.nationalHealthScore >= 40 ? 'orange' : 'red';
 
-  // Round all numbers for clean output
   Object.keys(results).forEach(k => {
-    if (typeof results[k] === 'number') {
-      results[k] = Math.round(results[k] * 100) / 100;
-    }
+    if (typeof results[k] === 'number') results[k] = Math.round(results[k] * 100) / 100;
   });
 
   return {
@@ -664,7 +711,8 @@ function runAnalysisEngine(data) {
 
 server.listen(PORT, () => {
   console.log(`BillSource AI running on port ${PORT}`);
-  console.log(`Google OAuth: ${GOOGLE_CLIENT_ID ? 'configured' : 'MISSING'}`);
-  console.log(`Flowise: ${FLOWISE_CHATFLOW_ID ? 'configured' : 'MISSING - set FLOWISE_CHATFLOW_ID'}`);
-  console.log(`Paystack: ${PAYSTACK_SECRET_KEY ? 'configured' : 'not configured yet'}`);
+  console.log(`Google OAuth : ${GOOGLE_CLIENT_ID     ? 'configured' : 'MISSING'}`);
+  console.log(`Flowise      : ${FLOWISE_CHATFLOW_ID   ? 'configured' : 'MISSING'}`);
+  console.log(`Paystack     : ${PAYSTACK_SECRET_KEY   ? 'configured' : 'not set'}`);
+  console.log(`Plans        : student=${PAYSTACK_PLANS.student} professional=${PAYSTACK_PLANS.professional}`);
 });
