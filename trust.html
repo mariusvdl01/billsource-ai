@@ -4,20 +4,20 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Trust Centre — BillSource AI</title>
-  <link rel="icon" type="image/png" href="logo2.png"/>
+  <link rel="icon" type="image/png" href="favicon.png"/>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    :root{--orange:#E8621A;--blue:#1E88E5;--font:Helvetica,Arial,sans-serif}
-    body.dark{--bg:#1C1C1E;--card:#2A2A2C;--border:#3A3A3C;--text:#F0EDE8;--muted:#8A8784;--nav-bg:rgba(28,28,30,0.96)}
-    body.light{--bg:#F5F0EB;--card:#FAF7F4;--border:#D8D0C8;--text:#1A1614;--muted:#6B6460;--nav-bg:rgba(245,240,235,0.96)}
-    body{font-family:Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background 0.3s,color 0.3s}
+    :root{--orange:#FF6600;--blue:#1E88E5;--font:Helvetica,Arial,sans-serif}
+    body.dark{--bg:#0D0D0D;--card:#1A1A1A;--border:#2A2A2A;--text:#F5F5F0;--muted:#888880;--nav-bg:rgba(13,13,13,0.95)}
+    body.light{--bg:#FFFFFF;--card:#FFFFFF;--border:#E0E0E0;--text:#111111;--muted:#666660;--nav-bg:rgba(255,255,255,0.95)}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background 0.3s,color 0.3s}
     nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2.5rem;border-bottom:0.5px solid var(--border);background:var(--nav-bg);position:sticky;top:0;z-index:100}
     .logo{display:flex;align-items:center;gap:10px;text-decoration:none}
     .logo-sub{color:var(--orange);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;display:block}
     .nav-right{display:flex;gap:10px;align-items:center}
-    .btn-ghost{background:transparent;border:0.5px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:6px;font-size:13px;cursor:pointer;font-family:Helvetica,Arial,sans-serif;text-decoration:none}
+    .btn-ghost{background:transparent;border:0.5px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:6px;font-size:13px;cursor:pointer;font-family:var(--font);text-decoration:none}
     .btn-ghost:hover{border-color:var(--orange);color:var(--orange)}
-    .btn-primary{background:var(--orange);border:none;color:#fff;padding:9px 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:Helvetica,Arial,sans-serif;text-decoration:none}
+    .btn-primary{background:var(--orange);border:none;color:#fff;padding:9px 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);text-decoration:none}
     .theme-toggle{background:transparent;border:0.5px solid var(--border);color:var(--muted);width:36px;height:36px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
     .page{max-width:860px;margin:0 auto;padding:3rem 2.5rem}
     h1{font-size:2rem;font-weight:700;margin-bottom:0.5rem}
@@ -29,7 +29,7 @@
     body.light .cert-card{box-shadow:0 1px 4px rgba(0,0,0,0.06)}
     .cert-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(30,136,229,0.1);border:0.5px solid rgba(30,136,229,0.3);color:var(--blue);font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;margin-bottom:0.75rem}
     .cert-badge.green{background:rgba(46,204,113,0.1);border-color:rgba(46,204,113,0.3);color:#1a9a52}
-    .cert-badge.orange{background:rgba(232,98,26,0.1);border-color:rgba(232,98,26,0.3);color:var(--orange)}
+    .cert-badge.orange{background:rgba(255,102,0,0.1);border-color:rgba(255,102,0,0.3);color:var(--orange)}
     .cert-name{font-weight:700;font-size:1rem;margin-bottom:0.4rem}
     .cert-by{font-size:12px;color:var(--muted);margin-bottom:0.75rem}
     .cert-desc{font-size:13px;color:var(--muted);line-height:1.6}
@@ -40,7 +40,7 @@
     .ethics-icon{font-size:1.5rem;margin-bottom:0.5rem}
     .ethics-title{font-weight:700;font-size:0.9rem;margin-bottom:0.4rem}
     .ethics-desc{font-size:12px;color:var(--muted);line-height:1.6}
-    .notice{background:rgba(232,98,26,0.06);border:0.5px solid rgba(232,98,26,0.2);border-radius:10px;padding:1.25rem 1.5rem;font-size:13px;color:var(--text);line-height:1.7;margin-bottom:1.5rem}
+    .notice{background:rgba(255,102,0,0.06);border:0.5px solid rgba(255,102,0,0.2);border-radius:10px;padding:1.25rem 1.5rem;font-size:13px;color:var(--text);line-height:1.7;margin-bottom:1.5rem}
     .notice strong{color:var(--orange)}
     .stack-item{display:flex;align-items:flex-start;gap:1rem;padding:1rem 0;border-bottom:0.5px solid var(--border)}
     .stack-item:last-child{border-bottom:none}
@@ -58,14 +58,14 @@
 </head>
 <body class="dark">
 <nav>
-  <a class="logo" href="/">
+  <a class="logo" href="index.html">
     <img src="logo2.png" alt="BillSource" height="32" style="object-fit:contain;max-width:140px" onerror="this.style.display='none'"/>
-    <span class="logo-sub">Financial Intelligence &middot; billsource.ai</span>
+    <span class="logo-sub">AI Billing Intelligence &middot; billsource.ai</span>
   </a>
   <div class="nav-right">
     <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">&#9788;</button>
-    <a class="btn-ghost" href="/">&#8592; Back</a>
-    <a class="btn-primary" href="/#demo-section">Try Billi</a>
+    <a class="btn-ghost" href="index.html">&#8592; Back</a>
+    <a class="btn-primary" href="index.html#demo-section">Try Billi</a>
   </div>
 </nav>
 
@@ -107,6 +107,34 @@
         <div class="ethics-icon">&#127759;</div>
         <div class="ethics-title">Regulatory Alignment</div>
         <div class="ethics-desc">Our AI practices align with the EU AI Act principles, South Africa's POPIA, and the NCR's consumer protection requirements.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BILLI ASSOCIATE TEAM -->
+  <div class="section">
+    <div class="section-title">Billi AI — The Five Associate Team</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:1.25rem;line-height:1.7">Billi operates as five distinct specialist roles. Each role draws from a curated South African knowledge base. All responses are clearly attributed to the relevant associate.</p>
+    <div>
+      <div class="stack-item">
+        <div class="stack-dot" style="background:#F59E0B"></div>
+        <div class="stack-text"><strong>Bean Counter (CFO)</strong> — Financial health, cash flow analysis, ratio interpretation, debtor management, dunning strategy and EBPP. Knowledge base: SA financial standards, IFRS for SMEs, NCR credit guidelines.</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-dot" style="background:#F59E0B"></div>
+        <div class="stack-text"><strong>The Rule Book (CGO)</strong> — Regulatory guidance covering POPIA, PAIA, NCA, NCR, CIPC obligations, B-BBEE requirements, King IV governance, labour relations and sector-specific compliance. Always frames guidance as regulatory context — never legal advice.</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-dot" style="background:#F59E0B"></div>
+        <div class="stack-text"><strong>Brand Guru (CMO)</strong> — Brand positioning, marketing strategy, social media, content planning, customer acquisition and SA market context including ASA/ASASA advertising standards.</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-dot" style="background:#F59E0B"></div>
+        <div class="stack-text"><strong>Deal Maker (CSO)</strong> — Sales pipeline management, proposal writing, pricing strategy, objection handling, client retention and CRM guidance.</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-dot" style="background:#F59E0B"></div>
+        <div class="stack-text"><strong>The Fixer (COO)</strong> — Operations, supply chain, vendor management, SOP design, business continuity planning and workflow automation advice.</div>
       </div>
     </div>
   </div>
@@ -160,14 +188,14 @@
     </div>
   </div>
 
-  <!-- LLM PROVIDER -->
+  <!-- TECHNOLOGY PROVIDERS -->
   <div class="section">
-    <div class="section-title">AI Model Provider</div>
+    <div class="section-title">Technology &amp; Service Providers</div>
     <div class="cert-grid">
       <div class="cert-card">
         <div class="cert-badge green">&#10003; Enterprise Grade</div>
         <div class="cert-name">Anthropic Claude API</div>
-        <div class="cert-by">Claude Haiku &middot; claude.ai</div>
+        <div class="cert-by">Claude Haiku 4.5 &middot; claude-haiku-4-5</div>
         <div class="cert-desc">Billi is powered by Anthropic's Claude — built with Constitutional AI principles. Anthropic explicitly does not train on API customer data. Your conversations are private.</div>
         <a class="cert-link" href="https://www.anthropic.com/privacy" target="_blank" rel="noopener">Anthropic Privacy Policy &#8599;</a>
       </div>
@@ -177,6 +205,20 @@
         <div class="cert-by">Flowise &middot; Apache 2.0 License</div>
         <div class="cert-desc">Our AI agent orchestration layer uses Flowise — an open-source, auditable framework. No vendor lock-in. Full source code transparency.</div>
         <a class="cert-link" href="https://flowiseai.com" target="_blank" rel="noopener">Flowise Platform &#8599;</a>
+      </div>
+      <div class="cert-card">
+        <div class="cert-badge green">&#10003; PCI DSS Compliant</div>
+        <div class="cert-name">Paystack Payments</div>
+        <div class="cert-by">Paystack &middot; A Stripe Company</div>
+        <div class="cert-desc">All subscription and merchandise payments are processed by Paystack — PCI DSS Level 1 certified. BillSource AI never stores card numbers or sensitive payment data. Paystack is licensed by the CBN and regulated in South Africa.</div>
+        <a class="cert-link" href="https://paystack.com/za/compliance" target="_blank" rel="noopener">Paystack Compliance &#8599;</a>
+      </div>
+      <div class="cert-card">
+        <div class="cert-badge green">&#10003; SOC 2 Compliant</div>
+        <div class="cert-name">Resend Email Infrastructure</div>
+        <div class="cert-by">Resend &middot; DKIM &amp; SPF verified</div>
+        <div class="cert-desc">Transactional emails (order confirmations, plan upgrades) are sent via Resend — a SOC 2 compliant email platform. Emails are sent from verified domain billi@billsource.ai with DKIM and SPF authentication to prevent spoofing.</div>
+        <a class="cert-link" href="https://resend.com/security" target="_blank" rel="noopener">Resend Security &#8599;</a>
       </div>
     </div>
   </div>
@@ -197,6 +239,10 @@
       <div class="stack-item">
         <div class="stack-dot"></div>
         <div class="stack-text"><strong>Knowledge Base Version Control</strong> — AI training documents are version-controlled and changes to the knowledge base follow a review process before being embedded into the vector store.</div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-dot"></div>
+        <div class="stack-text"><strong>Data Persistence</strong> — User accounts and session data are stored in-memory during the current phase, with PostgreSQL database persistence being introduced progressively. No financial documents or chat content are retained beyond your active session unless you have explicitly requested report storage.</div>
       </div>
       <div class="stack-item">
         <div class="stack-dot"></div>
@@ -234,17 +280,17 @@
     <div>Technical: <a href="tel:0126610385" style="color:var(--muted)">012 661 0385</a></div>
   </div>
   <div class="footer-links">
-    <a href="/">Home</a>
-    <a href="/privacy">Privacy</a>
-    <a href="/terms">Terms</a>
-    <a href="/trust">Trust Centre</a>
-    <a href="/#demo-section">Support</a>
+    <a href="index.html">Home</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="trust.html">Trust Centre</a>
+    <a href="index.html#demo-section">Support</a>
     <a href="https://billsource.com" target="_blank">billsource.com</a>
   </div>
 </footer>
 <script>
-  function toggleTheme(){var isDark=document.body.classList.contains('dark');document.body.className=isDark?'light':'dark';document.getElementById('theme-btn').innerHTML=isDark?'☽':'☀';try{localStorage.setItem('bs-theme',isDark?'light':'dark');}catch(e){}}
-  (function(){var s='';try{s=localStorage.getItem('bs-theme')||'';}catch(e){}var pl=s==='light'||(s===''&&window.matchMedia&&window.matchMedia('(prefers-color-scheme:light)').matches);document.body.className=pl?'light':'dark';document.getElementById('theme-btn').innerHTML=pl?'☽':'☀';})();
+  function toggleTheme(){var b=document.body,btn=document.getElementById('theme-btn');if(b.classList.contains('dark')){b.classList.replace('dark','light');btn.innerHTML='&#9790;';localStorage.setItem('bs-theme','light')}else{b.classList.replace('light','dark');btn.innerHTML='&#9788;';localStorage.setItem('bs-theme','dark')}}
+  (function(){var s=localStorage.getItem('bs-theme');if(s==='light'){document.body.classList.replace('dark','light');document.getElementById('theme-btn').innerHTML='&#9790;'}})();
 </script>
 </body>
 </html>
