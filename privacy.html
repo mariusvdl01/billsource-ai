@@ -4,12 +4,12 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Privacy Policy — BillSource AI</title>
-  <link rel="icon" type="image/png" href="logo2.png"/>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg"/><link rel="icon" type="image/png" href="favicon.png"/>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    :root{--orange:#E8621A;--blue:#1E88E5;--font:Helvetica,Arial,sans-serif}
-    body.dark{--bg:#1C1C1E;--card:#2A2A2C;--border:#3A3A3C;--text:#F0EDE8;--muted:#8A8784;--nav-bg:rgba(28,28,30,0.96)}
-    body.light{--bg:#F5F0EB;--card:#FAF7F4;--border:#D8D0C8;--text:#1A1614;--muted:#6B6460;--nav-bg:rgba(245,240,235,0.96)}
+    :root{--orange:#FF6600;--blue:#1E88E5;--font:Helvetica,Arial,sans-serif}
+    body.dark{--bg:#0D0D0D;--card:#1A1A1A;--border:#2A2A2A;--text:#F5F5F0;--muted:#888880;--nav-bg:rgba(13,13,13,0.95)}
+    body.light{--bg:#FFFFFF;--card:#FFFFFF;--border:#E0E0E0;--text:#111111;--muted:#666660;--nav-bg:rgba(255,255,255,0.95)}
     body{font-family:var(--font);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background 0.3s,color 0.3s}
     nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2.5rem;border-bottom:0.5px solid var(--border);background:var(--nav-bg);position:sticky;top:0;z-index:100}
     .logo{display:flex;align-items:center;gap:10px;text-decoration:none}
@@ -28,7 +28,7 @@
     li{font-size:14px;line-height:1.8;color:var(--text);opacity:0.9;margin-bottom:0.25rem}
     a{color:var(--blue);text-decoration:none}
     a:hover{text-decoration:underline}
-    .highlight{background:rgba(232,98,26,0.06);border:0.5px solid rgba(232,98,26,0.2);border-radius:8px;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:13px;line-height:1.7}
+    .highlight{background:rgba(255,102,0,0.06);border:0.5px solid rgba(255,102,0,0.2);border-radius:8px;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:13px;line-height:1.7}
     footer{padding:1.5rem 2.5rem;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-top:3rem}
     .footer-brand-text{font-size:11px;color:var(--muted);line-height:1.6}
     .footer-links{display:flex;gap:1.25rem;flex-wrap:wrap}
@@ -39,13 +39,13 @@
 </head>
 <body class="dark">
 <nav>
-  <a class="logo" href="/">
-    <img src="logo2.png" alt="BillSource" height="32" style="object-fit:contain;max-width:140px" onerror="this.style.display='none'"/>
-    <span class="logo-sub">Financial Intelligence &middot; billsource.ai</span>
+  <a class="logo" href="index.html">
+    <img src="billi-avatar.svg" alt="Billi" height="36" style="object-fit:contain" onerror="this.style.display:'none'"/>
+    <span class="logo-sub">Business Advisory Intelligence &middot; billsource.ai</span>
   </a>
   <div class="nav-right">
     <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()">&#9788;</button>
-    <a class="btn-ghost" href="/">&#8592; Back</a>
+    <a class="btn-ghost" href="index.html">&#8592; Back</a>
   </div>
 </nav>
 
@@ -68,7 +68,7 @@
     <li><strong>Account information:</strong> Name, email address, and Google account identifier when you sign in via Google OAuth.</li>
     <li><strong>Usage data:</strong> Message counts, session timestamps, plan tier, and feature interactions — used solely for billing and service improvement.</li>
     <li><strong>Conversation content:</strong> Questions and responses in your Billi chat sessions, stored temporarily to provide session continuity.</li>
-    <li><strong>Payment information:</strong> Processed exclusively by Stripe. We do not store card numbers or banking details.</li>
+    <li><strong>Payment information:</strong> Processed exclusively by Paystack (a Stripe company). We do not store card numbers or banking details.</li>
     <li><strong>Technical data:</strong> IP address, browser type, device type and referral URL — used for security monitoring and analytics.</li>
     <li><strong>Documents you upload:</strong> Files you upload to your personal knowledge base remain your property and are not shared.</li>
   </ul>
@@ -99,8 +99,9 @@
   <ul>
     <li><strong>Railway</strong> — Cloud infrastructure hosting (SOC 2 Type II certified, GDPR compliant)</li>
     <li><strong>Anthropic</strong> — AI model processing (does not train on API data)</li>
-    <li><strong>Stripe</strong> — Payment processing (PCI-DSS Level 1 certified)</li>
+    <li><strong>Paystack</strong> — Payment processing (PCI-DSS Level 1 certified, a Stripe company, SA regulated)</li>
     <li><strong>Google</strong> — Authentication via OAuth (Google Workspace)</li>
+    <li><strong>Resend</strong> — Transactional email delivery (SOC 2 compliant, DKIM/SPF verified)</li>
   </ul>
   <p>We do not sell, rent or otherwise disclose your personal information to third parties for marketing purposes.</p>
 
@@ -117,7 +118,7 @@
   <ul>
     <li>Request access to the personal information we hold about you</li>
     <li>Request correction of inaccurate personal information</li>
-li>Request deletion of your personal information (subject to legal retention requirements)</li>
+<li>Request deletion of your personal information (subject to legal retention requirements)</li>
     <li>Object to the processing of your personal information</li>
     <li>Lodge a complaint with the Information Regulator of South Africa</li>
   </ul>
@@ -128,7 +129,7 @@ li>Request deletion of your personal information (subject to legal retention req
   <p>Your data may be processed in the United States where Railway and Anthropic infrastructure is located. Both providers maintain EU-US Data Privacy Framework certification and GDPR-compliant data processing agreements. By using BillSource AI you consent to this transfer on the basis of adequate safeguards.</p>
 
   <h2>9. Security</h2>
-  <p>We implement appropriate technical and organisational measures including encryption in transit (TLS), encryption at rest, access controls, audit logging, and regular security reviews. Our infrastructure provider Railway holds SOC 2 Type II certification. See our <a href="/trust">Trust Centre</a> for full details.</p>
+  <p>We implement appropriate technical and organisational measures including encryption in transit (TLS), encryption at rest, access controls, audit logging, and regular security reviews. Our infrastructure provider Railway holds SOC 2 Type II certification. See our <a href="trust.html">Trust Centre</a> for full details.</p>
 
   <h2>10. Cookies</h2>
   <p>We use only functional cookies necessary for authentication and session management. We do not use advertising or tracking cookies. You may disable cookies in your browser settings but this will prevent login functionality.</p>
@@ -150,7 +151,7 @@ li>Request deletion of your personal information (subject to legal retention req
 
 <footer>
   <div class="footer-brand">
-    <img src="logo2.png" alt="BillSource" height="20" style="object-fit:contain;max-width:100px" onerror="this.style.display='none'"/>
+    <img src="billi-avatar.svg" alt="Billi" height="24" style="object-fit:contain" onerror="this.style.display:'none'"/>
     <div class="footer-brand-text">
       <div style="color:var(--text);font-size:12px;font-weight:700">billsource<sup style="font-size:8px">&#174;</sup> &middot; Billi AI</div>
       <div>&copy; 2026 AnyABEX (Pty) Ltd &middot; All rights reserved &middot; Registered trademark</div>
@@ -161,16 +162,16 @@ li>Request deletion of your personal information (subject to legal retention req
     <div>Technical: <a href="tel:0126610385" style="color:var(--muted)">012 661 0385</a></div>
   </div>
   <div class="footer-links">
-    <a href="/">Home</a>
-    <a href="/privacy">Privacy</a>
-    <a href="/terms">Terms</a>
-    <a href="/trust">Trust Centre</a>
+    <a href="index.html">Home</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="trust.html">Trust Centre</a>
     <a href="https://billsource.com" target="_blank">billsource.com</a>
   </div>
 </footer>
 <script>
-  function toggleTheme(){var isDark=document.body.classList.contains('dark');document.body.className=isDark?'light':'dark';document.getElementById('theme-btn').innerHTML=isDark?'☽':'☀';try{localStorage.setItem('bs-theme',isDark?'light':'dark');}catch(e){}}
-  (function(){var s='';try{s=localStorage.getItem('bs-theme')||'';}catch(e){}var pl=s==='light'||(s===''&&window.matchMedia&&window.matchMedia('(prefers-color-scheme:light)').matches);document.body.className=pl?'light':'dark';document.getElementById('theme-btn').innerHTML=pl?'☽':'☀';})();
+  function toggleTheme(){var b=document.body,btn=document.getElementById('theme-btn');if(b.classList.contains('dark')){b.classList.replace('dark','light');btn.innerHTML='&#9790;';localStorage.setItem('bs-theme','light')}else{b.classList.replace('light','dark');btn.innerHTML='&#9788;';localStorage.setItem('bs-theme','dark')}}
+  (function(){var s=localStorage.getItem('bs-theme');if(s==='light'){document.body.classList.replace('dark','light');document.getElementById('theme-btn').innerHTML='&#9790;'}})();
 </script>
 </body>
 </html>
