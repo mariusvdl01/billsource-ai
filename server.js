@@ -6,6 +6,7 @@ const crypto = require('crypto');
 const url = require('url');
 const querystring = require('querystring');
 const db = require('./db');
+const mailer = require('./mailer');
 
 const PORT = process.env.PORT || 8080;
 const ROOT = '/app';
@@ -409,9 +410,36 @@ const server = http.createServer(async (req, res) => {
       const planCode = event.data?.plan?.plan_code || '';
       console.log(`Webhook: ${event.event} — ${email}`);
       switch (event.event) {
-        case 'charge.success':
+        case 'charge.success': {
+          const meta = event.data?.metadata || {};
+          if (meta.order_type === 'merch') {
+            // Merch order — send fulfillment emails
+            const amount = event.data?.amount || 0;
+            const reference = event.data?.reference || '';
+            await mailer.sendMerchOrderEmails({
+              customerEmail: email,
+              item:  meta.item  || 'unknown',
+              size:  meta.size  || '',
+              amount, reference
+            }).catch(e => console.error('Merch email error:', e.message));
+          } else if (planCode) {
+            await upgradeUser(email, planCode);
+          }
+          break;
+        }
         case 'subscription.create':
-          if (email && planCode) await upgradeUser(email, planCode); break;
+          if (email && planCode) {
+            await upgradeUser(email, planCode);
+            const planName = PLAN_CODE_MAP[planCode];
+            if (planName) {
+              await mailer.sendPlanUpgradeEmail({
+                customerEmail: email,
+                planName,
+                messagesLimit: PLANS[planName]?.messages || 0
+              }).catch(e => console.error('Plan email error:', e.message));
+            }
+          }
+          break;
         case 'subscription.disable':
         case 'invoice.payment_failed':
           if (email) await downgradeUser(email); break;
