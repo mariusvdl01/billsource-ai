@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-200 -260 400 460" width="500" height="500">
+  <title>Billi feature logo</title>
+  <circle cx="0" cy="0" r="170" fill="#F59E0B" stroke="#92400E" stroke-width="12"/>
+  <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(-18,-87,-160)"/>
+  <rect x="-16" y="-230" width="52" height="124" rx="26" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(5,10,-168)"/>
+  <rect x="72" y="-208" width="42" height="96" rx="21" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(22,93,-160)"/>
+  <ellipse cx="0" cy="50" rx="144" ry="96" fill="#FEF3C7" stroke="#92400E" stroke-width="10"/>
+  <rect x="-118" y="32" width="96" height="22" rx="11" fill="#92400E"/>
+  <rect x="-108" y="14" width="72" height="10" rx="5" fill="#92400E" opacity="0.2"/>
+  <circle cx="72" cy="46" r="46" fill="#92400E"/>
+  <circle cx="88" cy="28" r="15" fill="#FEF3C7"/>
+  <circle cx="66" cy="58" r="5" fill="#FEF3C7" opacity="0.55"/>
+</svg>

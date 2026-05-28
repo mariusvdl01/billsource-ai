@@ -6,8 +6,8 @@
   <title>Billi — BillSource AI · Know your financial health score in 60 seconds</title>
   <meta name="description" content="Upload your income statement. Billi analyses 12 financial ratios, scores your business health, and tells you exactly what to do — before the cash flow crisis hits."/>
   <meta name="theme-color" content="#E8621A"/>
-  <link rel="icon" type="image/png" href="favicon.png"/>
-  <link rel="apple-touch-icon" href="favicon.png"/>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg"/><link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="apple-touch-icon" href="favicon.svg"/>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
 
@@ -231,6 +231,21 @@
     .trust-pill span{font-size:11px}
 
     /* ── RESPONSIVE ── */
+
+    .merch-section{padding:4rem 2rem;text-align:center;border-top:0.5px solid var(--border)}
+    .merch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;max-width:960px;margin:2.5rem auto 0}
+    .merch-card{background:var(--card);border:0.5px solid var(--border);border-radius:14px;padding:1.75rem 1.5rem;text-align:left;position:relative;transition:box-shadow 0.2s}
+    .merch-card:hover{box-shadow:0 4px 24px rgba(0,0,0,0.08)}
+    .merch-icon{font-size:2.5rem;margin-bottom:1rem;display:block}
+    .merch-name{font-size:1rem;font-weight:700;margin-bottom:0.25rem;font-family:Helvetica,Arial,sans-serif}
+    .merch-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:1.25rem}
+    .merch-sizes{display:flex;flex-direction:column;gap:6px;margin-bottom:1.25rem}
+    .merch-size-row{display:flex;justify-content:space-between;align-items:center;font-size:12px}
+    .merch-size-label{color:var(--muted)}
+    .merch-size-price{font-weight:700;color:var(--orange)}
+    .merch-btn{width:100%;padding:9px;background:var(--orange);border:none;color:#fff;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:Helvetica,Arial,sans-serif}
+    .merch-btn:hover{opacity:0.88}
+    .merch-badge{position:absolute;top:-10px;right:16px;background:#92400E;color:#FEF3C7;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:0.06em}
     @media(max-width:640px){
       nav{padding:1rem 1.25rem}
       .hero{padding:3rem 1.25rem 2rem}
@@ -291,7 +306,7 @@
 <!-- NAV -->
 <nav>
   <a class="logo" href="#">
-    <img src="favicon.png" alt="BillSource" width="38" height="38"
+    <img src="billi-avatar.svg" alt="Billi" width="38" height="38"
       style="border-radius:50%;border:2px solid #2D7DD2;object-fit:cover"
       onerror="this.style.display='none';document.getElementById('logo-fb').style.display='flex'"/>
     <div id="logo-fb" style="display:none;width:38px;height:38px;border-radius:50%;background:#1A5FA8;border:2px solid #2D7DD2;align-items:center;justify-content:center;flex-shrink:0">
@@ -313,9 +328,12 @@
 
 <!-- HERO -->
 <section class="hero">
+  <div style="display:flex;justify-content:center;margin-bottom:1.25rem">
+    <img src="billi-logo.svg" alt="Billi" width="120" height="120"/>
+  </div>
   <div class="badge"><span class="badge-dot"></span>Live now &mdash; free to try, no card required</div>
-  <h1>Meet <span>Billi</span> &mdash; the team that has your back</h1>
-  <p class="hero-sub">Bean Counter &middot; Brand Guru &middot; Deal Maker &middot; The Rule Book &middot; The Fixer &mdash; five business advisors in one conversation. Built for the business owner who asks <em>"the sales are kak, what do we do?"</em></p>
+  <h1>Meet <span>Billi</span> &mdash; the AI that has your back</h1>
+  <p class="hero-sub">Bean Counter &middot; Brand Guru &middot; Deal Maker &middot; The Rule Book &middot; The Fixer &mdash; five business advisors in one conversation. Built for the business owner who says <em>"the sales are kak, what do I do?"</em></p>
   <div class="hero-cta">
     <button class="btn-lg primary" onclick="document.getElementById('upload-section').scrollIntoView({behavior:'smooth'})">
       &#8593; Upload a statement &mdash; it&rsquo;s free
@@ -638,6 +656,64 @@
     <a style="color:var(--orange);cursor:pointer;text-decoration:none" onclick="openLogin()">Sign up free</a>
     for unlimited access &middot; No card required
   </p>
+</section>
+
+
+<!-- MERCH -->
+<section class="merch-section">
+  <div class="section-label">Billi Merch</div>
+  <div class="section-title">Wear the team that has your back</div>
+  <p style="color:var(--muted);font-size:0.95rem;max-width:480px;margin:0.75rem auto 0;line-height:1.7">Limited run. Real quality. Paystack checkout drops this afternoon.</p>
+  <div class="merch-grid">
+
+    <div class="merch-card">
+      <span class="merch-badge">LIMITED</span>
+      <span class="merch-icon">&#128084;</span>
+      <div class="merch-name">Billi Hoodie</div>
+      <div class="merch-desc">Premium 320gsm cotton fleece. Billi wink front centre, &ldquo;The AI that has your back&rdquo; on the back. Unisex fit.</div>
+      <div class="merch-sizes">
+        <div class="merch-size-row"><span class="merch-size-label">S / M / L</span><span class="merch-size-price">R549</span></div>
+        <div class="merch-size-row"><span class="merch-size-label">XL / XXL</span><span class="merch-size-price">R599</span></div>
+        <div class="merch-size-row"><span class="merch-size-label">3XL</span><span class="merch-size-price">R649</span></div>
+      </div>
+      <button class="merch-btn" onclick="alert('Paystack checkout coming this afternoon!')">Add to cart</button>
+    </div>
+
+    <div class="merch-card">
+      <span class="merch-icon">&#127913;</span>
+      <div class="merch-name">Billi Cap</div>
+      <div class="merch-desc">Structured 6-panel cap. Embroidered Billi wink on the front. Adjustable snapback. One size fits most.</div>
+      <div class="merch-sizes">
+        <div class="merch-size-row"><span class="merch-size-label">One size</span><span class="merch-size-price">R299</span></div>
+      </div>
+      <button class="merch-btn" onclick="alert('Paystack checkout coming this afternoon!')">Add to cart</button>
+    </div>
+
+    <div class="merch-card">
+      <span class="merch-badge">BESTSELLER</span>
+      <span class="merch-icon">&#9749;</span>
+      <div class="merch-name">Billi Mug</div>
+      <div class="merch-desc">Ceramic mug. Billi winks at you every morning. Dishwasher safe. Your Bean Counter deserves a good coffee.</div>
+      <div class="merch-sizes">
+        <div class="merch-size-row"><span class="merch-size-label">330ml standard</span><span class="merch-size-price">R199</span></div>
+        <div class="merch-size-row"><span class="merch-size-label">470ml jumbo</span><span class="merch-size-price">R249</span></div>
+      </div>
+      <button class="merch-btn" onclick="alert('Paystack checkout coming this afternoon!')">Add to cart</button>
+    </div>
+
+    <div class="merch-card">
+      <span class="merch-icon">&#127991;</span>
+      <div class="merch-name">Billi Sticker Pack</div>
+      <div class="merch-desc">Waterproof vinyl. Three sizes &mdash; laptop, bottle, notebook. 5 stickers per pack, open and wink mix.</div>
+      <div class="merch-sizes">
+        <div class="merch-size-row"><span class="merch-size-label">Small 35mm</span><span class="merch-size-price">R49</span></div>
+        <div class="merch-size-row"><span class="merch-size-label">Medium 60mm</span><span class="merch-size-price">R79</span></div>
+        <div class="merch-size-row"><span class="merch-size-label">Large 90mm</span><span class="merch-size-price">R99</span></div>
+      </div>
+      <button class="merch-btn" onclick="alert('Paystack checkout coming this afternoon!')">Add to cart</button>
+    </div>
+
+  </div>
 </section>
 
 <!-- FOOTER -->
