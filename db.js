@@ -1,58 +1,76 @@
 // ═══════════════════════════════════════════
 // DATABASE LAYER — PostgreSQL via pg
-// Falls back to in-memory if DATABASE_URL
-// is not set (safe for dev / first deploy)
+// Crash-safe: falls back to in-memory if DB
+// is unreachable — server always starts
 // ═══════════════════════════════════════════
 
-const USE_DB = !!process.env.DATABASE_URL;
 let pool = null;
-
-if (USE_DB) {
-  const { Pool } = require('pg');
-  pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
-  });
-}
+let useDb = false;
 
 // ── In-memory fallback store ─────────────
 const memUsers    = {};
 const memSessions = {};
 
-// ── Schema bootstrap ─────────────────────
+// ── Try to connect ───────────────────────
 async function initDb() {
-  if (!USE_DB) { console.log('DB: in-memory mode'); return; }
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS users (
-      email           TEXT PRIMARY KEY,
-      name            TEXT,
-      avatar          TEXT,
-      google_id       TEXT,
-      plan            TEXT        NOT NULL DEFAULT 'free',
-      messages_used   INTEGER     NOT NULL DEFAULT 0,
-      messages_limit  INTEGER     NOT NULL DEFAULT 10,
-      billing_cycle   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    );
-    CREATE TABLE IF NOT EXISTS sessions (
-      sid         TEXT PRIMARY KEY,
-      user_email  TEXT NOT NULL REFERENCES users(email) ON DELETE CASCADE,
-      created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      expires_at  TIMESTAMPTZ NOT NULL DEFAULT NOW() + INTERVAL '7 days'
-    );
-    CREATE INDEX IF NOT EXISTS idx_sessions_email   ON sessions(user_email);
-    CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at);
-  `);
-  console.log('DB: PostgreSQL schema ready');
+  if (!process.env.DATABASE_URL) {
+    console.log('DB: in-memory mode (no DATABASE_URL)');
+    return;
+  }
+  try {
+    const { Pool } = require('pg');
+    pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
+      connectionTimeoutMillis: 8000,
+      idleTimeoutMillis: 30000,
+      max: 5
+    });
+    // Test the connection
+    await pool.query('SELECT 1');
+    useDb = true;
+
+    // Create tables
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        email           TEXT PRIMARY KEY,
+        name            TEXT,
+        avatar          TEXT,
+        google_id       TEXT,
+        plan            TEXT        NOT NULL DEFAULT 'free',
+        messages_used   INTEGER     NOT NULL DEFAULT 0,
+        messages_limit  INTEGER     NOT NULL DEFAULT 10,
+        billing_cycle   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+      CREATE TABLE IF NOT EXISTS sessions (
+        sid         TEXT PRIMARY KEY,
+        user_email  TEXT NOT NULL REFERENCES users(email) ON DELETE CASCADE,
+        created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        expires_at  TIMESTAMPTZ NOT NULL DEFAULT NOW() + INTERVAL '7 days'
+      );
+      CREATE INDEX IF NOT EXISTS idx_sessions_email   ON sessions(user_email);
+      CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at);
+    `);
+    console.log('DB: PostgreSQL connected and schema ready');
+
+    pool.on('error', err => console.error('DB pool error:', err.message));
+
+  } catch(err) {
+    console.error('DB: Connection failed —', err.message);
+    console.warn('DB: Falling back to in-memory mode — users will not persist');
+    pool = null;
+    useDb = false;
+  }
 }
 
 // ── upsertUser ───────────────────────────
 async function upsertUser(profile, defaultPlan = 'free') {
-  const PLAN_LIMITS = {free:10,student:100,professional:300,business:1000,enterprise:5000};
-  const limit = PLAN_LIMITS[defaultPlan] || 10;
+  const LIMITS = {free:10,student:100,professional:300,business:1000,enterprise:5000};
+  const limit = LIMITS[defaultPlan] || 10;
 
-  if (!USE_DB) {
+  if (!useDb) {
     if (!memUsers[profile.email]) {
       memUsers[profile.email] = {
         email: profile.email, name: profile.name,
@@ -66,7 +84,6 @@ async function upsertUser(profile, defaultPlan = 'free') {
     }
     return memUsers[profile.email];
   }
-
   const r = await pool.query(`
     INSERT INTO users (email,name,avatar,google_id,plan,messages_limit,billing_cycle)
     VALUES ($1,$2,$3,$4,$5,$6,NOW())
@@ -79,14 +96,14 @@ async function upsertUser(profile, defaultPlan = 'free') {
 
 // ── getUser ──────────────────────────────
 async function getUser(email) {
-  if (!USE_DB) return memUsers[email] || null;
+  if (!useDb) return memUsers[email] || null;
   const r = await pool.query('SELECT * FROM users WHERE email=$1', [email]);
   return r.rows[0] || null;
 }
 
 // ── upgradePlan ──────────────────────────
 async function upgradePlan(email, planName, messagesLimit) {
-  if (!USE_DB) {
+  if (!useDb) {
     if (memUsers[email]) {
       memUsers[email].plan = planName;
       memUsers[email].messages_limit = messagesLimit;
@@ -96,40 +113,36 @@ async function upgradePlan(email, planName, messagesLimit) {
   }
   await pool.query(`
     UPDATE users SET plan=$2,messages_limit=$3,messages_used=0,
-      billing_cycle=NOW(),updated_at=NOW()
-    WHERE email=$1
+      billing_cycle=NOW(),updated_at=NOW() WHERE email=$1
   `, [email, planName, messagesLimit]);
 }
 
 // ── downgradePlan ────────────────────────
 async function downgradePlan(email) {
-  if (!USE_DB) {
+  if (!useDb) {
     if (memUsers[email]) { memUsers[email].plan='free'; memUsers[email].messages_limit=10; }
     return;
   }
-  await pool.query(`
-    UPDATE users SET plan='free',messages_limit=10,updated_at=NOW() WHERE email=$1
-  `, [email]);
+  await pool.query(`UPDATE users SET plan='free',messages_limit=10,updated_at=NOW() WHERE email=$1`, [email]);
 }
 
 // ── incrementMessages ────────────────────
 async function incrementMessages(email) {
-  if (!USE_DB) {
+  if (!useDb) {
     if (memUsers[email]) memUsers[email].messages_used++;
-    const u = memUsers[email] || {messages_used:1, messages_limit:10};
-    return {messages_used: u.messages_used, messages_limit: u.messages_limit};
+    const u = memUsers[email] || {messages_used:1,messages_limit:10};
+    return {messages_used:u.messages_used, messages_limit:u.messages_limit};
   }
   const r = await pool.query(`
     UPDATE users SET messages_used=messages_used+1,updated_at=NOW()
-    WHERE email=$1
-    RETURNING messages_used,messages_limit
+    WHERE email=$1 RETURNING messages_used,messages_limit
   `, [email]);
   return r.rows[0];
 }
 
 // ── resetMonthlyUsage ────────────────────
 async function resetMonthlyUsage() {
-  if (!USE_DB) {
+  if (!useDb) {
     const cutoff = Date.now() - 30*24*60*60*1000;
     Object.values(memUsers).forEach(u => {
       if (new Date(u.billing_cycle).getTime() < cutoff) {
@@ -146,7 +159,7 @@ async function resetMonthlyUsage() {
 
 // ── createSession ────────────────────────
 async function createSession(sid, email) {
-  if (!USE_DB) {
+  if (!useDb) {
     memSessions[sid] = {email, expires: Date.now() + 7*24*60*60*1000};
     return;
   }
@@ -159,16 +172,16 @@ async function createSession(sid, email) {
 
 // ── getSession ───────────────────────────
 async function getSession(sid) {
-  if (!USE_DB) {
+  if (!useDb) {
     const s = memSessions[sid];
     if (!s || s.expires < Date.now()) return null;
     const u = memUsers[s.email];
     if (!u) return null;
-    return { ...u, sid };
+    return {...u, sid};
   }
   const r = await pool.query(`
-    SELECT s.sid, u.*
-    FROM sessions s JOIN users u ON u.email=s.user_email
+    SELECT s.sid, u.* FROM sessions s
+    JOIN users u ON u.email=s.user_email
     WHERE s.sid=$1 AND s.expires_at>NOW()
   `, [sid]);
   return r.rows[0] || null;
@@ -176,13 +189,13 @@ async function getSession(sid) {
 
 // ── deleteSession ────────────────────────
 async function deleteSession(sid) {
-  if (!USE_DB) { delete memSessions[sid]; return; }
+  if (!useDb) { delete memSessions[sid]; return; }
   await pool.query('DELETE FROM sessions WHERE sid=$1', [sid]);
 }
 
 // ── cleanExpiredSessions ─────────────────
 async function cleanExpiredSessions() {
-  if (!USE_DB) {
+  if (!useDb) {
     const now = Date.now();
     Object.keys(memSessions).forEach(sid => {
       if (memSessions[sid].expires < now) delete memSessions[sid];
