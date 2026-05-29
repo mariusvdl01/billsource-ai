@@ -88,14 +88,20 @@ function generateSid() { return crypto.randomBytes(32).toString('hex'); }
 async function getSessionUser(req) {
   const sid = parseCookies(req.headers.cookie || '')['bs_session'];
   if (!sid) return null;
-  // Check memory cache first
+  // Check memory cache first — stored as {sid, user}
   if (sessionCache[sid]) return sessionCache[sid];
   // Fall back to DB
-  const row = await db.getSession(sid);
-  if (!row) return null;
-  const user = rowToUser(row);
-  sessionCache[sid] = user;
-  return { sid, user };
+  try {
+    const row = await db.getSession(sid);
+    if (!row) return null;
+    const user = rowToUser(row);
+    const session = { sid, user };
+    sessionCache[sid] = session;
+    return session;
+  } catch(err) {
+    console.error('getSessionUser error:', err.message);
+    return null;
+  }
 }
 
 function rowToUser(row) {
@@ -115,7 +121,10 @@ function rowToUser(row) {
 
 function invalidateSessionCache(email) {
   Object.keys(sessionCache).forEach(sid => {
-    if (sessionCache[sid]?.user?.email === email) delete sessionCache[sid];
+    const cached = sessionCache[sid];
+    // Handle both {sid, user} wrapper and bare user object
+    const cachedEmail = cached?.user?.email || cached?.email;
+    if (cachedEmail === email) delete sessionCache[sid];
   });
 }
 
@@ -194,7 +203,20 @@ async function upgradeUser(email, planCode) {
   const planName = PLAN_CODE_MAP[planCode];
   if (!planName) { console.log(`Unknown plan code: ${planCode}`); return; }
   await db.upgradePlan(email, planName, PLANS[planName].messages);
+  // Invalidate cache so next /api/me returns fresh data
   invalidateSessionCache(email);
+  // Also update any active sessions in cache directly
+  Object.keys(sessionCache).forEach(sid => {
+    const cached = sessionCache[sid];
+    const cachedEmail = cached?.user?.email || cached?.email;
+    if (cachedEmail === email && cached?.user) {
+      cached.user.plan = planName;
+      cached.user.planLabel = PLANS[planName]?.label || planName;
+      cached.user.messagesLimit = PLANS[planName].messages;
+      cached.user.messagesUsed = 0;
+      cached.user.messagesRemaining = PLANS[planName].messages;
+    }
+  });
   console.log(`Upgraded: ${email} → ${planName}`);
 }
 
