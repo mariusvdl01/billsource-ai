@@ -535,6 +535,42 @@ const server = http.createServer(async (req, res) => {
     res.end(JSON.stringify({prompts})); return;
   }
 
+  // ── PWA reset (clears cache + localStorage for testing) ──
+  if (pathname === '/reset-pwa' && method === 'GET') {
+    res.writeHead(200, {'Content-Type':'text/html'});
+    res.end(`<!DOCTYPE html>
+<html><head><meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Resetting Billi...</title>
+<style>body{font-family:Helvetica,Arial,sans-serif;background:#0D0D0D;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;flex-direction:column;gap:1rem}
+.spinner{width:40px;height:40px;border:3px solid #333;border-top-color:#F59E0B;border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}</style></head>
+<body>
+<div class="spinner"></div>
+<div>Clearing Billi cache...</div>
+<script>
+async function reset() {
+  // Clear service worker caches
+  if ('caches' in window) {
+    const keys = await caches.keys();
+    await Promise.all(keys.map(k => caches.delete(k)));
+  }
+  // Unregister service workers
+  if ('serviceWorker' in navigator) {
+    const regs = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(regs.map(r => r.unregister()));
+  }
+  // Clear install dismissed flag
+  localStorage.removeItem('billi-install-dismissed');
+  // Redirect to app
+  setTimeout(() => window.location.href = '/app', 800);
+}
+reset();
+</script>
+</body></html>`);
+    return;
+  }
+
   // ── Static files ──────────────────────────
   let filePath = path.join(ROOT, pathname === '/' ? 'index.html' : pathname);
   if (!path.extname(filePath)) filePath += '.html';
