@@ -354,7 +354,47 @@
 <section class="hero">
   <div class="hero-inner">
     <div class="hero-logo-col">
-      <img src="billi-logo.svg" alt="Billi" width="320" height="320" style="filter:drop-shadow(0 8px 32px rgba(245,158,11,0.25))"/>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="-200 -260 400 460" width="320" height="320" aria-label="Billi mascot" style="filter:drop-shadow(0 8px 32px rgba(245,158,11,0.25));overflow:visible">
+        <style>
+          @keyframes billi-eye-ball {
+            0%        { transform: scaleY(1); }
+            12%, 18%  { transform: scaleY(0.05); }
+            24%, 40%  { transform: scaleY(1); }
+            46%, 52%  { transform: scaleY(0.05); }
+            58%, 100% { transform: scaleY(0); }
+          }
+          @keyframes billi-eye-hi {
+            0%        { opacity: 1; }
+            12%, 18%  { opacity: 0; }
+            24%, 40%  { opacity: 1; }
+            46%, 52%  { opacity: 0; }
+            58%, 100% { opacity: 0; }
+          }
+          @keyframes billi-wink-bar {
+            0%        { opacity: 0; }
+            12%, 18%  { opacity: 1; }
+            24%, 40%  { opacity: 0; }
+            46%, 100% { opacity: 1; }
+          }
+          .billi-eye-ball { animation: billi-eye-ball 3.5s ease-in-out 1s forwards; transform-box: fill-box; transform-origin: center; }
+          .billi-eye-hi   { animation: billi-eye-hi   3.5s ease-in-out 1s forwards; }
+          .billi-wink-bar { animation: billi-wink-bar 3.5s ease-in-out 1s forwards; opacity: 0; }
+        </style>
+        <circle cx="0" cy="0" r="170" fill="#F59E0B" stroke="#92400E" stroke-width="12"/>
+        <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(-18,-87,-160)"/>
+        <rect x="-16"  y="-230" width="52" height="124" rx="26" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(5,10,-168)"/>
+        <rect x="72"   y="-208" width="42" height="96"  rx="21" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(22,93,-160)"/>
+        <ellipse cx="0" cy="50" rx="144" ry="96" fill="#FEF3C7" stroke="#92400E" stroke-width="10"/>
+        <rect x="-118" y="32" width="96" height="22" rx="11" fill="#92400E"/>
+        <rect x="-108" y="14" width="72" height="10" rx="5"  fill="#92400E" opacity="0.2"/>
+        <circle class="billi-eye-ball" cx="-72" cy="46" r="46" fill="#92400E"/>
+        <circle class="billi-eye-hi"   cx="-56" cy="28" r="15" fill="#FEF3C7"/>
+        <circle class="billi-eye-hi"   cx="-78" cy="58" r="5"  fill="#FEF3C7" opacity="0.55"/>
+        <rect class="billi-wink-bar" x="-118" y="40" width="92" height="12" rx="6" fill="#92400E"/>
+        <circle cx="72" cy="46" r="46" fill="#92400E"/>
+        <circle cx="88" cy="28" r="15" fill="#FEF3C7"/>
+        <circle cx="66" cy="58" r="5"  fill="#FEF3C7" opacity="0.55"/>
+      </svg>
     </div>
     <div class="hero-text-col">
       <div class="badge" style="display:inline-flex;margin-bottom:1.25rem"><span class="badge-dot"></span>Live now &mdash; free to try, no card required</div>
