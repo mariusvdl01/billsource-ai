@@ -1,0 +1,29 @@
+{
+  "name": "Billi — Your Business Associate Team",
+  "short_name": "Billi",
+  "description": "Bean Counter, Brand Guru, Deal Maker, The Rule Book and The Fixer — five AI business advisors in one conversation. Built for SA SMEs.",
+  "start_url": "/app",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0D0D0D",
+  "theme_color": "#F59E0B",
+  "icons": [
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" },
+    { "src": "favicon.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "billi-avatar.svg", "sizes": "any", "type": "image/svg+xml" }
+  ],
+  "screenshots": [
+    {
+      "src": "favicon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "form_factor": "narrow",
+      "label": "Billi chat interface"
+    }
+  ],
+  "categories": ["business", "finance", "productivity"],
+  "lang": "en-ZA",
+  "dir": "ltr",
+  "scope": "/",
+  "prefer_related_applications": false
+}

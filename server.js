@@ -7,6 +7,7 @@ const url = require('url');
 const querystring = require('querystring');
 const db = require('./db');
 const mailer = require('./mailer');
+const { getUserPrompts } = require('./promptbook');
 
 const PORT = process.env.PORT || 8080;
 const ROOT = '/app';
@@ -498,6 +499,18 @@ const server = http.createServer(async (req, res) => {
       res.end(JSON.stringify({error:'Analysis engine error'}));
     }
     return;
+  }
+
+  // ── Prompt book (protected IP — server-side only) ──
+  if (pathname === '/api/prompts' && method === 'GET') {
+    const session = await getSessionUser(req);
+    if (!session) {
+      res.writeHead(401,{'Content-Type':'application/json'});
+      res.end(JSON.stringify({error:'Authentication required'})); return;
+    }
+    const prompts = getUserPrompts(session.user.plan || 'free');
+    res.writeHead(200,{'Content-Type':'application/json'});
+    res.end(JSON.stringify({prompts})); return;
   }
 
   // ── Static files ──────────────────────────

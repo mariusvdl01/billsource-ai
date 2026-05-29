@@ -4,7 +4,13 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Billi — BillSource AI</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
   <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="theme-color" content="#F59E0B"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-title" content="Billi"/>
+  <link rel="apple-touch-icon" href="billi-avatar.svg"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
@@ -109,8 +115,9 @@
     @media(min-width:540px){.plan-grid{grid-template-columns:repeat(4,1fr)}}
     .plan-opt-student{border-color:#3b82f6}
     .plan-opt-student .plan-opt-name{color:#3b82f6}
-    .plan-opt{background:var(--bg);border:0.5px solid var(--border);border-radius:10px;padding:1rem;text-align:left;cursor:pointer;transition:all 0.2s}
-    .plan-opt:hover,.plan-opt.sel{border-color:var(--orange)}
+    .plan-opt{background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:1rem;text-align:left;cursor:pointer;transition:all 0.2s}
+    .plan-opt:hover{border-color:var(--orange);opacity:0.9}
+    .plan-opt.sel{border-color:var(--orange);border-width:3px;background:rgba(255,102,0,0.06);box-shadow:0 0 0 1px var(--orange)}
     .plan-opt-name{font-weight:700;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--orange);margin-bottom:0.25rem}
     .plan-opt-price{font-size:1.2rem;font-weight:700;margin-bottom:0.5rem;padding-bottom:0.5rem;border-bottom:0.5px solid var(--border)}
     .plan-opt-msgs{font-size:11px;color:var(--muted);line-height:1.7}
@@ -135,6 +142,22 @@
     .settings-action{font-size:12px;color:var(--blue);cursor:pointer;text-decoration:none}
     .settings-action:hover{text-decoration:underline}
 
+    .install-banner{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);padding:12px 16px;z-index:500;align-items:center;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,0.15)}
+    .install-banner.show{display:flex}
+    .install-banner img{width:40px;height:40px;border-radius:8px;flex-shrink:0}
+    .install-banner-text{flex:1;font-size:13px;line-height:1.4}
+    .install-banner-text strong{display:block;font-size:14px;margin-bottom:2px}
+    .install-banner-text span{color:var(--muted);font-size:12px}
+    .install-btn{background:var(--orange);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:var(--font)}
+    .install-dismiss{background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px;flex-shrink:0;line-height:1}
+    .install-banner{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);padding:12px 16px;z-index:500;align-items:center;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,0.15)}
+    .install-banner.show{display:flex}
+    .install-banner-icon{width:40px;height:40px;border-radius:8px;flex-shrink:0}
+    .install-banner-text{flex:1;font-size:13px;line-height:1.4}
+    .install-banner-text strong{display:block;font-size:14px;margin-bottom:2px}
+    .install-banner-text span{color:var(--muted);font-size:12px}
+    .install-btn{background:var(--orange);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:var(--font)}
+    .install-dismiss{background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px;flex-shrink:0;line-height:1}
     @media(max-width:768px){
       /* ── Sidebar: slide in overlay ── */
       .sidebar{
@@ -936,8 +959,20 @@
 
   function selectPlan(plan, el) {
     selectedPlan = plan;
-    document.querySelectorAll('.plan-opt').forEach(p => p.classList.remove('sel'));
+    document.querySelectorAll('.plan-opt').forEach(p => {
+      p.classList.remove('sel');
+      const chk = p.querySelector('.plan-check');
+      if (chk) chk.remove();
+    });
     el.classList.add('sel');
+    el.style.position = 'relative';
+    const check = document.createElement('div');
+    check.className = 'plan-check';
+    check.style.cssText = 'position:absolute;top:8px;right:10px;background:var(--orange);color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700';
+    check.textContent = '✓';
+    el.appendChild(check);
+    var prices = {student:'R39',professional:'R149',business:'R299',enterprise:'R599'};
+    document.querySelector('.modal-btn').textContent = 'Pay ' + (prices[plan]||'') + '/mo with Paystack →';
   }
 
   async function subscribePlan() {
@@ -992,7 +1027,38 @@
     }
   }
 
-  if (window.location.search.includes('payment=success')) setTimeout(loadUser, 2000);
+  if (window.location.search.includes('payment=success')) {
+    // Show success banner immediately
+    const banner = document.createElement('div');
+    banner.id = 'payment-banner';
+    banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#22c55e;color:#fff;text-align:center;padding:12px;font-size:14px;font-weight:600;z-index:999;font-family:Helvetica,Arial,sans-serif';
+    banner.textContent = '✅ Payment successful! Activating your new plan...';
+    document.body.prepend(banner);
+    // Clean URL without reload
+    window.history.replaceState({}, '', '/app');
+    // Poll /api/me until plan upgrades (webhook may take a few seconds)
+    var pollCount = 0;
+    var pollInterval = setInterval(async function() {
+      pollCount++;
+      try {
+        const res = await fetch('/api/me');
+        const data = await res.json();
+        if (data.authenticated && data.user) {
+          const prevPlan = currentUser ? currentUser.plan : 'free';
+          currentUser = data.user;
+          updateUI();
+          // If plan changed or we've waited long enough
+          if (data.user.plan !== 'free' || pollCount >= 10) {
+            clearInterval(pollInterval);
+            banner.textContent = '✅ ' + data.user.planLabel + ' plan activated! Welcome to your upgraded Billi.';
+            banner.style.background = '#F59E0B';
+            setTimeout(() => banner.remove(), 4000);
+          }
+        }
+      } catch(e) {}
+      if (pollCount >= 15) clearInterval(pollInterval);
+    }, 2000);
+  }
   init();
 
   function switchTab(role, el) {
@@ -1058,6 +1124,99 @@
     });
   }
 
+  // ══ PWA SERVICE WORKER ══
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch(e => console.log('SW:', e));
+    });
+  }
+
+  // ══ INSTALL PROMPT ══
+  var deferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (!localStorage.getItem('billi-install-dismissed')) {
+      setTimeout(() => document.getElementById('install-banner').classList.add('show'), 3000);
+    }
+  });
+  document.getElementById('install-btn').addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') document.getElementById('install-banner').classList.remove('show');
+    deferredPrompt = null;
+  });
+  function dismissInstall() {
+    document.getElementById('install-banner').classList.remove('show');
+    localStorage.setItem('billi-install-dismissed', '1');
+  }
+
+  // ══ API PROMPT BOOK ══
+  var cachedPrompts = null;
+  async function loadPromptBook() {
+    if (cachedPrompts) return cachedPrompts;
+    try {
+      const res = await fetch('/api/prompts');
+      if (!res.ok) return null;
+      cachedPrompts = (await res.json()).prompts;
+      return cachedPrompts;
+    } catch(e) { return null; }
+  }
+
+  async function renderAPIPrompts(role_filter) {
+    const prompts = await loadPromptBook();
+    if (!prompts) return;
+    const container = document.getElementById('prompt-book-body');
+    if (!container) return;
+    container.innerHTML = '';
+    prompts.forEach(role => {
+      if (role_filter !== 'all' && role_filter !== role.role) return;
+      role.sections.forEach(section => {
+        const h = document.createElement('div');
+        h.className = 'pb-section-heading';
+        h.textContent = section.heading;
+        container.appendChild(h);
+        section.prompts.forEach(p => {
+          const item = document.createElement('div');
+          item.className = 'prompt-item' + (p.locked ? ' pb-item-locked' : '');
+          item.innerHTML =
+            '<div class="prompt-item-title">' + p.title + (p.locked ? ' &#x1F512;' : '') + '</div>' +
+            '<div class="prompt-item-desc">' + (p.locked ? 'Upgrade to unlock.' : p.text) + '</div>';
+          item.onclick = () => {
+            if (p.locked) { closeModal('prompt-modal'); openUpgrade(false); return; }
+            closeModal('prompt-modal');
+            document.getElementById('chat-input').value = p.text;
+            document.getElementById('chat-input').focus();
+          };
+          container.appendChild(item);
+        });
+      });
+    });
+  }
+
+  // Hook tab clicks to re-render from API
+  document.querySelectorAll('.pb-tab').forEach(tab => {
+    tab.addEventListener('click', () => renderAPIPrompts(tab.dataset.role || 'all'));
+  });
+
+  // Pre-load prompts when prompt modal opens
+  var _origOpenPromptModal = window.openModal;
+  window.openModal = function(id) {
+    _origOpenPromptModal(id);
+    if (id === 'prompt-modal') renderAPIPrompts('all');
+  };
+
 </script>
+<!-- PWA INSTALL BANNER -->
+<div class="install-banner" id="install-banner">
+  <img src="billi-avatar.svg" alt="Billi" width="40" height="40" style="border-radius:8px;flex-shrink:0"/>
+  <div class="install-banner-text">
+    <strong>Add Billi to your home screen</strong>
+    <span>Instant access &mdash; no app store needed</span>
+  </div>
+  <button class="install-btn" id="install-btn">Install</button>
+  <button class="install-dismiss" onclick="dismissInstall()">&#x2715;</button>
+</div>
 </body>
 </html>
