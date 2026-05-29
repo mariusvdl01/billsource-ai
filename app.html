@@ -1136,20 +1136,46 @@
 
   // ══ INSTALL PROMPT ══
   var deferredPrompt = null;
+
   window.addEventListener('beforeinstallprompt', e => {
+    console.log('[PWA] beforeinstallprompt fired');
     e.preventDefault();
     deferredPrompt = e;
     if (!localStorage.getItem('billi-install-dismissed')) {
-      setTimeout(() => document.getElementById('install-banner').classList.add('show'), 3000);
+      setTimeout(() => {
+        console.log('[PWA] Showing install banner');
+        document.getElementById('install-banner').classList.add('show');
+      }, 3000);
     }
   });
+
+  window.addEventListener('appinstalled', () => {
+    console.log('[PWA] App installed successfully');
+    deferredPrompt = null;
+    document.getElementById('install-banner').classList.remove('show');
+  });
+
   document.getElementById('install-btn').addEventListener('click', async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') document.getElementById('install-banner').classList.remove('show');
+    console.log('[PWA] Install button tapped, deferredPrompt=', deferredPrompt);
+    if (!deferredPrompt) {
+      // Prompt not available — show manual instructions for Android Chrome
+      alert('To install: tap the ⋮ menu in Chrome → "Add to Home screen"');
+      return;
+    }
+    try {
+      await deferredPrompt.prompt();
+      const choice = await deferredPrompt.userChoice;
+      console.log('[PWA] User choice:', choice.outcome);
+      if (choice.outcome === 'accepted') {
+        document.getElementById('install-banner').classList.remove('show');
+      }
+    } catch(err) {
+      console.error('[PWA] prompt() error:', err);
+      alert('To install: tap the ⋮ menu in Chrome → "Add to Home screen"');
+    }
     deferredPrompt = null;
   });
+
   function dismissInstall() {
     document.getElementById('install-banner').classList.remove('show');
     localStorage.setItem('billi-install-dismissed', '1');
