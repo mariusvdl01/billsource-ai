@@ -70,7 +70,8 @@
     /* ── HERO ── */
     .hero{padding:4rem 2.5rem 3rem;position:relative;overflow:hidden}
     .hero-inner{display:flex;align-items:center;gap:3rem;max-width:1000px;margin:0 auto}
-    .hero-logo-col{flex-shrink:0;display:flex;align-items:center;justify-content:center}
+    .hero-logo-col{flex-shrink:0;display:flex;align-items:center;justify-content:center;width:460px;max-width:100%}
+    .hero-network{width:100%;height:auto;display:block}
     .hero-text-col{flex:1;text-align:left}
     .hero-text-col h1{margin-left:0;margin-right:0;text-align:left}
     .hero-text-col .hero-sub{text-align:left;margin-left:0;margin-right:0}
@@ -354,29 +355,155 @@
 <section class="hero">
   <div class="hero-inner">
     <div class="hero-logo-col">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="-200 -260 400 460" width="320" height="320" aria-label="Billi mascot" style="filter:drop-shadow(0 8px 32px rgba(245,158,11,0.25));overflow:visible">
-        <style>
-          @keyframes billi-eye-ball{0%{transform:scaleY(1)}12%,18%{transform:scaleY(0.05)}24%,40%{transform:scaleY(1)}46%,52%{transform:scaleY(0.05)}58%,100%{transform:scaleY(0)}}
-          @keyframes billi-eye-hi{0%{opacity:1}12%,18%{opacity:0}24%,40%{opacity:1}46%,52%{opacity:0}58%,100%{opacity:0}}
-          @keyframes billi-wink-bar{0%{opacity:0}12%,18%{opacity:1}24%,40%{opacity:0}46%,100%{opacity:1}}
-          .billi-eye-ball{animation:billi-eye-ball 3.5s ease-in-out 1s forwards;transform-box:fill-box;transform-origin:center}
-          .billi-eye-hi{animation:billi-eye-hi 3.5s ease-in-out 1s forwards}
-          .billi-wink-bar{animation:billi-wink-bar 3.5s ease-in-out 1s forwards;opacity:0}
-        </style>
-        <circle cx="0" cy="0" r="170" fill="#F59E0B" stroke="#92400E" stroke-width="12"/>
-        <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(-18,-87,-160)"/>
-        <rect x="-16"  y="-230" width="52" height="124" rx="26" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(5,10,-168)"/>
-        <rect x="72"   y="-208" width="42" height="96"  rx="21" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(22,93,-160)"/>
-        <ellipse cx="0" cy="50" rx="144" ry="96" fill="#FEF3C7" stroke="#92400E" stroke-width="10"/>
-        <rect x="-118" y="32" width="96" height="22" rx="11" fill="#92400E"/>
-        <rect x="-108" y="14" width="72" height="10" rx="5" fill="#92400E" opacity="0.2"/>
-        <circle class="billi-eye-ball" cx="-72" cy="46" r="46" fill="#92400E"/>
-        <circle class="billi-eye-hi"   cx="-56" cy="28" r="15" fill="#FEF3C7"/>
-        <circle class="billi-eye-hi"   cx="-78" cy="58" r="5"  fill="#FEF3C7" opacity="0.55"/>
-        <rect class="billi-wink-bar" x="-118" y="40" width="92" height="12" rx="6" fill="#92400E"/>
-        <circle cx="72" cy="46" r="46" fill="#92400E"/>
-        <circle cx="88" cy="28" r="15" fill="#FEF3C7"/>
-        <circle cx="66" cy="58" r="5"  fill="#FEF3C7" opacity="0.55"/>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900" class="hero-network" aria-label="Billi — five advisor roles network" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <radialGradient id="bgGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"  stop-color="#c87020" stop-opacity="0.10"/>
+            <stop offset="60%" stop-color="#c87020" stop-opacity="0.03"/>
+            <stop offset="100%" stop-color="#c87020" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="gAmber"  x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="10" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="gGreen"  x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="7"  result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="gPurple" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="7"  result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="gGold"   x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="7"  result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="gBlue"   x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="7"  result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="gRed"    x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="7"  result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <style>
+            .nd1{animation:nd 4.4s ease-in-out infinite 0.00s;}
+            .nd2{animation:nd 4.4s ease-in-out infinite 0.88s;}
+            .nd3{animation:nd 4.4s ease-in-out infinite 1.76s;}
+            .nd4{animation:nd 4.4s ease-in-out infinite 2.64s;}
+            .nd5{animation:nd 4.4s ease-in-out infinite 3.52s;}
+            @keyframes nd{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+            .orbit{animation:orb 20s linear infinite;transform-origin:50% 50%;}
+            @keyframes orb{to{transform:rotate(360deg)}}
+            .pulse{animation:pulseR 3.2s ease-in-out infinite;}
+            @keyframes pulseR{0%,100%{opacity:0.22}50%{opacity:0.06}}
+            @keyframes billi-eye-ball{0%,13%{transform:scaleY(1);}16%,21%{transform:scaleY(0.05);}25%,47%{transform:scaleY(1);}51%,100%{transform:scaleY(0.05);}}
+            @keyframes billi-eye-hi{0%,13%{opacity:1;}16%,21%{opacity:0;}25%,47%{opacity:1;}51%,100%{opacity:0;}}
+            @keyframes billi-wink-bar{0%,13%{opacity:0;}16%,21%{opacity:1;}25%,47%{opacity:0;}51%,100%{opacity:1;}}
+            .b-eye-ball{animation:billi-eye-ball 4.5s ease-in-out 1s infinite;transform-box:fill-box;transform-origin:center;}
+            .b-eye-hi{animation:billi-eye-hi 4.5s ease-in-out 1s infinite;}
+            .b-wink-bar{animation:billi-wink-bar 4.5s ease-in-out 1s infinite;opacity:0;}
+            .icon-bg{fill-opacity:0.18;}
+          </style>
+        </defs>
+        <circle cx="450" cy="450" r="420" fill="url(#bgGlow)"/>
+        <!-- Dashed connector lines -->
+        <line id="ln1" x1="450" y1="368" x2="450" y2="287" stroke="#2ecc71" stroke-width="2" stroke-opacity="0.55" stroke-dasharray="6 7"/>
+        <line id="ln2" x1="508" y1="408" x2="591" y2="357" stroke="#c77dff" stroke-width="2" stroke-opacity="0.55" stroke-dasharray="6 7"/>
+        <line id="ln3" x1="508" y1="492" x2="591" y2="543" stroke="#f4a100" stroke-width="2" stroke-opacity="0.55" stroke-dasharray="6 7"/>
+        <line id="ln4" x1="392" y1="492" x2="309" y2="543" stroke="#38bdf8" stroke-width="2" stroke-opacity="0.55" stroke-dasharray="6 7"/>
+        <line id="ln5" x1="392" y1="408" x2="309" y2="357" stroke="#ff6b6b" stroke-width="2" stroke-opacity="0.55" stroke-dasharray="6 7"/>
+        <!-- Travelling dots -->
+        <circle r="4" fill="#2ecc71" filter="url(#gGreen)"><animateMotion dur="2.2s" repeatCount="indefinite" keyPoints="0;1;0" keyTimes="0;0.5;1" calcMode="linear"><mpath href="#ln1"/></animateMotion></circle>
+        <circle r="4" fill="#c77dff" filter="url(#gPurple)"><animateMotion dur="2.7s" repeatCount="indefinite" keyPoints="0;1;0" keyTimes="0;0.5;1" calcMode="linear"><mpath href="#ln2"/></animateMotion></circle>
+        <circle r="4" fill="#f4a100" filter="url(#gGold)"><animateMotion dur="1.9s" repeatCount="indefinite" keyPoints="0;1;0" keyTimes="0;0.5;1" calcMode="linear"><mpath href="#ln3"/></animateMotion></circle>
+        <circle r="4" fill="#38bdf8" filter="url(#gBlue)"><animateMotion dur="2.5s" repeatCount="indefinite" keyPoints="0;1;0" keyTimes="0;0.5;1" calcMode="linear"><mpath href="#ln4"/></animateMotion></circle>
+        <circle r="4" fill="#ff6b6b" filter="url(#gRed)"><animateMotion dur="2.9s" repeatCount="indefinite" keyPoints="0;1;0" keyTimes="0;0.5;1" calcMode="linear"><mpath href="#ln5"/></animateMotion></circle>
+        <!-- Icons on connector lines -->
+        <circle cx="450" cy="327" r="14" fill="#2ecc71" class="icon-bg"/>
+        <g transform="translate(450,327)" stroke="#2ecc71" stroke-width="2" stroke-linecap="round" fill="none"><rect x="-10" y="-8" width="20" height="15" rx="2"/><line x1="-5" y1="2" x2="-5" y2="-3"/><line x1="0" y1="2" x2="0" y2="-5"/><line x1="5" y1="2" x2="5" y2="-7"/></g>
+        <circle cx="549" cy="382" r="14" fill="#c77dff" class="icon-bg"/>
+        <g transform="translate(549,382)" stroke="#c77dff" stroke-width="2" stroke-linecap="round" fill="none"><circle cx="0" cy="0" r="5"/><line x1="0" y1="-10" x2="0" y2="-7"/><line x1="0" y1="7" x2="0" y2="10"/><line x1="-10" y1="0" x2="-7" y2="0"/><line x1="7" y1="0" x2="10" y2="0"/><line x1="-7" y1="-7" x2="-5" y2="-5"/><line x1="5" y1="5" x2="7" y2="7"/><line x1="7" y1="-7" x2="5" y2="-5"/><line x1="-5" y1="5" x2="-7" y2="7"/></g>
+        <circle cx="549" cy="517" r="14" fill="#f4a100" class="icon-bg"/>
+        <g transform="translate(549,517)" stroke="#f4a100" stroke-width="2" stroke-linecap="round" fill="none"><line x1="0" y1="-11" x2="0" y2="11"/><path d="M6,-6 C6,-10 -6,-10 -6,-5 C-6,-1 6,-1 6,4 C6,8 -6,8 -6,5"/></g>
+        <circle cx="350" cy="517" r="14" fill="#38bdf8" class="icon-bg"/>
+        <g transform="translate(350,517)" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M-9,-9 C-9,-9 -4,-11 0,-8 L0,9 C-4,7 -9,9 -9,9 Z"/><path d="M9,-9 C9,-9 4,-11 0,-8 L0,9 C4,7 9,9 9,9 Z"/><line x1="-7" y1="-3" x2="-2" y2="-3"/><line x1="-7" y1="1" x2="-2" y2="1"/><line x1="2" y1="-3" x2="7" y2="-3"/><line x1="2" y1="1" x2="7" y2="1"/></g>
+        <circle cx="350" cy="382" r="14" fill="#ff6b6b" class="icon-bg"/>
+        <g transform="translate(350,382)" stroke="#ff6b6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M5,-9 A5,5 0 0,1 10,-3 A5,5 0 0,1 3,1 L-8,10 A1.8,1.8 0 0,1 -10,8 L1,-3 A5,5 0 0,1 5,-9Z"/></g>
+        <!-- Centre Billi -->
+        <circle cx="450" cy="450" r="94" fill="none" stroke="#c87020" stroke-width="1.2" stroke-opacity="0.25" class="pulse"/>
+        <circle cx="450" cy="450" r="98" fill="none" stroke="#c87020" stroke-width="0.6" stroke-opacity="0.07"/>
+        <g class="orbit"><circle cx="450" cy="356" r="4" fill="#d4821a" opacity="0.8" filter="url(#gAmber)"/></g>
+        <circle cx="450" cy="450" r="82" fill="none" stroke="#c87020" stroke-width="2.5" stroke-opacity="0.4" filter="url(#gAmber)"/>
+        <g transform="translate(450,447) scale(0.355)">
+          <circle cx="0" cy="0" r="170" fill="#F59E0B" stroke="#92400E" stroke-width="12"/>
+          <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(-18,-87,-160)"/>
+          <rect x="-16" y="-230" width="52" height="124" rx="26" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(5,10,-168)"/>
+          <rect x="72" y="-208" width="42" height="96" rx="21" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(22,93,-160)"/>
+          <ellipse cx="0" cy="50" rx="144" ry="96" fill="#FEF3C7" stroke="#92400E" stroke-width="10"/>
+          <circle class="b-eye-ball" cx="-72" cy="46" r="46" fill="#92400E"/>
+          <circle class="b-eye-hi" cx="-56" cy="28" r="15" fill="#FEF3C7"/>
+          <circle class="b-eye-hi" cx="-78" cy="58" r="5" fill="#FEF3C7" opacity="0.55"/>
+          <rect class="b-wink-bar" x="-118" y="38" width="92" height="14" rx="7" fill="#92400E"/>
+          <circle cx="72" cy="46" r="46" fill="#92400E"/>
+          <circle cx="88" cy="28" r="15" fill="#FEF3C7"/>
+          <circle cx="66" cy="58" r="5" fill="#FEF3C7" opacity="0.55"/>
+          <rect x="-118" y="122" width="96" height="14" rx="7" fill="#92400E" opacity="0.15"/>
+        </g>
+        <text x="450" y="548" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="17" font-weight="800" fill="#c87020" letter-spacing="3">Billi</text>
+        <text x="450" y="563" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#888780" letter-spacing="2">Advisor AI</text>
+        <!-- Bean Counter — green -->
+        <g class="nd1">
+          <g transform="translate(450,235) scale(0.22)">
+            <circle cx="0" cy="0" r="170" fill="#1a7a44" stroke="#0d4024" stroke-width="14"/>
+            <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#d4f7e4" stroke="#0d4024" stroke-width="11" transform="rotate(-18,-87,-160)"/>
+            <rect x="-16" y="-230" width="52" height="124" rx="26" fill="#d4f7e4" stroke="#0d4024" stroke-width="11" transform="rotate(5,10,-168)"/>
+            <rect x="72" y="-208" width="42" height="96" rx="21" fill="#d4f7e4" stroke="#0d4024" stroke-width="11" transform="rotate(22,93,-160)"/>
+            <ellipse cx="0" cy="50" rx="144" ry="96" fill="#d4f7e4" stroke="#0d4024" stroke-width="11"/>
+            <circle cx="-72" cy="46" r="46" fill="#0d4024"/><circle cx="-56" cy="28" r="15" fill="#d4f7e4"/>
+            <circle cx="72" cy="46" r="46" fill="#0d4024"/><circle cx="88" cy="28" r="15" fill="#d4f7e4"/>
+          </g>
+          <text x="450" y="284" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="12" font-weight="800" fill="#2ecc71">Bean Counter</text>
+          <text x="450" y="298" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9.5" fill="#888780">Finance &amp; Cash Flow</text>
+        </g>
+        <!-- Brand Guru — purple -->
+        <g class="nd2">
+          <g transform="translate(638,343) scale(0.22)">
+            <circle cx="0" cy="0" r="170" fill="#6b2fa0" stroke="#3d1260" stroke-width="14"/>
+            <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#ead4f7" stroke="#3d1260" stroke-width="11" transform="rotate(-18,-87,-160)"/>
+            <rect x="-16" y="-230" width="52" height="124" rx="26" fill="#ead4f7" stroke="#3d1260" stroke-width="11" transform="rotate(5,10,-168)"/>
+            <rect x="72" y="-208" width="42" height="96" rx="21" fill="#ead4f7" stroke="#3d1260" stroke-width="11" transform="rotate(22,93,-160)"/>
+            <ellipse cx="0" cy="50" rx="144" ry="96" fill="#ead4f7" stroke="#3d1260" stroke-width="11"/>
+            <circle cx="-72" cy="46" r="46" fill="#3d1260"/><circle cx="-56" cy="28" r="15" fill="#ead4f7"/>
+            <circle cx="72" cy="46" r="46" fill="#3d1260"/><circle cx="88" cy="28" r="15" fill="#ead4f7"/>
+          </g>
+          <text x="638" y="392" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="12" font-weight="800" fill="#c77dff">Brand Guru</text>
+          <text x="638" y="406" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9.5" fill="#888780">Identity &amp; Marketing</text>
+        </g>
+        <!-- Deal Maker — gold -->
+        <g class="nd3">
+          <g transform="translate(638,557) scale(0.22)">
+            <circle cx="0" cy="0" r="170" fill="#a06600" stroke="#5a3700" stroke-width="14"/>
+            <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#faecd4" stroke="#5a3700" stroke-width="11" transform="rotate(-18,-87,-160)"/>
+            <rect x="-16" y="-230" width="52" height="124" rx="26" fill="#faecd4" stroke="#5a3700" stroke-width="11" transform="rotate(5,10,-168)"/>
+            <rect x="72" y="-208" width="42" height="96" rx="21" fill="#faecd4" stroke="#5a3700" stroke-width="11" transform="rotate(22,93,-160)"/>
+            <ellipse cx="0" cy="50" rx="144" ry="96" fill="#faecd4" stroke="#5a3700" stroke-width="11"/>
+            <circle cx="-72" cy="46" r="46" fill="#5a3700"/><circle cx="-56" cy="28" r="15" fill="#faecd4"/>
+            <circle cx="72" cy="46" r="46" fill="#5a3700"/><circle cx="88" cy="28" r="15" fill="#faecd4"/>
+          </g>
+          <text x="638" y="606" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="12" font-weight="800" fill="#f4a100">Deal Maker</text>
+          <text x="638" y="620" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9.5" fill="#888780">Sales &amp; Negotiation</text>
+        </g>
+        <!-- The Rule Book — sky -->
+        <g class="nd4">
+          <g transform="translate(262,557) scale(0.22)">
+            <circle cx="0" cy="0" r="170" fill="#0a6080" stroke="#043348" stroke-width="14"/>
+            <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#d4f0fa" stroke="#043348" stroke-width="11" transform="rotate(-18,-87,-160)"/>
+            <rect x="-16" y="-230" width="52" height="124" rx="26" fill="#d4f0fa" stroke="#043348" stroke-width="11" transform="rotate(5,10,-168)"/>
+            <rect x="72" y="-208" width="42" height="96" rx="21" fill="#d4f0fa" stroke="#043348" stroke-width="11" transform="rotate(22,93,-160)"/>
+            <ellipse cx="0" cy="50" rx="144" ry="96" fill="#d4f0fa" stroke="#043348" stroke-width="11"/>
+            <circle cx="-72" cy="46" r="46" fill="#043348"/><circle cx="-56" cy="28" r="15" fill="#d4f0fa"/>
+            <circle cx="72" cy="46" r="46" fill="#043348"/><circle cx="88" cy="28" r="15" fill="#d4f0fa"/>
+          </g>
+          <text x="262" y="606" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="12" font-weight="800" fill="#38bdf8">The Rule Book</text>
+          <text x="262" y="620" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9.5" fill="#888780">Compliance &amp; Legal</text>
+        </g>
+        <!-- The Fixer — coral -->
+        <g class="nd5">
+          <g transform="translate(262,343) scale(0.22)">
+            <circle cx="0" cy="0" r="170" fill="#a03030" stroke="#5a1010" stroke-width="14"/>
+            <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#fad4d4" stroke="#5a1010" stroke-width="11" transform="rotate(-18,-87,-160)"/>
+            <rect x="-16" y="-230" width="52" height="124" rx="26" fill="#fad4d4" stroke="#5a1010" stroke-width="11" transform="rotate(5,10,-168)"/>
+            <rect x="72" y="-208" width="42" height="96" rx="21" fill="#fad4d4" stroke="#5a1010" stroke-width="11" transform="rotate(22,93,-160)"/>
+            <ellipse cx="0" cy="50" rx="144" ry="96" fill="#fad4d4" stroke="#5a1010" stroke-width="11"/>
+            <circle cx="-72" cy="46" r="46" fill="#5a1010"/><circle cx="-56" cy="28" r="15" fill="#fad4d4"/>
+            <circle cx="72" cy="46" r="46" fill="#5a1010"/><circle cx="88" cy="28" r="15" fill="#fad4d4"/>
+          </g>
+          <text x="262" y="392" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="12" font-weight="800" fill="#ff6b6b">The Fixer</text>
+          <text x="262" y="406" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9.5" fill="#888780">Ops &amp; Problem Solving</text>
+        </g>
       </svg>
     </div>
     <div class="hero-text-col">
