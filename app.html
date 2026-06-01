@@ -127,67 +127,62 @@
     .modal-btn:hover{opacity:0.88}
 
     /* prompt book trigger — half-circle bubble tab on sidebar edge */
+    /* ── Prompt book bubble tab — horizontal text, draggable ── */
     .pb-tab-trigger {
       position: fixed;
-      left: var(--sidebar-w, 260px);   /* sits flush against sidebar right edge */
+      left: 0;
       top: 50%;
       transform: translateY(-50%);
       z-index: 110;
       display: flex;
       align-items: center;
-      cursor: pointer;
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
       transition: left 0.25s ease;
     }
+    .pb-tab-trigger.dragging { cursor: grabbing; transition: none; }
     .pb-tab-trigger .pb-bubble {
       background: var(--orange);
       color: #fff;
-      border-radius: 0 50px 50px 0;   /* flat left, rounded right — half-pill */
-      padding: 14px 10px 14px 6px;
+      border-radius: 0 50px 50px 0;
+      padding: 12px 18px 12px 10px;
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       align-items: center;
-      gap: 6px;
-      box-shadow: 3px 0 16px rgba(255,102,0,0.28);
+      gap: 8px;
+      box-shadow: 3px 0 18px rgba(255,102,0,0.32);
       transition: padding 0.2s, box-shadow 0.2s;
-      writing-mode: vertical-rl;
-      text-orientation: mixed;
-      font-size: 11px;
+      writing-mode: horizontal-tb;
+      font-size: 12px;
       font-weight: 700;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.07em;
       text-transform: uppercase;
       font-family: var(--font);
-      user-select: none;
       line-height: 1;
       white-space: nowrap;
     }
     .pb-tab-trigger .pb-bubble span.pb-icon {
-      font-size: 16px;
-      writing-mode: horizontal-tb;
-      margin-bottom: 2px;
+      font-size: 17px;
+      flex-shrink: 0;
     }
-    .pb-tab-trigger:hover .pb-bubble {
-      padding: 14px 14px 14px 8px;
-      box-shadow: 4px 0 22px rgba(255,102,0,0.42);
+    .pb-tab-trigger:not(.dragging):hover .pb-bubble {
+      padding: 12px 22px 12px 12px;
+      box-shadow: 5px 0 24px rgba(255,102,0,0.48);
     }
-    /* When sidebar is closed on mobile, trigger shifts to edge=0 */
     @media(max-width:740px) {
-      .pb-tab-trigger { left: 0; }
-      .pb-tab-trigger .pb-bubble {
-        padding: 12px 10px 12px 6px;
-        font-size: 10px;
-      }
+      .pb-tab-trigger .pb-bubble { font-size: 11px; padding: 10px 14px 10px 8px; gap: 6px; }
     }
-    /* Hide old sb-btn prompt book — keep new trigger only */
     .sb-btn-pb { display: none; }
     .prompt-cat{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);padding:0.5rem 0 0.25rem}
-    .prompt-item{background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:0.75rem 1rem;cursor:pointer;transition:all 0.2s}
+    .prompt-item{background:var(--bg);border:0.5px solid var(--border);border-radius:999px;padding:0.6rem 1.25rem;cursor:pointer;transition:all 0.2s;display:flex;flex-direction:column;justify-content:center}
     .prompt-item:hover{border-color:var(--orange);background:rgba(255,102,0,0.04)}
-    .prompt-item-title{font-size:13px;font-weight:600;margin-bottom:3px}
+    .prompt-item-title{font-size:13px;font-weight:600;margin-bottom:2px;line-height:1.3}
     .prompt-item-desc{font-size:11px;color:var(--muted);line-height:1.5}
     .pb-section-heading{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);padding:0.5rem 0 0.25rem}
     .pb-section-lock-notice{padding:8px 12px;background:rgba(232,98,26,0.06);border:0.5px solid rgba(232,98,26,0.2);border-radius:8px;margin-bottom:6px}
     .pb-section-lock-notice:hover{border-color:var(--orange);cursor:pointer}
-    .prompt-item-hint{font-size:11px;color:var(--muted);line-height:1.4;margin-top:3px}
+    .prompt-item-hint{font-size:11px;color:var(--muted);line-height:1.3;margin-top:2px}
 
     /* settings */
     .settings-row{display:flex;justify-content:space-between;align-items:center;padding:0.875rem 0;border-bottom:0.5px solid var(--border)}
@@ -451,7 +446,7 @@
 
 <!-- ══ PROMPT BOOK MODAL ══ -->
 <!-- ══ PROMPT BOOK BUBBLE TAB — half-circle clings to sidebar right edge ══ -->
-<div class="pb-tab-trigger" id="pb-tab-trigger" onclick="openPromptBook()" title="Open Prompt Book">
+<div class="pb-tab-trigger" id="pb-tab-trigger" title="Drag to move · Click to open Prompt Book">
   <div class="pb-bubble">
     <span class="pb-icon">&#128218;</span>
     Prompts
@@ -1015,6 +1010,74 @@
   }
   positionBubble();
   window.addEventListener('resize', positionBubble);
+
+  // Drag to reposition vertically — persists in localStorage
+  (function() {
+    var trigger = document.getElementById('pb-tab-trigger');
+    if (!trigger) return;
+
+    // Restore saved Y position
+    var saved = localStorage.getItem('billi-pb-y');
+    if (saved) {
+      trigger.style.top = saved;
+      trigger.style.transform = 'translateY(0)';
+    }
+
+    var isDragging = false, startY = 0, startTop = 0;
+
+    function getTop() {
+      return parseInt(trigger.style.top) ||
+             (window.innerHeight / 2 - trigger.offsetHeight / 2);
+    }
+
+    function clamp(val) {
+      var minY = 60;
+      var maxY = window.innerHeight - trigger.offsetHeight - 16;
+      return Math.max(minY, Math.min(maxY, val));
+    }
+
+    function onDown(e) {
+      // Only drag on the bubble itself, not a click-through
+      if (e.target.tagName === 'INPUT') return;
+      isDragging = false;
+      startY = e.touches ? e.touches[0].clientY : e.clientY;
+      startTop = getTop();
+      trigger.classList.add('dragging');
+      trigger.style.transform = 'translateY(0)';
+      trigger.style.top = clamp(startTop) + 'px';
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+      document.addEventListener('touchmove', onMove, {passive: false});
+      document.addEventListener('touchend', onUp);
+    }
+
+    function onMove(e) {
+      var clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      var delta = clientY - startY;
+      if (Math.abs(delta) > 4) isDragging = true;
+      if (!isDragging) return;
+      if (e.cancelable) e.preventDefault();
+      var newTop = clamp(startTop + delta);
+      trigger.style.top = newTop + 'px';
+    }
+
+    function onUp(e) {
+      trigger.classList.remove('dragging');
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend', onUp);
+      // Save position
+      localStorage.setItem('billi-pb-y', trigger.style.top);
+      // If it wasn't a drag — treat as a click → open prompt book
+      if (!isDragging) openPromptBook();
+    }
+
+    trigger.addEventListener('mousedown', onDown);
+    trigger.addEventListener('touchstart', onDown, {passive: true});
+    // Remove the onclick to avoid double-open (drag handler handles click)
+    trigger.onclick = null;
+  })();
 
   function switchTab(role, el) {
     var plan = currentUser ? currentUser.plan : 'free';
