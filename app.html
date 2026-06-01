@@ -123,13 +123,14 @@
     .modal-close{position:absolute;top:1rem;right:1rem;background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer}
     .modal-title{font-size:1.15rem;font-weight:700;margin-bottom:0.4rem}
     .modal-sub{font-size:13px;color:var(--muted);margin-bottom:1.5rem;line-height:1.6}
-    .plan-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:1.25rem}
-    @media(min-width:540px){.plan-grid{grid-template-columns:repeat(4,1fr)}}
+    .plan-grid{display:flex;gap:8px;margin-bottom:1.25rem;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+    .plan-opt{background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:0.85rem;text-align:left;cursor:pointer;transition:all 0.2s;flex:0 0 148px;min-width:148px}
     .plan-opt-student{border-color:#3b82f6}
     .plan-opt-student .plan-opt-name{color:#3b82f6}
     .plan-opt{background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:1rem;text-align:left;cursor:pointer;transition:all 0.2s}
     .plan-opt:hover{border-color:var(--orange);opacity:0.9}
-    .plan-opt.sel{border-color:var(--orange);border-width:3px;background:rgba(255,102,0,0.06);box-shadow:0 0 0 1px var(--orange)}
+    .plan-opt.sel{border-color:var(--orange);border-width:2.5px;background:rgba(255,102,0,0.04);box-shadow:0 2px 12px rgba(232,98,26,0.18)}
+    .plan-opt.sel .plan-opt-name{color:var(--orange)}
     .plan-opt-name{font-weight:700;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--orange);margin-bottom:0.25rem}
     .plan-opt-price{font-size:1.2rem;font-weight:700;margin-bottom:0.5rem;padding-bottom:0.5rem;border-bottom:0.5px solid var(--border)}
     .plan-opt-msgs{font-size:11px;color:var(--muted);line-height:1.7}
@@ -262,7 +263,7 @@
 
       /* ── Modals ── */
       .modal-box{width:96vw !important;max-height:90dvh;padding:1.25rem}
-      .plan-grid{grid-template-columns:repeat(2,1fr) !important}
+      /* plan-grid scrolls horizontally on all screen sizes */
     }
 
     .pb-tab{
@@ -1085,16 +1086,8 @@
     selectedPlan = plan;
     document.querySelectorAll('.plan-opt').forEach(p => {
       p.classList.remove('sel');
-      const chk = p.querySelector('.plan-check');
-      if (chk) chk.remove();
     });
     el.classList.add('sel');
-    el.style.position = 'relative';
-    const check = document.createElement('div');
-    check.className = 'plan-check';
-    check.style.cssText = 'position:absolute;top:8px;right:10px;background:var(--orange);color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700';
-    check.textContent = '✓';
-    el.appendChild(check);
     var prices = {student:'R39',professional:'R149',business:'R299',enterprise:'R599'};
     var btn = document.getElementById('subscribe-btn');
     var ssoNote = document.getElementById('sso-note');
