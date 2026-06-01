@@ -166,6 +166,25 @@ const PROMPT_BOOK = {
           { id:'it-3l-09', display:'Diagnose a production memory leak',     template:'Write a Claude prompt to help diagnose a memory leak in our Express.js production API, including heap profiling approach and potential fixes.' },
           { id:'it-3l-10', display:'What device should I buy?',             template:'Help me select the right computer or device for my role. Ask me about my daily tasks, whether I am fixed-desk or mobile, my budget, and any specific software I use, then give me a specific recommendation with brand and model.' },
         ]
+      },
+
+      // ── TECH SELECTION GUIDE ─────────────────
+      // Available on all plans — helps users choose personal technology
+      {
+        heading: 'THE IT GUY — PERSONAL TECHNOLOGY GUIDE',
+        minPlan: 'free',
+        prompts: [
+          { id:'it-ts-01', display:'Which laptop suits a business owner?',    hint:'Portable, battery life, travel-ready recommendations',     template:'I am a business owner who travels frequently and needs to stay connected. I use email, video calls, and presentations. What laptop should I buy, what specifications do I need, and what brands are recommended in South Africa?' },
+          { id:'it-ts-02', display:'Best setup for a fixed office desk?',     hint:'Desktop vs laptop, dual monitors, ergonomics',             template:'I work at a fixed desk all day using Microsoft Office and accounting software. Should I buy a desktop PC or a laptop, and what monitor, keyboard and mouse setup do you recommend?' },
+          { id:'it-ts-03', display:'Tech for a sales rep on the road?',       hint:'Lightweight laptop, LTE, long battery, client demos',     template:'I am in sales and spend most of my time at client sites doing demos and presentations. What lightweight laptop with long battery life should I buy, and do I need a mobile data solution?' },
+          { id:'it-ts-04', display:'What does a developer need?',             hint:'High RAM, Docker, multi-environment dev setup',            template:'I am a software developer who runs Docker containers, multiple development environments, and compiles code regularly. What computer should I buy — PC or Mac — and what specifications do I need?' },
+          { id:'it-ts-05', display:'Hardware for graphic design and video?',  hint:'Adobe Suite, colour-accurate display, GPU requirements',  template:'I do graphic design and video editing using Adobe Premiere and Photoshop. What hardware do I need, what GPU is recommended, and what display specifications matter for accurate colours?' },
+          { id:'it-ts-06', display:'Best device for working from home?',      hint:'Video conferencing, cloud apps, home office setup',       template:'I work from home full-time using Microsoft Teams, Google Workspace, and cloud tools. What laptop and home office peripherals — monitor, webcam, headset — do you recommend?' },
+          { id:'it-ts-07', display:'Rugged devices for warehouse or field?',  hint:'Drop-resistant, barcode scanning, tough environments',   template:'Our team works in a warehouse or field environment and needs devices that can handle rough conditions and barcode scanning. What rugged tablets or devices do you recommend for South African businesses?' },
+          { id:'it-ts-08', display:'Affordable tech for interns and students?', hint:'Budget laptop or Chromebook for basic office tasks',   template:'We are hiring interns who need basic computing for research, documents, and email. What affordable laptop or Chromebook do you recommend, and what are the minimum specifications?' },
+          { id:'it-ts-09', display:'Compare PC vs Mac for my business?',      hint:'Ecosystem, cost, software compatibility breakdown',       template:'Help me decide between a Windows PC and a Mac for my business. Compare them on cost, software compatibility, support, and long-term value for a South African SME.' },
+          { id:'it-ts-10', display:'Build a full office tech bundle?',         hint:'Everything a new office needs — end to end',             template:'I am setting up a new office for 5 people. What complete technology bundle do I need — computers, monitors, printers, networking, phones, and accessories — and what is a realistic budget in South African rand?' },
+        ]
       }
     ]
   }
