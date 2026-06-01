@@ -138,12 +138,38 @@ const FLOWISE_CHATFLOW_ID  = process.env.FLOWISE_CHATFLOW_ID || '';
 const PAYSTACK_SECRET_KEY  = process.env.PAYSTACK_SECRET_KEY || '';
 
 const PLANS = {
-  free:         { messages: 10,   label: 'Free' },
+  free:         { messages: 10,   label: 'Free',  previewAfter: 3,  previewChars: 380 },
   student:      { messages: 100,  label: 'Student' },
   professional: { messages: 300,  label: 'Professional' },
   business:     { messages: 1000, label: 'Business' },
   enterprise:   { messages: 5000, label: 'Enterprise' }
 };
+
+// ── Free plan response truncation ──────────────────────────────────────────
+// Messages 1–3: full response (let them taste it)
+// Messages 4–10: truncated at ~380 chars, upgrade nudge appended
+function applyFreeTruncation(answer, plan, messagesUsed) {
+  const planCfg = PLANS[plan];
+  if (!planCfg || !planCfg.previewAfter) return answer; // paid plans — no truncation
+  if (messagesUsed <= planCfg.previewAfter) return answer; // first N messages — full
+
+  // Find a clean sentence break near previewChars
+  const limit = planCfg.previewChars;
+  if (answer.length <= limit) return answer; // short answer — no need to cut
+
+  // Cut at last sentence end (. ! ?) before the limit, or at last space
+  const slice = answer.slice(0, limit);
+  const lastSentence = Math.max(
+    slice.lastIndexOf('. '), slice.lastIndexOf('! '), slice.lastIndexOf('? '),
+    slice.lastIndexOf('.\n'), slice.lastIndexOf('!\n')
+  );
+  const cutAt = lastSentence > limit * 0.5 ? lastSentence + 1 : slice.lastIndexOf(' ');
+  const preview = answer.slice(0, cutAt).trim();
+
+  return preview +
+    '\n\n---\n*🔒 Sign up for a paid plan to read the full answer, copy it, and download it as PDF or Word.*\n' +
+    '*[Upgrade to Professional →](https://billsource.ai/app)*';
+}
 
 const PAYSTACK_PLANS = {
   student:      process.env.PAYSTACK_PLAN_STUDENT       || 'PLN_u5uxr8t2tf0p64z',
@@ -515,6 +541,9 @@ const server = http.createServer(async (req, res) => {
         answer = answer + referral;
       }
 
+      // ── Free plan truncation — messages 4+ get a preview only ──
+      answer = applyFreeTruncation(answer, u.plan, usage.messages_used);
+
       res.writeHead(200, {'Content-Type':'application/json'});
       res.end(JSON.stringify({
         answer,
@@ -775,6 +804,9 @@ const server = http.createServer(async (req, res) => {
         const referral = u.plan === 'enterprise' ? BILLSOURCE_REFERRAL_SSO : BILLSOURCE_REFERRAL_BASE;
         answer = answer + referral;
       }
+
+      // ── Free plan truncation — messages 4+ get a preview only ──
+      answer = applyFreeTruncation(answer, u.plan, usage.messages_used);
 
       res.writeHead(200,{'Content-Type':'application/json'});
       res.end(JSON.stringify({
