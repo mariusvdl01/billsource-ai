@@ -712,54 +712,49 @@
   }
 
   function downloadAsPDF(plainText, htmlContent, filename) {
-    // Build a clean printable HTML page and trigger print-to-PDF
+    var date = new Date().toLocaleDateString('en-ZA', {day:'numeric',month:'long',year:'numeric'});
     var win = window.open('', '_blank');
-    win.document.write(\`<!DOCTYPE html><html><head>
-      <meta charset="UTF-8"/>
-      <title>\${filename}</title>
-      <style>
-        body{font-family:Helvetica,Arial,sans-serif;font-size:14px;line-height:1.7;color:#1c1c1e;max-width:680px;margin:40px auto;padding:0 24px}
-        h1,h2,h3{font-weight:700;margin:1.2em 0 0.4em}
-        p{margin:0 0 0.8em}
-        ul,ol{margin:0.4em 0 0.8em 1.4em}
-        li{margin-bottom:0.3em}
-        strong{font-weight:700}
-        hr{border:none;border-top:1px solid #ddd;margin:1.2em 0}
-        a{color:#E8621A;text-decoration:none}
-        .header{border-bottom:2px solid #E8621A;padding-bottom:12px;margin-bottom:24px}
-        .logo{font-size:18px;font-weight:800;color:#E8621A;letter-spacing:1px}
-        .meta{font-size:11px;color:#888;margin-top:4px}
-        @media print{body{margin:20px}}
-      </style>
-    </head><body>
-      <div class="header">
-        <div class="logo">Billi — Business Associate Intelligence</div>
-        <div class="meta">billsource.ai &middot; \${new Date().toLocaleDateString('en-ZA',{day:'numeric',month:'long',year:'numeric'})}</div>
-      </div>
-      \${htmlContent}
-    </body></html>\`);
+    win.document.write(
+      '<!DOCTYPE html><html><head>' +
+      '<meta charset="UTF-8"/>' +
+      '<title>' + filename + '</title>' +
+      '<style>' +
+        'body{font-family:Helvetica,Arial,sans-serif;font-size:14px;line-height:1.7;color:#1c1c1e;max-width:680px;margin:40px auto;padding:0 24px}' +
+        'h1,h2,h3{font-weight:700;margin:1.2em 0 0.4em}' +
+        'p{margin:0 0 0.8em}ul,ol{margin:0.4em 0 0.8em 1.4em}li{margin-bottom:0.3em}' +
+        'strong{font-weight:700}hr{border:none;border-top:1px solid #ddd;margin:1.2em 0}' +
+        'a{color:#E8621A;text-decoration:none}' +
+        '.header{border-bottom:2px solid #E8621A;padding-bottom:12px;margin-bottom:24px}' +
+        '.logo{font-size:18px;font-weight:800;color:#E8621A;letter-spacing:1px}' +
+        '.meta{font-size:11px;color:#888;margin-top:4px}' +
+        '@media print{body{margin:20px}}' +
+      '</style></head><body>' +
+      '<div class="header">' +
+        '<div class="logo">Billi \u2014 Business Associate Intelligence</div>' +
+        '<div class="meta">billsource.ai &middot; ' + date + '</div>' +
+      '</div>' +
+      htmlContent +
+      '</body></html>'
+    );
     win.document.close();
     setTimeout(function(){ win.print(); }, 400);
   }
 
   function downloadAsDocx(plainText, filename) {
-    // Build a simple RTF file (opens in Word on all platforms, no library needed)
+    var date = new Date().toLocaleDateString('en-ZA');
+    var body = plainText
+      .replace(/\\/g, '\\\\')
+      .replace(/\{/g, '\\{')
+      .replace(/\}/g, '\\}')
+      .replace(/\n\n/g, '\\par\\par ')
+      .replace(/\n/g, '\\line ');
     var rtf = '{\\rtf1\\ansi\\deff0' +
       '{\\fonttbl{\\f0 Helvetica;}}' +
       '{\\colortbl ;\\red232\\green98\\blue26;}' +
       '\\f0\\fs28 ' +
-      '{\\b\\cf1 Billi \\emdash  Business Associate Intelligence}\\line' +
-      '\\fs20 billsource.ai \\bullet  ' + new Date().toLocaleDateString('en-ZA') + '\\par\\par' +
-      '\\fs24 ' +
-      plainText
-        .replace(/\\/g, '\\\\')
-        .replace(/[{}]/g, '\\$&')
-        .replace(/
-
-/g, '\\par\\par ')
-        .replace(/
-/g, '\\line ') +
-      '}';
+      '{\\b\\cf1 Billi \\emdash Business Associate Intelligence}\\line' +
+      '\\fs20 billsource.ai \\bullet ' + date + '\\par\\par' +
+      '\\fs24 ' + body + '}';
     var blob = new Blob([rtf], {type: 'application/rtf'});
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -768,7 +763,7 @@
     URL.revokeObjectURL(a.href);
   }
 
-  function addBubble(text, role) {
+    function addBubble(text, role) {
     const msgs = document.getElementById('chat-messages');
     const d = document.createElement('div');
     d.className = 'msg' + (role === 'user' ? ' user' : '');
@@ -1202,7 +1197,8 @@
     if (!trigger) return;
     var saved = localStorage.getItem('billi-pb-y');
     if (saved) { trigger.style.top = saved; trigger.style.transform = 'translateY(0)'; }
-    positionBubble();
+    // Delay so sidebar width is settled before positioning
+    setTimeout(positionBubble, 100);
     window.addEventListener('resize', positionBubble);
   })();
 
