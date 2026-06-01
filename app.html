@@ -126,8 +126,59 @@
     .modal-btn{width:100%;padding:11px;background:var(--orange);border:none;color:#fff;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font)}
     .modal-btn:hover{opacity:0.88}
 
-    /* prompt book */
-    .prompt-grid{display:flex;flex-direction:column;gap:8px;max-height:400px;overflow-y:auto}
+    /* prompt book trigger — half-circle bubble tab on sidebar edge */
+    .pb-tab-trigger {
+      position: fixed;
+      left: var(--sidebar-w, 260px);   /* sits flush against sidebar right edge */
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 110;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: left 0.25s ease;
+    }
+    .pb-tab-trigger .pb-bubble {
+      background: var(--orange);
+      color: #fff;
+      border-radius: 0 50px 50px 0;   /* flat left, rounded right — half-pill */
+      padding: 14px 10px 14px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 3px 0 16px rgba(255,102,0,0.28);
+      transition: padding 0.2s, box-shadow 0.2s;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-family: var(--font);
+      user-select: none;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .pb-tab-trigger .pb-bubble span.pb-icon {
+      font-size: 16px;
+      writing-mode: horizontal-tb;
+      margin-bottom: 2px;
+    }
+    .pb-tab-trigger:hover .pb-bubble {
+      padding: 14px 14px 14px 8px;
+      box-shadow: 4px 0 22px rgba(255,102,0,0.42);
+    }
+    /* When sidebar is closed on mobile, trigger shifts to edge=0 */
+    @media(max-width:740px) {
+      .pb-tab-trigger { left: 0; }
+      .pb-tab-trigger .pb-bubble {
+        padding: 12px 10px 12px 6px;
+        font-size: 10px;
+      }
+    }
+    /* Hide old sb-btn prompt book — keep new trigger only */
+    .sb-btn-pb { display: none; }
     .prompt-cat{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);padding:0.5rem 0 0.25rem}
     .prompt-item{background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:0.75rem 1rem;cursor:pointer;transition:all 0.2s}
     .prompt-item:hover{border-color:var(--orange);background:rgba(255,102,0,0.04)}
@@ -285,7 +336,7 @@
 
     <div class="sidebar-actions">
       <button class="sb-btn primary" onclick="newChat()">&#43; New chat</button>
-      <button class="sb-btn" onclick="openPromptBook()" title="Prompt Book">&#128218;</button>
+      <button class="sb-btn sb-btn-pb" onclick="openPromptBook()" title="Prompt Book">&#128218;</button>
       <button class="sb-btn" onclick="openSettings()" title="Account Settings">&#9881;</button>
     </div>
 
@@ -399,6 +450,14 @@
 </div>
 
 <!-- ══ PROMPT BOOK MODAL ══ -->
+<!-- ══ PROMPT BOOK BUBBLE TAB — half-circle clings to sidebar right edge ══ -->
+<div class="pb-tab-trigger" id="pb-tab-trigger" onclick="openPromptBook()" title="Open Prompt Book">
+  <div class="pb-bubble">
+    <span class="pb-icon">&#128218;</span>
+    Prompts
+  </div>
+</div>
+
 <div class="modal-overlay" id="prompt-modal" onclick="if(event.target===this)closeModal('prompt-modal')">
   <div class="modal-box" style="width:580px;max-height:88vh;display:flex;flex-direction:column">
     <button class="modal-close" onclick="closeModal('prompt-modal')">&#215;</button>
@@ -942,6 +1001,20 @@
     }, 2000);
   }
   init();
+
+  // Position prompt bubble tab flush against sidebar on load and resize
+  function positionBubble() {
+    var trigger = document.getElementById('pb-tab-trigger');
+    var sb = document.getElementById('sidebar');
+    if (!trigger || !sb) return;
+    if (window.innerWidth <= 740) {
+      trigger.style.left = '0px';
+    } else {
+      trigger.style.left = sb.offsetWidth + 'px';
+    }
+  }
+  positionBubble();
+  window.addEventListener('resize', positionBubble);
 
   function switchTab(role, el) {
     var plan = currentUser ? currentUser.plan : 'free';
