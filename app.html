@@ -42,10 +42,11 @@
     .sidebar-item:hover .sidebar-item-del{opacity:0.5}
     .sidebar-item-del:hover{opacity:1!important;color:var(--orange)}
     .sidebar-bottom{margin-top:auto;border-top:0.5px solid var(--border);padding:0.75rem 0.875rem}
-    .sso-reminder{display:none;background:rgba(232,98,26,0.08);border:0.5px solid rgba(232,98,26,0.3);border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:10.5px;line-height:1.5;color:var(--text)}
+    .sso-reminder{display:none;background:rgba(232,98,26,0.08);border:0.5px solid rgba(232,98,26,0.35);border-radius:8px;padding:8px 10px 8px 10px;margin-bottom:8px;font-size:10.5px;line-height:1.55;color:var(--text);position:relative}
     .sso-reminder a{color:var(--orange);font-weight:600;text-decoration:none}
     .sso-reminder a:hover{text-decoration:underline}
-    .sso-reminder-icon{font-size:14px;margin-bottom:2px;display:block}
+    .sso-reminder-close{position:absolute;top:5px;right:7px;background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;line-height:1;padding:0;opacity:0.6}
+    .sso-reminder-close:hover{opacity:1;color:var(--text)}
     .user-row{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;cursor:pointer;transition:background 0.2s}
     .user-row:hover{background:var(--card)}
     .user-av{width:30px;height:30px;border-radius:50%;object-fit:cover;background:var(--orange);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;flex-shrink:0}
@@ -316,12 +317,10 @@
     <div class="sidebar-bottom">
       <!-- SSO activation reminder — shown for business/enterprise until Billsource profile is set up -->
       <div class="sso-reminder" id="sso-activation-reminder">
-        <span class="sso-reminder-icon">&#128279;</span>
-        <strong>Complete your Billsource setup</strong><br>
-        Your plan includes Billsource access.<br>
-        <a href="https://billsource.com/index.php/business/profile/upgrade" target="_blank" rel="noopener">
-          Set up your profile &#8599;
-        </a>
+        <button class="sso-reminder-close" onclick="dismissSSOReminder()" title="Dismiss for now">&#215;</button>
+        <strong id="sso-reminder-title">Activate your Billsource access</strong><br>
+        Your plan includes a Billsource profile — set it up to unlock your full subscription.<br>
+        <a href="https://billsource.com/index.php/business/profile/upgrade" target="_blank" rel="noopener">Complete setup &#8599;</a>
       </div>
       <div class="user-row" onclick="openSettings()">
         <div class="user-av" id="sb-avatar">?</div>
@@ -588,20 +587,35 @@
     } catch(e) { console.error(e); }
   }
 
+  function dismissSSOReminder() {
+    var reminder = document.getElementById('sso-activation-reminder');
+    if (reminder) reminder.style.display = 'none';
+    // Store dismissal with timestamp — re-show after 3 days as a persistent nudge
+    localStorage.setItem('billi-sso-dismissed', Date.now().toString());
+  }
+
   function showSSOReminder() {
     var reminder = document.getElementById('sso-activation-reminder');
     if (!reminder || !currentUser) return;
-    var ssoPlans = ['business','enterprise'];
-    if (ssoPlans.indexOf(currentUser.plan) > -1) {
-      reminder.style.display = 'block';
-      // Update link text based on plan
-      var planLabel = currentUser.plan === 'enterprise'
-        ? 'Billsource Medium Business (R150/mo)'
-        : 'Billsource Small Business (R85/mo)';
-      reminder.querySelector('strong').textContent = 'Activate your ' + planLabel;
-    } else {
+    var ssoPlans = ['business', 'enterprise'];
+    if (ssoPlans.indexOf(currentUser.plan) === -1) {
       reminder.style.display = 'none';
+      return;
     }
+    // Check if dismissed recently (within 3 days)
+    var dismissed = localStorage.getItem('billi-sso-dismissed');
+    var threeDays = 3 * 24 * 60 * 60 * 1000;
+    if (dismissed && (Date.now() - parseInt(dismissed)) < threeDays) {
+      reminder.style.display = 'none';
+      return;
+    }
+    // Show with plan-specific label
+    var planLabel = currentUser.plan === 'enterprise'
+      ? 'Billsource Medium Business (R150/mo value)'
+      : 'Billsource Small Business (R85/mo value)';
+    var titleEl = document.getElementById('sso-reminder-title');
+    if (titleEl) titleEl.textContent = 'Activate your ' + planLabel;
+    reminder.style.display = 'block';
   }
 
   function updateUI() {
