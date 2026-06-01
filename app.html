@@ -460,145 +460,10 @@
     </div>
 
     <div class="prompt-grid" id="prompt-grid" style="flex:1;overflow-y:auto;max-height:440px">
-
-      <div class="prompt-cat">&#128200; Bean Counter &mdash; Cash Flow &amp; Financial Health</div>
-      <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
-        <div class="prompt-item-title">Monthly cash flow health check</div>
-        <div class="prompt-item-desc">Analyse my business cash flow position and flag any gaps or risks for the next 30 days.</div>
+      <!-- Rendered dynamically by renderAPIPrompts() — no template text in DOM -->
+      <div id="prompt-book-body">
+        <div style="padding:2rem;text-align:center;color:var(--muted);font-size:13px">Loading prompts...</div>
       </div>
-      <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
-        <div class="prompt-item-title">12 key financial ratios report</div>
-        <div class="prompt-item-desc">Give me a complete analysis of the 12 most important financial ratios for my business health.</div>
-      </div>
-      <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
-        <div class="prompt-item-title">Days Sales Outstanding review</div>
-        <div class="prompt-item-desc">Calculate and interpret my DSO and tell me what it means for my cash flow cycle.</div>
-      </div>
-      <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
-        <div class="prompt-item-title">Working capital optimisation</div>
-        <div class="prompt-item-desc">How can I optimise my working capital to improve cash flow without taking on more debt?</div>
-      </div>
-
-      <div class="prompt-cat">&#128239; Bean Counter &mdash; Debt Collection &amp; Dunning</div>
-      <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
-        <div class="prompt-item-title">30-day overdue dunning letter</div>
-        <div class="prompt-item-desc">Draft a professional but firm dunning letter for an account that is 30 days overdue.</div>
-      </div>
-      <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
-        <div class="prompt-item-title">60-day escalation notice</div>
-        <div class="prompt-item-desc">Draft a formal escalation notice for a debtor 60 days overdue referencing legal consequences.</div>
-      </div>
-      <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
-        <div class="prompt-item-title">Final demand before legal action</div>
-        <div class="prompt-item-desc">Write a final demand letter compliant with South African debt collection law before referring to attorneys.</div>
-      </div>
-      <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
-        <div class="prompt-item-title">Debtor ageing analysis guide</div>
-        <div class="prompt-item-desc">Walk me through how to prepare and interpret a debtor ageing analysis.</div>
-      </div>
-
-      <div class="prompt-cat">&#9878; The Rule Book &mdash; Governance &amp; Compliance</div>
-      <div class="prompt-item" data-role="cgo" onclick="usePrompt(this)">
-        <div class="prompt-item-title">POPIA compliance checklist</div>
-        <div class="prompt-item-desc">Walk me through a POPIA compliance checklist for my South African business and flag any gaps.</div>
-      </div>
-      <div class="prompt-item" data-role="cgo" onclick="usePrompt(this)">
-        <div class="prompt-item-title">NCA credit extension guidance</div>
-        <div class="prompt-item-desc">What does the National Credit Act mean for how I extend credit terms to my clients?</div>
-      </div>
-      <div class="prompt-item" data-role="cgo" onclick="usePrompt(this)">
-        <div class="prompt-item-title">B-BBEE level assessment</div>
-        <div class="prompt-item-desc">Help me understand what B-BBEE level my business is likely at and how I can improve it.</div>
-      </div>
-      <div class="prompt-item" data-role="cgo" onclick="usePrompt(this)">
-        <div class="prompt-item-title">King IV governance principles</div>
-        <div class="prompt-item-desc">Walk me through the King IV governance principles that apply to an SME like mine.</div>
-      </div>
-      <div class="prompt-item" data-role="cgo" onclick="usePrompt(this)">
-        <div class="prompt-item-title">Data privacy policy draft</div>
-        <div class="prompt-item-desc">Help me draft a simple POPIA-aligned data privacy policy for my business website.</div>
-      </div>
-
-      <div class="prompt-cat">&#128227; Brand Guru &mdash; Marketing &amp; Brand</div>
-      <div class="prompt-item" data-role="cmo" onclick="usePrompt(this)">
-        <div class="prompt-item-title">90-day marketing plan</div>
-        <div class="prompt-item-desc">Draft a practical 90-day marketing plan for my business type and target market in South Africa.</div>
-      </div>
-      <div class="prompt-item" data-role="cmo" onclick="usePrompt(this)">
-        <div class="prompt-item-title">Social media content calendar</div>
-        <div class="prompt-item-desc">Create a 2-week social media content calendar for Facebook and Instagram for my business.</div>
-      </div>
-      <div class="prompt-item" data-role="cmo" onclick="usePrompt(this)">
-        <div class="prompt-item-title">Brand positioning statement</div>
-        <div class="prompt-item-desc">Help me craft a clear brand positioning statement that differentiates me from my competitors.</div>
-      </div>
-      <div class="prompt-item" data-role="cmo" onclick="usePrompt(this)">
-        <div class="prompt-item-title">Promotional email campaign</div>
-        <div class="prompt-item-desc">Write a compelling promotional email for my latest offer or product launch.</div>
-      </div>
-      <div class="prompt-item" data-role="cmo" onclick="usePrompt(this)">
-        <div class="prompt-item-title">Customer acquisition cost analysis</div>
-        <div class="prompt-item-desc">Help me calculate and reduce my customer acquisition cost for my main marketing channel.</div>
-      </div>
-
-      <div class="prompt-cat">&#127919; Deal Maker &mdash; Sales &amp; Growth</div>
-      <div class="prompt-item" data-role="cso" onclick="usePrompt(this)">
-        <div class="prompt-item-title">Sales pipeline health review</div>
-        <div class="prompt-item-desc">Review my sales pipeline and identify the biggest risks and opportunities this month.</div>
-      </div>
-      <div class="prompt-item" data-role="cso" onclick="usePrompt(this)">
-        <div class="prompt-item-title">Winning client proposal</div>
-        <div class="prompt-item-desc">Draft a compelling proposal for a new client that addresses their pain points and presents my value clearly.</div>
-      </div>
-      <div class="prompt-item" data-role="cso" onclick="usePrompt(this)">
-        <div class="prompt-item-title">Objection handling scripts</div>
-        <div class="prompt-item-desc">Give me 5 professional responses to the most common sales objections including price pushback.</div>
-      </div>
-      <div class="prompt-item" data-role="cso" onclick="usePrompt(this)">
-        <div class="prompt-item-title">Pricing strategy review</div>
-        <div class="prompt-item-desc">Help me build a pricing strategy for my market segment that balances competitiveness and margin.</div>
-      </div>
-      <div class="prompt-item" data-role="cso" onclick="usePrompt(this)">
-        <div class="prompt-item-title">Client retention improvement plan</div>
-        <div class="prompt-item-desc">What strategies can I implement to improve client retention and increase lifetime value?</div>
-      </div>
-
-      <div class="prompt-cat">&#9881; The Fixer &mdash; Operations &amp; Efficiency</div>
-      <div class="prompt-item" data-role="coo" onclick="usePrompt(this)">
-        <div class="prompt-item-title">Business process mapping</div>
-        <div class="prompt-item-desc">Map my core business process, identify the bottlenecks and suggest how to streamline it.</div>
-      </div>
-      <div class="prompt-item" data-role="coo" onclick="usePrompt(this)">
-        <div class="prompt-item-title">SOP for my key task</div>
-        <div class="prompt-item-desc">Write a standard operating procedure for my most frequently repeated business task.</div>
-      </div>
-      <div class="prompt-item" data-role="coo" onclick="usePrompt(this)">
-        <div class="prompt-item-title">Business continuity plan</div>
-        <div class="prompt-item-desc">Build a practical business continuity plan covering load shedding, key person risk and supply chain disruption.</div>
-      </div>
-      <div class="prompt-item" data-role="coo" onclick="usePrompt(this)">
-        <div class="prompt-item-title">Supplier negotiation strategy</div>
-        <div class="prompt-item-desc">How do I negotiate better payment terms and pricing with my key suppliers?</div>
-      </div>
-      <div class="prompt-item" data-role="coo" onclick="usePrompt(this)">
-        <div class="prompt-item-title">Top 3 operational risks</div>
-        <div class="prompt-item-desc">Identify my top 3 operational risks and give me a practical mitigation plan for each.</div>
-      </div>
-
-      <div class="prompt-cat">&#128187; Tech Advisor &mdash; IT &amp; Digital Transformation</div>
-      <div class="prompt-item" data-role="tech" onclick="usePrompt(this)">
-        <div class="prompt-item-title">Digital transformation readiness</div>
-        <div class="prompt-item-desc">Assess my business digital transformation readiness and recommend the right next steps.</div>
-      </div>
-      <div class="prompt-item" data-role="tech" onclick="usePrompt(this)">
-        <div class="prompt-item-title">IT governance framework</div>
-        <div class="prompt-item-desc">What IT governance framework should a South African SME like mine be following?</div>
-      </div>
-      <div class="prompt-item" data-role="tech" onclick="usePrompt(this)">
-        <div class="prompt-item-title">Cybersecurity basics checklist</div>
-        <div class="prompt-item-desc">Give me a practical cybersecurity checklist to protect my business against the most common threats.</div>
-      </div>
-
     </div>
   </div>
 </div>
@@ -1381,16 +1246,16 @@
     } catch(e) { return null; }
   }
 
-  async function renderAPIPrompts(role_filter) {
+  async function renderAPIPrompts(role_filter, scrollToFirst) {
     const prompts = await loadPromptBook();
     if (!prompts) return;
     const container = document.getElementById('prompt-book-body');
     if (!container) return;
     container.innerHTML = '';
+
     // Update active tab
     document.querySelectorAll('.pb-tab').forEach(function(t){ t.classList.remove('active'); });
-    var activeTab = document.querySelector('.pb-tab[data-role="' + role_filter + '"]') ||
-                    document.querySelector('.pb-tab[data-roles="' + role_filter + '"]');
+    var activeTab = document.querySelector('.pb-tab[data-role="' + role_filter + '"]');
     if (activeTab) activeTab.classList.add('active');
 
     prompts.forEach(role => {
@@ -1398,8 +1263,10 @@
       role.sections.forEach(section => {
         const h = document.createElement('div');
         h.className = 'pb-section-heading';
+        h.setAttribute('data-role', role.role);
         h.textContent = section.heading + (section.locked ? ' 🔒' : '');
         container.appendChild(h);
+
         if (section.locked) {
           const plan = section.requiredPlan || 'professional';
           const planLabel = plan.charAt(0).toUpperCase() + plan.slice(1);
@@ -1409,18 +1276,15 @@
           notice.innerHTML =
             '<span style="font-size:12px;color:var(--muted)">' +
             '🔒 Upgrade to <strong style="color:var(--orange)">' + planLabel + '</strong> to unlock this section &nbsp;' +
-            '<span style="color:var(--orange);font-size:11px;text-decoration:underline;cursor:pointer">Upgrade now &#8599;</span>' +
+            '<span style="color:var(--orange);font-size:11px;text-decoration:underline">Upgrade now &#8599;</span>' +
             '</span>';
-          notice.onclick = function() {
-            closeModal('prompt-modal');
-            openUpgrade(false);
-          };
+          notice.onclick = function() { closeModal('prompt-modal'); openUpgrade(false); };
           container.appendChild(notice);
         }
+
         section.prompts.forEach(p => {
           const item = document.createElement('div');
           item.className = 'prompt-item' + (p.locked ? ' pb-item-locked' : '');
-          // Display title + hint only — template text NEVER in the DOM
           item.innerHTML =
             '<div class="prompt-item-title">' + p.title + (p.locked ? ' &#x1F512;' : '') + '</div>' +
             (p.hint ? '<div class="prompt-item-hint">' + p.hint + '</div>' : '');
@@ -1433,6 +1297,21 @@
         });
       });
     });
+
+    // Scroll: if a specific role tab clicked, jump to first section heading for that role
+    if (role_filter !== 'all') {
+      requestAnimationFrame(function() {
+        var grid = document.getElementById('prompt-grid');
+        var firstHeading = container.querySelector('.pb-section-heading');
+        if (grid && firstHeading) {
+          grid.scrollTop = firstHeading.offsetTop - 8;
+        }
+      });
+    } else {
+      // All tab — scroll back to top
+      var grid = document.getElementById('prompt-grid');
+      if (grid) grid.scrollTop = 0;
+    }
   }
 
   // Send prompt by ID — template resolved server-side, never touches browser
