@@ -422,32 +422,32 @@
       <div style="background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:1.25rem">
         <div style="font-size:1.4rem;margin-bottom:0.5rem">💰</div>
         <div style="font-weight:700;font-size:0.9rem;color:#1A5FA8;margin-bottom:0.25rem">Bean Counter</div>
-        <div style="font-size:0.82rem;color:var(--muted);line-height:1.6">Cash flow, financial ratios, debt collection, dunning letters, DSO analysis. Your CFO on call.</div>
+        <div style="font-size:0.82rem;color:var(--muted);line-height:1.6">Is your cash running out? Who owes you money? Are you actually making a profit? Bean Counter tells you straight — and helps you chase debtors too.</div>
       </div>
       <div style="background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:1.25rem">
         <div style="font-size:1.4rem;margin-bottom:0.5rem">📋</div>
         <div style="font-weight:700;font-size:0.9rem;color:#7C3AED;margin-bottom:0.25rem">The Rule Book</div>
-        <div style="font-size:0.82rem;color:var(--muted);line-height:1.6">POPIA, NCA, CIPC, B-BBEE, King IV, BCEA. SA regulatory guidance — never legal advice.</div>
+        <div style="font-size:0.82rem;color:var(--muted);line-height:1.6">Am I breaking any rules I don't know about? POPIA, CIPC, B-BBEE, labour law — The Rule Book keeps you out of trouble. Always says: talk to a professional for the serious stuff.</div>
       </div>
       <div style="background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:1.25rem">
         <div style="font-size:1.4rem;margin-bottom:0.5rem">📣</div>
         <div style="font-weight:700;font-size:0.9rem;color:#EA580C;margin-bottom:0.25rem">Brand Guru</div>
-        <div style="font-size:0.82rem;color:var(--muted);line-height:1.6">Brand positioning, content calendars, customer acquisition, SA market strategy. Your CMO.</div>
+        <div style="font-size:0.82rem;color:var(--muted);line-height:1.6">Nobody knows about you. How do you get more customers? What should you post on social media? Brand Guru helps you get noticed in the SA market without blowing your budget.</div>
       </div>
       <div style="background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:1.25rem">
         <div style="font-size:1.4rem;margin-bottom:0.5rem">🎯</div>
         <div style="font-weight:700;font-size:0.9rem;color:#16A34A;margin-bottom:0.25rem">Deal Maker</div>
-        <div style="font-size:0.82rem;color:var(--muted);line-height:1.6">Sales pipeline, proposals, objection handling, pricing strategy, client retention. Your CSO.</div>
+        <div style="font-size:0.82rem;color:var(--muted);line-height:1.6">How do you close more deals? What do you say when the client says you're too expensive? Deal Maker helps you write proposals, handle objections and keep clients coming back.</div>
       </div>
       <div style="background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:1.25rem">
         <div style="font-size:1.4rem;margin-bottom:0.5rem">⚙️</div>
         <div style="font-weight:700;font-size:0.9rem;color:#DC2626;margin-bottom:0.25rem">The Fixer</div>
-        <div style="font-size:0.82rem;color:var(--muted);line-height:1.6">Operations, SOPs, supplier risk, business continuity, load-shedding planning. Your COO.</div>
+        <div style="font-size:0.82rem;color:var(--muted);line-height:1.6">Your business feels chaotic — where do you start fixing it? The Fixer helps you sort out your processes, deal with dodgy suppliers, and keep things running when load shedding hits.</div>
       </div>
       <div style="background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:1.25rem">
         <div style="font-size:1.4rem;margin-bottom:0.5rem">💻</div>
         <div style="font-weight:700;font-size:0.9rem;color:#0891B2;margin-bottom:0.25rem">The IT Guy</div>
-        <div style="font-size:0.82rem;color:var(--muted);line-height:1.6">1st line support, cloud accounts, device recommendations, AI-assisted dev. Your tech team.</div>
+        <div style="font-size:0.82rem;color:var(--muted);line-height:1.6">Printer not working? Can't get into your email? Need to know which laptop to buy? The IT Guy fixes your tech problems and tells you what to buy — without the technical rubbish.</div>
       </div>
     </div>
   </div>
@@ -722,7 +722,7 @@
 <!-- DEMO CHAT -->
 <section class="demo" id="demo-section">
   <div class="section-label">Live demo</div>
-  <div class="section-title">Ask Billi anything &mdash; across your whole business about your finances</div>
+  <div class="section-title">Ask Billi anything &mdash; money, marketing, sales, compliance, IT, operations</div>
   <div class="chat-container">
     <div class="chat-header">
       <img src="billi-avatar.svg" alt="Billi" width="36" height="36"
@@ -749,13 +749,17 @@
     </div>
     <div class="chat-input-area" id="chat-input-area">
       <input class="chat-input" id="chat-input" placeholder="Ask Billi about finance, marketing, sales, governance or operations..." onkeydown="if(event.key==='Enter')sendMessage()"/>
-      <button class="send-btn" onclick="sendMessage()">&#8594;</button>
+      <button class="send-btn" onclick="sendMessage()">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="2,1 14,7.5 2,14" fill="#fff"/>
+        </svg>
+      </button>
     </div>
   </div>
   <p style="font-size:12px;color:var(--muted);margin-top:10px;text-align:center">
     Demo limited to 3 messages &middot;
     <a style="color:var(--orange);cursor:pointer;text-decoration:none" onclick="openLogin()">Sign up free</a>
-    for unlimited access &middot; No card required
+    to meet all six advisors &middot; No card required
   </p>
 </section>
 
@@ -959,7 +963,7 @@
   }
   function sendSuggestion(el){document.getElementById('chat-input').value=el.textContent;sendMessage();}
   function showLock(){
-    document.getElementById('chat-input-area').innerHTML='<div style="width:100%;text-align:center;padding:1rem"><div style="font-size:13px;color:var(--muted);margin-bottom:10px"><strong style="color:var(--text)">You\'ve used all 3 demo messages.</strong><br>Sign up free for unlimited access — no card needed.</div><button class="btn-primary" style="padding:10px 24px;border-radius:7px;font-size:13px" onclick="openLogin()">Create free account</button></div>';
+    document.getElementById('chat-input-area').innerHTML='<div style="width:100%;text-align:center;padding:1rem"><div style="font-size:13px;color:var(--muted);margin-bottom:10px"><strong style="color:var(--text)">You\'ve used all 3 demo messages.</strong><br>Sign up free to meet all six advisors — no card needed.</div><button class="btn-primary" style="padding:10px 24px;border-radius:7px;font-size:13px" onclick="openLogin()">Create free account</button></div>';
   }
 
   /* ── AUTH ── */
