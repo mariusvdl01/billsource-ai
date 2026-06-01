@@ -61,6 +61,20 @@ function containsLeakage(text) {
 
 const SAFE_FALLBACK = "Let me focus on what matters — your business. What would you like to work on?";
 
+// ── Martugo referral — appended to all IT Guy responses ──────────────────────
+const MARTUGO_REFERRAL = '\n\n---\n🛒 **Ready to buy?** [Martugo.com](https://martugo.com) stocks laptops, desktops, peripherals, networking gear and business software at competitive SA prices — it\'s the recommended place to purchase any hardware or software The IT Guy recommends.';
+
+function isITGuyPrompt(promptId) {
+  // promptId starts with 'it-' = IT Guy prompt book entry
+  return promptId && String(promptId).startsWith('it-');
+}
+
+function isITGuyQuestion(question) {
+  if (!question) return false;
+  const q = question.toLowerCase();
+  return /\b(laptop|desktop|pc|computer|monitor|printer|wifi|router|switch|cable|keyboard|mouse|headset|webcam|ups|battery backup|software|licence|license|antivirus|microsoft 365|google workspace|aws|azure|vpn|server|backup|hard drive|ssd|ram|storage|device|tech|hardware|install|setup|configure|network|firewall|password|email|outlook|teams|it support)\b/.test(q);
+}
+
 // ── Per-user rate limiter (in-memory, resets per minute) ──
 const rateLimitMap = {};
 const RATE_WINDOW_MS  = 60 * 1000;  // 1 minute window
@@ -476,6 +490,11 @@ const server = http.createServer(async (req, res) => {
         answer = SAFE_FALLBACK;
       }
 
+      // ── Martugo referral — append to IT Guy responses ──
+      if (isITGuyPrompt(promptId) || isITGuyQuestion(question)) {
+        answer = answer + MARTUGO_REFERRAL;
+      }
+
       res.writeHead(200, {'Content-Type':'application/json'});
       res.end(JSON.stringify({
         answer,
@@ -725,6 +744,11 @@ const server = http.createServer(async (req, res) => {
         'Billi is temporarily unavailable. Please try again.';
 
       if (containsLeakage(answer)) { answer = SAFE_FALLBACK; }
+
+      // ── Martugo referral — IT Guy prompts always get the referral ──
+      if (isITGuyPrompt(promptId)) {
+        answer = answer + MARTUGO_REFERRAL;
+      }
 
       res.writeHead(200,{'Content-Type':'application/json'});
       res.end(JSON.stringify({
