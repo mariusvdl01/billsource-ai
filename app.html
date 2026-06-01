@@ -132,6 +132,14 @@
     .modal-btn:hover{opacity:0.88}
 
     /* prompt book */
+    /* ── Prompt bubble tab — horizontal, draggable ── */
+    .pb-tab-trigger{position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:110;display:flex;align-items:center;cursor:grab;touch-action:none;user-select:none;transition:left 0.25s ease}
+    .pb-tab-trigger.dragging{cursor:grabbing;transition:none}
+    .pb-tab-trigger .pb-bubble{background:var(--orange);color:#fff;border-radius:0 50px 50px 0;padding:12px 18px 12px 10px;display:flex;flex-direction:row;align-items:center;gap:8px;box-shadow:3px 0 18px rgba(255,102,0,0.32);transition:padding 0.2s,box-shadow 0.2s;writing-mode:horizontal-tb;font-size:12px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;font-family:var(--font);line-height:1;white-space:nowrap}
+    .pb-tab-trigger .pb-bubble span.pb-icon{font-size:17px;flex-shrink:0}
+    .pb-tab-trigger:not(.dragging):hover .pb-bubble{padding:12px 22px 12px 12px;box-shadow:5px 0 24px rgba(255,102,0,0.48)}
+    @media(max-width:740px){.pb-tab-trigger .pb-bubble{font-size:11px;padding:10px 14px 10px 8px;gap:6px}}
+    .sb-btn-pb{display:none}
     .prompt-grid{display:flex;flex-direction:column;gap:8px;max-height:400px;overflow-y:auto}
     .prompt-cat{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);padding:0.5rem 0 0.25rem}
     .prompt-item{background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:0.75rem 1rem;cursor:pointer;transition:all 0.2s}
@@ -286,7 +294,7 @@
 
     <div class="sidebar-actions">
       <button class="sb-btn primary" onclick="newChat()">&#43; New chat</button>
-      <button class="sb-btn" onclick="openPromptBook()" title="Prompt Book">&#128218;</button>
+      <button class="sb-btn sb-btn-pb" onclick="openPromptBook()" title="Prompt Book">&#128218;</button>
       <button class="sb-btn" onclick="openSettings()" title="Account Settings">&#9881;</button>
     </div>
 
@@ -413,6 +421,14 @@
   </div>
 </div>
 
+<!-- ══ PROMPT BOOK BUBBLE TAB ══ -->
+<div class="pb-tab-trigger" id="pb-tab-trigger" title="Drag to move · Click to open Prompt Book">
+  <div class="pb-bubble">
+    <span class="pb-icon">&#128218;</span>
+    Prompts
+  </div>
+</div>
+
 <!-- ══ PROMPT BOOK MODAL ══ -->
 <div class="modal-overlay" id="prompt-modal" onclick="if(event.target===this)closeModal('prompt-modal')">
   <div class="modal-box" style="width:580px;max-height:88vh;display:flex;flex-direction:column">
@@ -428,7 +444,7 @@
       <button class="pb-tab" onclick="switchTab('cmo',this)" data-roles="business,enterprise">&#128227; Brand Guru</button>
       <button class="pb-tab" onclick="switchTab('cso',this)" data-roles="enterprise">&#127919; Deal Maker</button>
       <button class="pb-tab" onclick="switchTab('coo',this)" data-roles="enterprise">&#9881; The Fixer</button>
-      <button class="pb-tab" onclick="switchTab('tech',this)" data-roles="enterprise">&#128187; Tech Advisor</button>
+      <button class="pb-tab" onclick="switchTab('tech',this)" data-roles="starter,student,professional,business,enterprise">&#128187; The IT Guy</button>
     </div>
 
     <!-- Plan notice -->
@@ -733,7 +749,7 @@
     const msgs = document.getElementById('chat-messages');
     msgs.innerHTML = '';
     const first = currentUser ? currentUser.name.split(' ')[0] : 'there';
-    addBubble(`Hi ${first}! I'm Billi, your BillSource Business Associate Team.<br><br>I'm your <strong>Bean Counter, Brand Guru, Deal Maker, The Rule Book and The Fixer</strong> &mdash; five business advisors in one conversation. Ask me about money, marketing, sales, compliance or how to run your business better.<br><br>What would you like to work on today?`, 'ai');
+    addBubble(`Hi ${first}! I'm Billi, your BillSource Business Associate Team.<br><br>I'm your <strong>Bean Counter, Brand Guru, Deal Maker, The Rule Book, The Fixer and The IT Guy</strong> &mdash; six business advisors in one conversation. Ask me about money, marketing, sales, compliance, operations or IT support.<br><br>What would you like to work on today?`, 'ai');
   }
 
   // ── CHAT ──
@@ -1154,6 +1170,71 @@
   }
   init();
 
+  // ── Prompt bubble: position flush with sidebar edge ──
+  function positionBubble() {
+    var trigger = document.getElementById('pb-tab-trigger');
+    var sb = document.getElementById('sidebar');
+    if (!trigger || !sb) return;
+    trigger.style.left = (window.innerWidth <= 740 || sb.classList.contains('collapsed'))
+      ? '0px' : (sb.offsetWidth + 'px');
+    trigger.style.transform = 'translateY(0)';
+  }
+
+  // Restore saved Y position
+  (function() {
+    var trigger = document.getElementById('pb-tab-trigger');
+    if (!trigger) return;
+    var saved = localStorage.getItem('billi-pb-y');
+    if (saved) { trigger.style.top = saved; trigger.style.transform = 'translateY(0)'; }
+    positionBubble();
+    window.addEventListener('resize', positionBubble);
+  })();
+
+  // ── Drag to reposition vertically ──
+  (function() {
+    var trigger = document.getElementById('pb-tab-trigger');
+    if (!trigger) return;
+    var isDragging = false, startY = 0, startTop = 0;
+    function getTop() {
+      return parseInt(trigger.style.top) || (window.innerHeight / 2 - trigger.offsetHeight / 2);
+    }
+    function clamp(val) {
+      return Math.max(60, Math.min(window.innerHeight - trigger.offsetHeight - 16, val));
+    }
+    function onDown(e) {
+      isDragging = false;
+      startY = e.touches ? e.touches[0].clientY : e.clientY;
+      startTop = getTop();
+      trigger.classList.add('dragging');
+      trigger.style.top = clamp(startTop) + 'px';
+      trigger.style.transform = 'translateY(0)';
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+      document.addEventListener('touchmove', onMove, {passive: false});
+      document.addEventListener('touchend', onUp);
+    }
+    function onMove(e) {
+      var clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      var delta = clientY - startY;
+      if (Math.abs(delta) > 4) isDragging = true;
+      if (!isDragging) return;
+      if (e.cancelable) e.preventDefault();
+      trigger.style.top = clamp(startTop + delta) + 'px';
+    }
+    function onUp() {
+      trigger.classList.remove('dragging');
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend', onUp);
+      localStorage.setItem('billi-pb-y', trigger.style.top);
+      if (!isDragging) openPromptBook();
+      isDragging = false;
+    }
+    trigger.addEventListener('mousedown', onDown);
+    trigger.addEventListener('touchstart', onDown, {passive: true});
+  })();
+
   function switchTab(role, el) {
     var plan = currentUser ? currentUser.plan : 'free';
     var planKey = plan === 'free' ? 'starter' : plan;
@@ -1289,24 +1370,39 @@
     const container = document.getElementById('prompt-book-body');
     if (!container) return;
     container.innerHTML = '';
+    // Update active tab
+    document.querySelectorAll('.pb-tab').forEach(function(t){ t.classList.remove('active'); });
+    var activeTab = document.querySelector('.pb-tab[data-role="' + role_filter + '"]') ||
+                    document.querySelector('.pb-tab[data-roles="' + role_filter + '"]');
+    if (activeTab) activeTab.classList.add('active');
+
     prompts.forEach(role => {
       if (role_filter !== 'all' && role_filter !== role.role) return;
       role.sections.forEach(section => {
         const h = document.createElement('div');
         h.className = 'pb-section-heading';
-        h.textContent = section.heading;
+        h.textContent = section.heading + (section.locked ? ' 🔒' : '');
         container.appendChild(h);
+        if (section.locked) {
+          const notice = document.createElement('div');
+          notice.className = 'pb-section-lock-notice';
+          notice.innerHTML = '<span style="font-size:12px;color:var(--muted)">Upgrade to <strong style="color:var(--orange)">' +
+            (section.requiredPlan || 'a higher plan').charAt(0).toUpperCase() +
+            (section.requiredPlan || 'a higher plan').slice(1) +
+            '</strong> to unlock this section.</span>';
+          container.appendChild(notice);
+        }
         section.prompts.forEach(p => {
           const item = document.createElement('div');
           item.className = 'prompt-item' + (p.locked ? ' pb-item-locked' : '');
+          // Display title + hint only — template text NEVER in the DOM
           item.innerHTML =
             '<div class="prompt-item-title">' + p.title + (p.locked ? ' &#x1F512;' : '') + '</div>' +
-            '<div class="prompt-item-desc">' + (p.locked ? 'Upgrade to unlock.' : p.text) + '</div>';
+            (p.hint ? '<div class="prompt-item-hint">' + p.hint + '</div>' : '');
           item.onclick = () => {
             if (p.locked) { closeModal('prompt-modal'); openUpgrade(false); return; }
             closeModal('prompt-modal');
-            document.getElementById('chat-input').value = p.text;
-            document.getElementById('chat-input').focus();
+            sendPromptById(p.id, p.title);
           };
           container.appendChild(item);
         });
@@ -1314,16 +1410,104 @@
     });
   }
 
-  // Hook tab clicks to re-render from API
+  // Send prompt by ID — template resolved server-side, never touches browser
+  async function sendPromptById(promptId, displayTitle) {
+    if (isTyping) return;
+    if (currentUser && currentUser.messagesRemaining <= 0) { openUpgrade(true); return; }
+    var sg = document.getElementById('suggestions');
+    if (sg) { sg.classList.add('scrolling'); }
+    document.getElementById('chat-input').value = '';
+    addBubble(displayTitle, 'user');
+    isTyping = true;
+    setSendState(true);
+    showTyping();
+    if (!activeChat) {
+      activeChat = { id: Date.now(), title: displayTitle.slice(0, 45), messages: [], created: new Date().toISOString() };
+      chats.unshift(activeChat);
+      document.getElementById('chat-title').textContent = activeChat.title;
+    }
+    activeChat.messages.push({ role: 'user', text: displayTitle });
+    saveHistory();
+    try {
+      const res = await fetch('/api/prompt/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ promptId })
+      });
+      const data = await res.json();
+      removeTyping();
+      if (res.status === 403) {
+        addBubble(data.error === 'prompt_locked'
+          ? 'This prompt requires a higher plan. Upgrade to unlock it.'
+          : 'Message limit reached.', 'ai');
+        if (data.error !== 'prompt_locked') openUpgrade(true);
+        isTyping = false; setSendState(false);
+        document.getElementById('send-btn').disabled = false; return;
+      }
+      if (res.status === 401) { window.location.href = '/auth/google'; return; }
+      if (res.status === 429) {
+        addBubble(data.answer || 'Give me a moment — try again in a minute.', 'ai');
+        isTyping = false; setSendState(false);
+        document.getElementById('send-btn').disabled = false; return;
+      }
+      const answer = data.answer || 'Sorry, Billi is temporarily unavailable.';
+      addBubble(answer, 'ai');
+      activeChat.messages.push({ role: 'ai', text: answer });
+      saveHistory();
+      if (data.messagesRemaining !== undefined) {
+        currentUser.messagesUsed++;
+        currentUser.messagesRemaining = data.messagesRemaining;
+        updateUI();
+      }
+    } catch(e) {
+      removeTyping();
+      addBubble('Billi is temporarily unavailable. Please try again in a moment.', 'ai');
+    }
+    isTyping = false; setSendState(false);
+    document.getElementById('send-btn').disabled = false;
+    renderHistory();
+  }
+
+  function filterPrompts(q) {
+    q = (q || '').toLowerCase().trim();
+    var items = document.querySelectorAll('#prompt-book-body .prompt-item');
+    var headings = document.querySelectorAll('#prompt-book-body .pb-section-heading');
+    items.forEach(function(item) {
+      var titleEl = item.querySelector('.prompt-item-title');
+      var title = titleEl ? titleEl.textContent.toLowerCase() : '';
+      item.style.display = (!q || title.includes(q)) ? '' : 'none';
+    });
+    headings.forEach(function(h) {
+      var next = h.nextElementSibling;
+      var hasVisible = false;
+      while (next && !next.classList.contains('pb-section-heading')) {
+        if (next.classList.contains('prompt-item') && next.style.display !== 'none') hasVisible = true;
+        next = next.nextElementSibling;
+      }
+      h.style.display = hasVisible ? '' : 'none';
+    });
+  }
+
+  // Tab clicks
   document.querySelectorAll('.pb-tab').forEach(tab => {
-    tab.addEventListener('click', () => renderAPIPrompts(tab.dataset.role || 'all'));
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.pb-tab').forEach(function(t){ t.classList.remove('active'); });
+      tab.classList.add('active');
+    });
   });
 
-  // Pre-load prompts when prompt modal opens
+  // Open prompt modal hook — refresh cache each time
   var _origOpenPromptModal = window.openModal;
   window.openModal = function(id) {
     _origOpenPromptModal(id);
-    if (id === 'prompt-modal') renderAPIPrompts('all');
+    if (id === 'prompt-modal') {
+      cachedPrompts = null;
+      renderAPIPrompts('all');
+      document.querySelectorAll('.pb-tab').forEach(function(t){ t.classList.remove('active'); });
+      var allTab = document.querySelector('.pb-tab[data-roles="all"]') ||
+                   document.querySelector('.pb-tab[data-role="all"]');
+      if (allTab) allTab.classList.add('active');
+    }
   };
 
 </script>
