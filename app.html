@@ -77,7 +77,11 @@
     .msg.user{flex-direction:row-reverse}
     .msg-av-user{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
     .msg-bubble{max-width:78%;padding:11px 15px;border-radius:12px;font-size:14px;line-height:1.65}
-    .msg-bubble.ai{background:var(--msg-ai);border:0.5px solid var(--border);color:var(--text)}
+    .msg-bubble.ai{background:var(--msg-ai);border:0.5px solid var(--border);color:var(--text);position:relative}
+    .msg-copy{position:absolute;top:6px;right:8px;background:transparent;border:none;color:var(--muted);cursor:pointer;padding:3px;border-radius:4px;opacity:0;transition:opacity 0.2s;display:flex;align-items:center;justify-content:center}
+    .msg-copy:hover{color:var(--orange);opacity:1!important}
+    .msg-copy svg{width:13px;height:13px}
+    .msg:hover .msg-copy{opacity:0.5}
     .msg-bubble.user{background:var(--orange);color:#fff}
     .msg-bubble.ai p{margin:0 0 0.6em 0;text-align:left}
     .msg-bubble.ai p:last-child{margin-bottom:0}
@@ -100,9 +104,10 @@
     .input-row:focus-within{border-color:var(--orange)}
     .chat-input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:14px;font-family:var(--font);resize:none;max-height:100px;line-height:1.5;min-height:22px}
     .chat-input::placeholder{color:var(--muted)}
-    .send-btn{background:var(--orange);border:none;color:#fff;width:36px;height:36px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
-    .send-btn:hover{opacity:0.85}
-    .send-btn:disabled{opacity:0.35;cursor:not-allowed}
+    .send-btn{background:var(--orange);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform 0.15s,opacity 0.2s}
+    .send-btn:hover{opacity:0.88;transform:scale(1.08)}
+    .send-btn:disabled{opacity:0.35;cursor:not-allowed;transform:none}
+    .send-btn svg{width:16px;height:16px;display:block;transition:opacity 0.15s}
 
     /* ── MODALS ── */
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:500;align-items:center;justify-content:center}
@@ -126,63 +131,13 @@
     .modal-btn{width:100%;padding:11px;background:var(--orange);border:none;color:#fff;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font)}
     .modal-btn:hover{opacity:0.88}
 
-    /* prompt book trigger — half-circle bubble tab on sidebar edge */
-    /* ── Prompt book bubble tab — horizontal text, draggable ── */
-    .pb-tab-trigger {
-      position: fixed;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 110;
-      display: flex;
-      align-items: center;
-      cursor: grab;
-      touch-action: none;
-      user-select: none;
-      transition: left 0.25s ease;
-    }
-    .pb-tab-trigger.dragging { cursor: grabbing; transition: none; }
-    .pb-tab-trigger .pb-bubble {
-      background: var(--orange);
-      color: #fff;
-      border-radius: 0 50px 50px 0;
-      padding: 12px 18px 12px 10px;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 3px 0 18px rgba(255,102,0,0.32);
-      transition: padding 0.2s, box-shadow 0.2s;
-      writing-mode: horizontal-tb;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      font-family: var(--font);
-      line-height: 1;
-      white-space: nowrap;
-    }
-    .pb-tab-trigger .pb-bubble span.pb-icon {
-      font-size: 17px;
-      flex-shrink: 0;
-    }
-    .pb-tab-trigger:not(.dragging):hover .pb-bubble {
-      padding: 12px 22px 12px 12px;
-      box-shadow: 5px 0 24px rgba(255,102,0,0.48);
-    }
-    @media(max-width:740px) {
-      .pb-tab-trigger .pb-bubble { font-size: 11px; padding: 10px 14px 10px 8px; gap: 6px; }
-    }
-    .sb-btn-pb { display: none; }
+    /* prompt book */
+    .prompt-grid{display:flex;flex-direction:column;gap:8px;max-height:400px;overflow-y:auto}
     .prompt-cat{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);padding:0.5rem 0 0.25rem}
-    .prompt-item{background:var(--bg);border:0.5px solid var(--border);border-radius:999px;padding:0.6rem 1.25rem;cursor:pointer;transition:all 0.2s;display:flex;flex-direction:column;justify-content:center}
+    .prompt-item{background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:0.75rem 1rem;cursor:pointer;transition:all 0.2s}
     .prompt-item:hover{border-color:var(--orange);background:rgba(255,102,0,0.04)}
-    .prompt-item-title{font-size:13px;font-weight:600;margin-bottom:2px;line-height:1.3}
+    .prompt-item-title{font-size:13px;font-weight:600;margin-bottom:3px}
     .prompt-item-desc{font-size:11px;color:var(--muted);line-height:1.5}
-    .pb-section-heading{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);padding:0.5rem 0 0.25rem}
-    .pb-section-lock-notice{padding:8px 12px;background:rgba(232,98,26,0.06);border:0.5px solid rgba(232,98,26,0.2);border-radius:8px;margin-bottom:6px}
-    .pb-section-lock-notice:hover{border-color:var(--orange);cursor:pointer}
-    .prompt-item-hint{font-size:11px;color:var(--muted);line-height:1.3;margin-top:2px}
 
     /* settings */
     .settings-row{display:flex;justify-content:space-between;align-items:center;padding:0.875rem 0;border-bottom:0.5px solid var(--border)}
@@ -331,7 +286,7 @@
 
     <div class="sidebar-actions">
       <button class="sb-btn primary" onclick="newChat()">&#43; New chat</button>
-      <button class="sb-btn sb-btn-pb" onclick="openPromptBook()" title="Prompt Book">&#128218;</button>
+      <button class="sb-btn" onclick="openPromptBook()" title="Prompt Book">&#128218;</button>
       <button class="sb-btn" onclick="openSettings()" title="Account Settings">&#9881;</button>
     </div>
 
@@ -384,7 +339,15 @@
           <textarea class="chat-input" id="chat-input"
             placeholder="Ask Billi about finance, marketing, sales, governance or operations..."
             rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-          <button class="send-btn" id="send-btn" onclick="sendMessage()">&#8594;</button>
+          <!-- Play triangle = send/activate; Stop square = cancel/typing indicator -->
+          <button class="send-btn" id="send-btn" onclick="sendMessage()" title="Send to Billi">
+            <svg id="send-icon-play" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="3,1 15,8 3,15" fill="#fff"/>
+            </svg>
+            <svg id="send-icon-stop" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:none">
+              <rect x="3" y="3" width="10" height="10" rx="2" fill="#fff"/>
+            </svg>
+          </button>
         </div>
       </div>
     </div>
@@ -437,22 +400,20 @@
           <span class="role">The Fixer</span>
           <span class="role">The IT Guy</span>
           <span class="meta">Unlimited · 5 000 msg/mo · All 3 IT support lines</span>
+          <span class="meta" style="color:var(--orange);font-weight:600;margin-top:4px">&#10003; Includes Billsource Small Profile (R85/mo value)</span>
+          <span class="meta" style="font-size:10px">SSO — one login for Billi + Billsource 2.0</span>
         </div>
       </div>
     </div>
-    <button class="modal-btn" onclick="subscribePlan()">Pay with Paystack &#8594;</button>
+    <button class="modal-btn" id="subscribe-btn" onclick="subscribePlan()">Pay with Paystack &#9654;</button>
+    <p id="sso-note" style="display:none;margin-top:0.75rem;font-size:11px;color:var(--muted);text-align:center;line-height:1.6">
+      Your Enterprise plan includes single sign-on access to Billsource 2.0.<br>
+      After payment you will be redirected to complete your Billsource profile.
+    </p>
   </div>
 </div>
 
 <!-- ══ PROMPT BOOK MODAL ══ -->
-<!-- ══ PROMPT BOOK BUBBLE TAB — half-circle clings to sidebar right edge ══ -->
-<div class="pb-tab-trigger" id="pb-tab-trigger" title="Drag to move · Click to open Prompt Book">
-  <div class="pb-bubble">
-    <span class="pb-icon">&#128218;</span>
-    Prompts
-  </div>
-</div>
-
 <div class="modal-overlay" id="prompt-modal" onclick="if(event.target===this)closeModal('prompt-modal')">
   <div class="modal-box" style="width:580px;max-height:88vh;display:flex;flex-direction:column">
     <button class="modal-close" onclick="closeModal('prompt-modal')">&#215;</button>
@@ -461,13 +422,13 @@
 
     <!-- Role tabs -->
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:0.75rem;flex-shrink:0" id="pb-tabs">
-      <button class="pb-tab active" onclick="renderAPIPrompts('all')" data-role="all">All</button>
-      <button class="pb-tab" onclick="renderAPIPrompts('cfo')" data-role="cfo">&#128200; Bean Counter</button>
-      <button class="pb-tab" onclick="renderAPIPrompts('cgo')" data-role="cgo">&#9878; The Rule Book</button>
-      <button class="pb-tab" onclick="renderAPIPrompts('cmo')" data-role="cmo">&#128227; Brand Guru</button>
-      <button class="pb-tab" onclick="renderAPIPrompts('cso')" data-role="cso">&#127919; Deal Maker</button>
-      <button class="pb-tab" onclick="renderAPIPrompts('coo')" data-role="coo">&#9881; The Fixer</button>
-      <button class="pb-tab" onclick="renderAPIPrompts('tech')" data-role="tech">&#128187; The IT Guy</button>
+      <button class="pb-tab active" onclick="switchTab('all',this)" data-roles="all">All</button>
+      <button class="pb-tab" onclick="switchTab('cfo',this)" data-roles="starter,professional,business,enterprise">&#128200; Bean Counter</button>
+      <button class="pb-tab" onclick="switchTab('cgo',this)" data-roles="professional,business,enterprise">&#9878; The Rule Book</button>
+      <button class="pb-tab" onclick="switchTab('cmo',this)" data-roles="business,enterprise">&#128227; Brand Guru</button>
+      <button class="pb-tab" onclick="switchTab('cso',this)" data-roles="enterprise">&#127919; Deal Maker</button>
+      <button class="pb-tab" onclick="switchTab('coo',this)" data-roles="enterprise">&#9881; The Fixer</button>
+      <button class="pb-tab" onclick="switchTab('tech',this)" data-roles="enterprise">&#128187; Tech Advisor</button>
     </div>
 
     <!-- Plan notice -->
@@ -483,13 +444,149 @@
     </div>
 
     <div class="prompt-grid" id="prompt-grid" style="flex:1;overflow-y:auto;max-height:440px">
-      <!-- All prompts rendered dynamically by renderAPIPrompts() — no template text in DOM -->
-      <div id="prompt-book-body"><div style="padding:2rem;text-align:center;color:var(--muted);font-size:13px">Loading prompts...</div></div>
+
+      <div class="prompt-cat">&#128200; Bean Counter &mdash; Cash Flow &amp; Financial Health</div>
+      <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
+        <div class="prompt-item-title">Monthly cash flow health check</div>
+        <div class="prompt-item-desc">Analyse my business cash flow position and flag any gaps or risks for the next 30 days.</div>
+      </div>
+      <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
+        <div class="prompt-item-title">12 key financial ratios report</div>
+        <div class="prompt-item-desc">Give me a complete analysis of the 12 most important financial ratios for my business health.</div>
+      </div>
+      <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
+        <div class="prompt-item-title">Days Sales Outstanding review</div>
+        <div class="prompt-item-desc">Calculate and interpret my DSO and tell me what it means for my cash flow cycle.</div>
+      </div>
+      <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
+        <div class="prompt-item-title">Working capital optimisation</div>
+        <div class="prompt-item-desc">How can I optimise my working capital to improve cash flow without taking on more debt?</div>
+      </div>
+
+      <div class="prompt-cat">&#128239; Bean Counter &mdash; Debt Collection &amp; Dunning</div>
+      <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
+        <div class="prompt-item-title">30-day overdue dunning letter</div>
+        <div class="prompt-item-desc">Draft a professional but firm dunning letter for an account that is 30 days overdue.</div>
+      </div>
+      <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
+        <div class="prompt-item-title">60-day escalation notice</div>
+        <div class="prompt-item-desc">Draft a formal escalation notice for a debtor 60 days overdue referencing legal consequences.</div>
+      </div>
+      <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
+        <div class="prompt-item-title">Final demand before legal action</div>
+        <div class="prompt-item-desc">Write a final demand letter compliant with South African debt collection law before referring to attorneys.</div>
+      </div>
+      <div class="prompt-item" data-role="cfo" onclick="usePrompt(this)">
+        <div class="prompt-item-title">Debtor ageing analysis guide</div>
+        <div class="prompt-item-desc">Walk me through how to prepare and interpret a debtor ageing analysis.</div>
+      </div>
+
+      <div class="prompt-cat">&#9878; The Rule Book &mdash; Governance &amp; Compliance</div>
+      <div class="prompt-item" data-role="cgo" onclick="usePrompt(this)">
+        <div class="prompt-item-title">POPIA compliance checklist</div>
+        <div class="prompt-item-desc">Walk me through a POPIA compliance checklist for my South African business and flag any gaps.</div>
+      </div>
+      <div class="prompt-item" data-role="cgo" onclick="usePrompt(this)">
+        <div class="prompt-item-title">NCA credit extension guidance</div>
+        <div class="prompt-item-desc">What does the National Credit Act mean for how I extend credit terms to my clients?</div>
+      </div>
+      <div class="prompt-item" data-role="cgo" onclick="usePrompt(this)">
+        <div class="prompt-item-title">B-BBEE level assessment</div>
+        <div class="prompt-item-desc">Help me understand what B-BBEE level my business is likely at and how I can improve it.</div>
+      </div>
+      <div class="prompt-item" data-role="cgo" onclick="usePrompt(this)">
+        <div class="prompt-item-title">King IV governance principles</div>
+        <div class="prompt-item-desc">Walk me through the King IV governance principles that apply to an SME like mine.</div>
+      </div>
+      <div class="prompt-item" data-role="cgo" onclick="usePrompt(this)">
+        <div class="prompt-item-title">Data privacy policy draft</div>
+        <div class="prompt-item-desc">Help me draft a simple POPIA-aligned data privacy policy for my business website.</div>
+      </div>
+
+      <div class="prompt-cat">&#128227; Brand Guru &mdash; Marketing &amp; Brand</div>
+      <div class="prompt-item" data-role="cmo" onclick="usePrompt(this)">
+        <div class="prompt-item-title">90-day marketing plan</div>
+        <div class="prompt-item-desc">Draft a practical 90-day marketing plan for my business type and target market in South Africa.</div>
+      </div>
+      <div class="prompt-item" data-role="cmo" onclick="usePrompt(this)">
+        <div class="prompt-item-title">Social media content calendar</div>
+        <div class="prompt-item-desc">Create a 2-week social media content calendar for Facebook and Instagram for my business.</div>
+      </div>
+      <div class="prompt-item" data-role="cmo" onclick="usePrompt(this)">
+        <div class="prompt-item-title">Brand positioning statement</div>
+        <div class="prompt-item-desc">Help me craft a clear brand positioning statement that differentiates me from my competitors.</div>
+      </div>
+      <div class="prompt-item" data-role="cmo" onclick="usePrompt(this)">
+        <div class="prompt-item-title">Promotional email campaign</div>
+        <div class="prompt-item-desc">Write a compelling promotional email for my latest offer or product launch.</div>
+      </div>
+      <div class="prompt-item" data-role="cmo" onclick="usePrompt(this)">
+        <div class="prompt-item-title">Customer acquisition cost analysis</div>
+        <div class="prompt-item-desc">Help me calculate and reduce my customer acquisition cost for my main marketing channel.</div>
+      </div>
+
+      <div class="prompt-cat">&#127919; Deal Maker &mdash; Sales &amp; Growth</div>
+      <div class="prompt-item" data-role="cso" onclick="usePrompt(this)">
+        <div class="prompt-item-title">Sales pipeline health review</div>
+        <div class="prompt-item-desc">Review my sales pipeline and identify the biggest risks and opportunities this month.</div>
+      </div>
+      <div class="prompt-item" data-role="cso" onclick="usePrompt(this)">
+        <div class="prompt-item-title">Winning client proposal</div>
+        <div class="prompt-item-desc">Draft a compelling proposal for a new client that addresses their pain points and presents my value clearly.</div>
+      </div>
+      <div class="prompt-item" data-role="cso" onclick="usePrompt(this)">
+        <div class="prompt-item-title">Objection handling scripts</div>
+        <div class="prompt-item-desc">Give me 5 professional responses to the most common sales objections including price pushback.</div>
+      </div>
+      <div class="prompt-item" data-role="cso" onclick="usePrompt(this)">
+        <div class="prompt-item-title">Pricing strategy review</div>
+        <div class="prompt-item-desc">Help me build a pricing strategy for my market segment that balances competitiveness and margin.</div>
+      </div>
+      <div class="prompt-item" data-role="cso" onclick="usePrompt(this)">
+        <div class="prompt-item-title">Client retention improvement plan</div>
+        <div class="prompt-item-desc">What strategies can I implement to improve client retention and increase lifetime value?</div>
+      </div>
+
+      <div class="prompt-cat">&#9881; The Fixer &mdash; Operations &amp; Efficiency</div>
+      <div class="prompt-item" data-role="coo" onclick="usePrompt(this)">
+        <div class="prompt-item-title">Business process mapping</div>
+        <div class="prompt-item-desc">Map my core business process, identify the bottlenecks and suggest how to streamline it.</div>
+      </div>
+      <div class="prompt-item" data-role="coo" onclick="usePrompt(this)">
+        <div class="prompt-item-title">SOP for my key task</div>
+        <div class="prompt-item-desc">Write a standard operating procedure for my most frequently repeated business task.</div>
+      </div>
+      <div class="prompt-item" data-role="coo" onclick="usePrompt(this)">
+        <div class="prompt-item-title">Business continuity plan</div>
+        <div class="prompt-item-desc">Build a practical business continuity plan covering load shedding, key person risk and supply chain disruption.</div>
+      </div>
+      <div class="prompt-item" data-role="coo" onclick="usePrompt(this)">
+        <div class="prompt-item-title">Supplier negotiation strategy</div>
+        <div class="prompt-item-desc">How do I negotiate better payment terms and pricing with my key suppliers?</div>
+      </div>
+      <div class="prompt-item" data-role="coo" onclick="usePrompt(this)">
+        <div class="prompt-item-title">Top 3 operational risks</div>
+        <div class="prompt-item-desc">Identify my top 3 operational risks and give me a practical mitigation plan for each.</div>
+      </div>
+
+      <div class="prompt-cat">&#128187; Tech Advisor &mdash; IT &amp; Digital Transformation</div>
+      <div class="prompt-item" data-role="tech" onclick="usePrompt(this)">
+        <div class="prompt-item-title">Digital transformation readiness</div>
+        <div class="prompt-item-desc">Assess my business digital transformation readiness and recommend the right next steps.</div>
+      </div>
+      <div class="prompt-item" data-role="tech" onclick="usePrompt(this)">
+        <div class="prompt-item-title">IT governance framework</div>
+        <div class="prompt-item-desc">What IT governance framework should a South African SME like mine be following?</div>
+      </div>
+      <div class="prompt-item" data-role="tech" onclick="usePrompt(this)">
+        <div class="prompt-item-title">Cybersecurity basics checklist</div>
+        <div class="prompt-item-desc">Give me a practical cybersecurity checklist to protect my business against the most common threats.</div>
+      </div>
+
     </div>
   </div>
 </div>
 
-<!-- ══ SETTINGS MODAL
 <!-- ══ SETTINGS MODAL ══ -->
 <div class="modal-overlay" id="settings-modal" onclick="if(event.target===this)closeModal('settings-modal')">
   <div class="modal-box" style="width:420px">
@@ -636,7 +733,7 @@
     const msgs = document.getElementById('chat-messages');
     msgs.innerHTML = '';
     const first = currentUser ? currentUser.name.split(' ')[0] : 'there';
-    addBubble(`Hi ${first}! I'm Billi, your BillSource Business Associate Team.<br><br>I'm your <strong>Bean Counter, Brand Guru, Deal Maker, The Rule Book, The Fixer and The IT Guy</strong> &mdash; six business advisors in one conversation. Ask me about money, marketing, sales, compliance, operations or IT support.<br><br>What would you like to work on today?`, 'ai');
+    addBubble(`Hi ${first}! I'm Billi, your BillSource Business Associate Team.<br><br>I'm your <strong>Bean Counter, Brand Guru, Deal Maker, The Rule Book and The Fixer</strong> &mdash; five business advisors in one conversation. Ask me about money, marketing, sales, compliance or how to run your business better.<br><br>What would you like to work on today?`, 'ai');
   }
 
   // ── CHAT ──
@@ -651,6 +748,16 @@
     } catch(e) { return text; }
   }
 
+  function copyBubble(btn) {
+    var bubble = btn.closest('.msg-bubble');
+    var text = bubble ? (bubble.innerText || bubble.textContent || '').replace(/^Copy\n?/, '').trim() : '';
+    navigator.clipboard.writeText(text).then(function() {
+      var icon = btn.querySelector('svg');
+      btn.innerHTML = '<svg viewBox="0 0 13 13" fill="none"><polyline points="1,7 4,10 11,3" stroke="#2ecc71" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      setTimeout(function(){ btn.innerHTML = '<svg viewBox="0 0 13 13" fill="none"><rect x="1" y="4" width="7" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 4V2.5a1 1 0 011-1h5.5a1 1 0 011 1V9a1 1 0 01-1 1H10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>'; }, 1800);
+    });
+  }
+
   function addBubble(text, role) {
     const msgs = document.getElementById('chat-messages');
     const d = document.createElement('div');
@@ -659,7 +766,15 @@
     const av = role === 'user'
       ? `<div class="msg-av-user">${init}</div>`
       : billiAv();
-    d.innerHTML = av + `<div class="msg-bubble ${role}">${renderText(text, role)}</div>`;
+    const copyBtn = role === 'ai'
+      ? `<button class="msg-copy" onclick="copyBubble(this)" title="Copy response">
+           <svg viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+             <rect x="1" y="4" width="7" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
+             <path d="M4 4V2.5a1 1 0 011-1h5.5a1 1 0 011 1V9a1 1 0 01-1 1H10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+           </svg>
+         </button>`
+      : '';
+    d.innerHTML = av + `<div class="msg-bubble ${role}">${copyBtn}${renderText(text, role)}</div>`;
     msgs.appendChild(d);
     msgs.scrollTop = msgs.scrollHeight;
     return d;
@@ -674,6 +789,24 @@
   }
   function removeTyping() { const t = document.getElementById('typing-ind'); if(t) t.remove(); }
 
+  function setSendState(sending) {
+    var play = document.getElementById('send-icon-play');
+    var stop = document.getElementById('send-icon-stop');
+    var btn  = document.getElementById('send-btn');
+    if (!play || !stop) return;
+    if (sending) {
+      play.style.display = 'none';
+      stop.style.display = 'block';
+      btn.title = 'Billi is thinking…';
+      btn.onclick = null; // stop button does nothing yet — future: cancel stream
+    } else {
+      play.style.display = 'block';
+      stop.style.display = 'none';
+      btn.title = 'Send to Billi';
+      btn.onclick = sendMessage;
+    }
+  }
+
   async function sendMessage() {
     if (isTyping) return;
     const input = document.getElementById('chat-input');
@@ -685,7 +818,8 @@
     input.value = ''; input.style.height = 'auto';
     addBubble(msg, 'user');
     isTyping = true;
-    document.getElementById('send-btn').disabled = true;
+    document.getElementById('send-btn').disabled = false; // keep clickable as stop
+    setSendState(true);
     showTyping();
 
     // Save to history
@@ -706,7 +840,7 @@
       const data = await res.json();
       removeTyping();
 
-      if (res.status === 403) { openUpgrade(true); isTyping = false; document.getElementById('send-btn').disabled = false; return; }
+      if (res.status === 403) { openUpgrade(true); isTyping = false; setSendState(false); document.getElementById('send-btn').disabled = false; return; }
       if (res.status === 401) { window.location.href = '/auth/google'; return; }
 
       const answer = data.answer || 'Sorry, Billi is temporarily unavailable.';
@@ -725,6 +859,7 @@
     }
 
     isTyping = false;
+    setSendState(false);
     document.getElementById('send-btn').disabled = false;
     renderHistory();
   }
@@ -871,11 +1006,10 @@
 
   function isRoleAllowed(role, planKey) {
     var access = {
-      starter:      ['cfo', 'tech'],
-      student:      ['cfo', 'tech'],
-      professional: ['cfo', 'cgo', 'tech'],
-      business:     ['cfo', 'cgo', 'cmo', 'tech'],
-      enterprise:   ['cfo', 'cgo', 'cmo', 'cso', 'coo', 'tech']
+      starter:      ['cfo'],
+      professional: ['cfo','cgo'],
+      business:     ['cfo','cgo','cmo'],
+      enterprise:   ['cfo','cgo','cmo','cso','coo','tech']
     };
     var allowed = access[planKey] || access['starter'];
     return allowed.indexOf(role) >= 0;
@@ -899,11 +1033,19 @@
     check.textContent = '✓';
     el.appendChild(check);
     var prices = {student:'R39',professional:'R149',business:'R299',enterprise:'R599'};
-    document.querySelector('.modal-btn').textContent = 'Pay ' + (prices[plan]||'') + '/mo with Paystack →';
+    var btn = document.getElementById('subscribe-btn');
+    var ssoNote = document.getElementById('sso-note');
+    if (plan === 'enterprise') {
+      btn.textContent = 'Pay R599/mo — Activate Enterprise + Billsource ▶';
+      if (ssoNote) ssoNote.style.display = 'block';
+    } else {
+      btn.textContent = 'Pay ' + (prices[plan]||'') + '/mo with Paystack ▶';
+      if (ssoNote) ssoNote.style.display = 'none';
+    }
   }
 
   async function subscribePlan() {
-    const btn = document.querySelector('.modal-btn');
+    const btn = document.getElementById('subscribe-btn');
     btn.textContent = 'Redirecting to Paystack...';
     btn.disabled = true;
     try {
@@ -913,18 +1055,42 @@
       });
       const data = await res.json();
       if (data.url) {
+        // For Enterprise: after Paystack success, redirect to Billsource SSO profile page
+        if (selectedPlan === 'enterprise') {
+          // Store SSO redirect intent — server webhook will handle the actual account link
+          sessionStorage.setItem('billi-post-payment', 'sso-billsource');
+        }
         window.location.href = data.url;
       } else if (data.error) {
         alert(data.error);
-        btn.textContent = 'Pay with Paystack →';
+        btn.textContent = selectedPlan === 'enterprise'
+          ? 'Pay R599/mo — Activate Enterprise + Billsource ▶'
+          : 'Pay with Paystack ▶';
         btn.disabled = false;
       }
     } catch(e) {
       alert('Payment error. Please try again.');
-      btn.textContent = 'Pay with Paystack →';
+      btn.textContent = 'Pay with Paystack ▶';
       btn.disabled = false;
     }
   }
+
+  // After successful Enterprise payment, redirect to Billsource 2.0 profile
+  // This fires when user lands back on /app?payment=success with enterprise plan
+  (function checkSSORedirect() {
+    if (window.location.search.includes('payment=success') &&
+        sessionStorage.getItem('billi-post-payment') === 'sso-billsource') {
+      sessionStorage.removeItem('billi-post-payment');
+      // Give the plan activation webhook a few seconds then redirect
+      setTimeout(function() {
+        var msg = document.createElement('div');
+        msg.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--orange);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;font-family:var(--font);text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.2)';
+        msg.innerHTML = '✓ Enterprise activated! <a href="https://billsource.com/index.php/business/profile/upgrade" style="color:#fff;text-decoration:underline;margin-left:6px">Set up your Billsource profile →</a>';
+        document.body.appendChild(msg);
+        setTimeout(function(){ msg.remove(); }, 12000);
+      }, 3000);
+    }
+  })();
 
   function usePrompt(el) {
     if (el.classList.contains('pb-item-locked')) {
@@ -932,19 +1098,10 @@
       openUpgrade(false);
       return;
     }
-    // Use prompt-id if available (API-rendered prompts), fall back to static items
-    const promptId = el.getAttribute('data-prompt-id');
-    const title    = el.querySelector('.prompt-item-title') ?
-                     el.querySelector('.prompt-item-title').textContent.replace('🔒','').trim() : '';
-    if (promptId) {
-      closeModal('prompt-modal');
-      sendPromptById(promptId, title);
-    } else {
-      // Legacy static prompts — put display label in input, user sends manually
-      closeModal('prompt-modal');
-      document.getElementById('chat-input').value = title;
-      document.getElementById('chat-input').focus();
-    }
+    const desc = el.querySelector('.prompt-item-desc').textContent;
+    closeModal('prompt-modal');
+    document.getElementById('chat-input').value = desc;
+    document.getElementById('chat-input').focus();
   }
 
   // ── THEME ──
@@ -997,88 +1154,6 @@
   }
   init();
 
-  // Position prompt bubble tab flush against sidebar on load and resize
-  function positionBubble() {
-    var trigger = document.getElementById('pb-tab-trigger');
-    var sb = document.getElementById('sidebar');
-    if (!trigger || !sb) return;
-    if (window.innerWidth <= 740) {
-      trigger.style.left = '0px';
-    } else {
-      trigger.style.left = sb.offsetWidth + 'px';
-    }
-  }
-  positionBubble();
-  window.addEventListener('resize', positionBubble);
-
-  // Drag to reposition vertically — persists in localStorage
-  (function() {
-    var trigger = document.getElementById('pb-tab-trigger');
-    if (!trigger) return;
-
-    // Restore saved Y position
-    var saved = localStorage.getItem('billi-pb-y');
-    if (saved) {
-      trigger.style.top = saved;
-      trigger.style.transform = 'translateY(0)';
-    }
-
-    var isDragging = false, startY = 0, startTop = 0;
-
-    function getTop() {
-      return parseInt(trigger.style.top) ||
-             (window.innerHeight / 2 - trigger.offsetHeight / 2);
-    }
-
-    function clamp(val) {
-      var minY = 60;
-      var maxY = window.innerHeight - trigger.offsetHeight - 16;
-      return Math.max(minY, Math.min(maxY, val));
-    }
-
-    function onDown(e) {
-      // Only drag on the bubble itself, not a click-through
-      if (e.target.tagName === 'INPUT') return;
-      isDragging = false;
-      startY = e.touches ? e.touches[0].clientY : e.clientY;
-      startTop = getTop();
-      trigger.classList.add('dragging');
-      trigger.style.transform = 'translateY(0)';
-      trigger.style.top = clamp(startTop) + 'px';
-      document.addEventListener('mousemove', onMove);
-      document.addEventListener('mouseup', onUp);
-      document.addEventListener('touchmove', onMove, {passive: false});
-      document.addEventListener('touchend', onUp);
-    }
-
-    function onMove(e) {
-      var clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      var delta = clientY - startY;
-      if (Math.abs(delta) > 4) isDragging = true;
-      if (!isDragging) return;
-      if (e.cancelable) e.preventDefault();
-      var newTop = clamp(startTop + delta);
-      trigger.style.top = newTop + 'px';
-    }
-
-    function onUp(e) {
-      trigger.classList.remove('dragging');
-      document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('mouseup', onUp);
-      document.removeEventListener('touchmove', onMove);
-      document.removeEventListener('touchend', onUp);
-      // Save position
-      localStorage.setItem('billi-pb-y', trigger.style.top);
-      // If it wasn't a drag — treat as a click → open prompt book
-      if (!isDragging) openPromptBook();
-    }
-
-    trigger.addEventListener('mousedown', onDown);
-    trigger.addEventListener('touchstart', onDown, {passive: true});
-    // Remove the onclick to avoid double-open (drag handler handles click)
-    trigger.onclick = null;
-  })();
-
   function switchTab(role, el) {
     var plan = currentUser ? currentUser.plan : 'free';
     var planKey = plan === 'free' ? 'starter' : plan;
@@ -1114,23 +1189,31 @@
     document.getElementById('prompt-grid').scrollTop = 0;
   }
 
-  function filterPrompts(q) {
-    q = (q || '').toLowerCase().trim();
-    var items = document.querySelectorAll('#prompt-book-body .prompt-item');
-    var headings = document.querySelectorAll('#prompt-book-body .pb-section-heading');
-    items.forEach(function(item) {
-      var titleEl = item.querySelector('.prompt-item-title');
-      var title = titleEl ? titleEl.textContent.toLowerCase() : '';
-      item.style.display = (!q || title.includes(q)) ? '' : 'none';
+  function filterPrompts(query) {
+    query = query.toLowerCase();
+    var items = document.querySelectorAll('.prompt-item');
+    var cats = document.querySelectorAll('.prompt-cat');
+    // Reset tab buttons
+    document.querySelectorAll('.pb-tab').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelector('.pb-tab').classList.add('active');
+    items.forEach(function(item){
+      var title = item.querySelector('.prompt-item-title').textContent.toLowerCase();
+      var desc = item.querySelector('.prompt-item-desc').textContent.toLowerCase();
+      if(!query || title.includes(query) || desc.includes(query)){
+        item.classList.remove('hidden');
+      } else {
+        item.classList.add('hidden');
+      }
     });
-    headings.forEach(function(h) {
-      var next = h.nextElementSibling;
+    // Hide empty categories
+    cats.forEach(function(cat){
+      var next = cat.nextElementSibling;
       var hasVisible = false;
-      while (next && !next.classList.contains('pb-section-heading')) {
-        if (next.classList.contains('prompt-item') && next.style.display !== 'none') hasVisible = true;
+      while(next && !next.classList.contains('prompt-cat')){
+        if(next.classList && !next.classList.contains('hidden')) hasVisible = true;
         next = next.nextElementSibling;
       }
-      h.style.display = hasVisible ? '' : 'none';
+      cat.style.display = hasVisible ? '' : 'none';
     });
   }
 
@@ -1208,38 +1291,22 @@
     container.innerHTML = '';
     prompts.forEach(role => {
       if (role_filter !== 'all' && role_filter !== role.role) return;
-
-      // Section-level lock banner (e.g. 2nd/3rd line IT Guy)
       role.sections.forEach(section => {
         const h = document.createElement('div');
         h.className = 'pb-section-heading';
-        h.textContent = section.heading + (section.locked ? ' 🔒' : '');
+        h.textContent = section.heading;
         container.appendChild(h);
-
-        if (section.locked) {
-          // Show locked prompts as titles only — no text, no template hinted
-          const notice = document.createElement('div');
-          notice.className = 'pb-section-lock-notice';
-          notice.innerHTML = '<span style="font-size:12px;color:var(--muted)">Upgrade to <strong style="color:var(--orange)">' +
-            section.requiredPlan.charAt(0).toUpperCase() + section.requiredPlan.slice(1) +
-            '</strong> to unlock this section.</span>';
-          container.appendChild(notice);
-        }
-
         section.prompts.forEach(p => {
           const item = document.createElement('div');
           item.className = 'prompt-item' + (p.locked ? ' pb-item-locked' : '');
-
-          // Display: title + optional plain-English hint. No template text ever shown.
           item.innerHTML =
             '<div class="prompt-item-title">' + p.title + (p.locked ? ' &#x1F512;' : '') + '</div>' +
-            (p.hint ? '<div class="prompt-item-hint">' + p.hint + '</div>' : '');
-
+            '<div class="prompt-item-desc">' + (p.locked ? 'Upgrade to unlock.' : p.text) + '</div>';
           item.onclick = () => {
             if (p.locked) { closeModal('prompt-modal'); openUpgrade(false); return; }
             closeModal('prompt-modal');
-            // Fire the prompt server-side via ID — template never touches the browser
-            sendPromptById(p.id, p.title);
+            document.getElementById('chat-input').value = p.text;
+            document.getElementById('chat-input').focus();
           };
           container.appendChild(item);
         });
@@ -1247,100 +1314,16 @@
     });
   }
 
-  // Send a prompt book entry by ID — shows title as user bubble, resolves template server-side
-  async function sendPromptById(promptId, displayTitle) {
-    if (isTyping) return;
-    if (currentUser && currentUser.messagesRemaining <= 0) { openUpgrade(true); return; }
-
-    var sg = document.getElementById('suggestions');
-    sg.classList.add('scrolling'); sg.style.display = '';
-    document.getElementById('chat-input').value = '';
-    document.getElementById('chat-input').style.height = 'auto';
-
-    // Show the display title as the user bubble — never the template
-    addBubble(displayTitle, 'user');
-    isTyping = true;
-    document.getElementById('send-btn').disabled = true;
-    showTyping();
-
-    // Save title to history (not template)
-    if (!activeChat) {
-      activeChat = { id: Date.now(), title: displayTitle.slice(0, 45), messages: [], created: new Date().toISOString() };
-      chats.unshift(activeChat);
-      document.getElementById('chat-title').textContent = activeChat.title;
-    }
-    activeChat.messages.push({ role: 'user', text: displayTitle });
-    saveHistory();
-
-    try {
-      // Send only the promptId — template is resolved server-side, never returned
-      const res = await fetch('/api/prompt/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ promptId })
-      });
-      const data = await res.json();
-      removeTyping();
-
-      if (res.status === 403) {
-        if (data.error === 'prompt_locked') {
-          addBubble('This prompt requires a higher plan. Upgrade to unlock it.', 'ai');
-        } else {
-          openUpgrade(true);
-        }
-        isTyping = false;
-        document.getElementById('send-btn').disabled = false;
-        return;
-      }
-      if (res.status === 401) { window.location.href = '/auth/google'; return; }
-      if (res.status === 429) {
-        removeTyping();
-        addBubble(data.answer || 'Give me a moment — try again in a minute.', 'ai');
-        isTyping = false;
-        document.getElementById('send-btn').disabled = false;
-        return;
-      }
-
-      const answer = data.answer || 'Sorry, Billi is temporarily unavailable.';
-      addBubble(answer, 'ai');
-      activeChat.messages.push({ role: 'ai', text: answer });
-      saveHistory();
-
-      if (data.messagesRemaining !== undefined) {
-        currentUser.messagesUsed++;
-        currentUser.messagesRemaining = data.messagesRemaining;
-        updateUI();
-      }
-    } catch(e) {
-      removeTyping();
-      addBubble('Billi is temporarily unavailable. Please try again in a moment.', 'ai');
-    }
-
-    isTyping = false;
-    document.getElementById('send-btn').disabled = false;
-    renderHistory();
-  }
-
-  // Tab active state — set on click, renderAPIPrompts does the content
+  // Hook tab clicks to re-render from API
   document.querySelectorAll('.pb-tab').forEach(tab => {
-    tab.addEventListener('click', function() {
-      document.querySelectorAll('.pb-tab').forEach(function(t){ t.classList.remove('active'); });
-      tab.classList.add('active');
-    });
+    tab.addEventListener('click', () => renderAPIPrompts(tab.dataset.role || 'all'));
   });
 
   // Pre-load prompts when prompt modal opens
   var _origOpenPromptModal = window.openModal;
   window.openModal = function(id) {
     _origOpenPromptModal(id);
-    if (id === 'prompt-modal') {
-      cachedPrompts = null; // always refresh on open to pick up plan changes
-      renderAPIPrompts('all');
-      // Set All tab as active
-      document.querySelectorAll('.pb-tab').forEach(function(t){ t.classList.remove('active'); });
-      var allTab = document.querySelector('.pb-tab[data-role="all"]');
-      if (allTab) allTab.classList.add('active');
-    }
+    if (id === 'prompt-modal') renderAPIPrompts('all');
   };
 
 </script>
