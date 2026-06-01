@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 900 940"
   width="100%" height="100%"
-  style="max-width:900px;display:block;margin:0 auto"
+  style="display:block"
   preserveAspectRatio="xMidYMid meet">
 <defs>
   <radialGradient id="bgGlow" cx="50%" cy="48%" r="52%">
@@ -160,7 +160,7 @@
     <circle cx="72"  cy="46" r="46" fill="#0d4024"/><circle cx="88"  cy="28" r="15" fill="#d4f7e4"/>
   </g>
   <text x="450" y="284" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="12" font-weight="800" fill="#2ecc71">Bean Counter</text>
-  <text x="450" y="298" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9.5" fill="#888780">Finance &amp; Cash Flow</text>
+  
 </g>
 
 <!-- ══ NODE 2: BRAND GURU — purple — top-right (636,342) ══ -->
@@ -175,7 +175,7 @@
     <circle cx="72"  cy="46" r="46" fill="#3d1260"/><circle cx="88"  cy="28" r="15" fill="#ead4f7"/>
   </g>
   <text x="636" y="391" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="12" font-weight="800" fill="#c77dff">Brand Guru</text>
-  <text x="636" y="405" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9.5" fill="#888780">Identity &amp; Marketing</text>
+  
 </g>
 
 <!-- ══ NODE 3: DEAL MAKER — gold — bottom-right (636,558) ══ -->
@@ -190,7 +190,7 @@
     <circle cx="72"  cy="46" r="46" fill="#5a3700"/><circle cx="88"  cy="28" r="15" fill="#faecd4"/>
   </g>
   <text x="636" y="607" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="12" font-weight="800" fill="#f4a100">Deal Maker</text>
-  <text x="636" y="621" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9.5" fill="#888780">Sales &amp; Negotiation</text>
+  
 </g>
 
 <!-- ══ NODE 4: IT GUY — cyan — bottom (450,665) ══ -->
@@ -205,7 +205,7 @@
     <circle cx="72"  cy="46" r="46" fill="#044040"/><circle cx="88"  cy="28" r="15" fill="#d4f7f7"/>
   </g>
   <text x="450" y="714" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="12" font-weight="800" fill="#00d4d4">The IT Guy</text>
-  <text x="450" y="728" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9.5" fill="#888780">1st, 2nd &amp; 3rd Line Support</text>
+  
 </g>
 
 <!-- ══ NODE 5: RULE BOOK — sky — bottom-left (264,558) ══ -->
@@ -220,7 +220,7 @@
     <circle cx="72"  cy="46" r="46" fill="#043348"/><circle cx="88"  cy="28" r="15" fill="#d4f0fa"/>
   </g>
   <text x="264" y="607" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="12" font-weight="800" fill="#38bdf8">The Rule Book</text>
-  <text x="264" y="621" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9.5" fill="#888780">Compliance &amp; Legal</text>
+  
 </g>
 
 <!-- ══ NODE 6: THE FIXER — coral — top-left (264,343) ══ -->
@@ -235,7 +235,7 @@
     <circle cx="72"  cy="46" r="46" fill="#5a1010"/><circle cx="88"  cy="28" r="15" fill="#fad4d4"/>
   </g>
   <text x="264" y="392" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="12" font-weight="800" fill="#ff6b6b">The Fixer</text>
-  <text x="264" y="406" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9.5" fill="#888780">Ops &amp; Problem Solving</text>
+  
 </g>
 
 </svg>
