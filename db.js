@@ -52,6 +52,17 @@ async function initDb() {
       );
       CREATE INDEX IF NOT EXISTS idx_sessions_email   ON sessions(user_email);
       CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at);
+
+      CREATE TABLE IF NOT EXISTS prompt_access_log (
+        id          BIGSERIAL PRIMARY KEY,
+        user_email  TEXT        NOT NULL,
+        plan        TEXT        NOT NULL,
+        ip          TEXT,
+        user_agent  TEXT,
+        accessed_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+      CREATE INDEX IF NOT EXISTS idx_pal_email ON prompt_access_log(user_email);
+      CREATE INDEX IF NOT EXISTS idx_pal_time  ON prompt_access_log(accessed_at);
     `);
     console.log('DB: PostgreSQL connected and schema ready');
 
@@ -205,9 +216,41 @@ async function cleanExpiredSessions() {
   await pool.query('DELETE FROM sessions WHERE expires_at<NOW()');
 }
 
+// ── logPromptAccess ──────────────────────
+async function logPromptAccess(email, plan, ip, userAgent) {
+  if (!useDb) {
+    // In-memory: just log to console — no persistence in fallback mode
+    console.log(`PROMPT_ACCESS | ${email} | ${plan} | ${ip || 'unknown'}`);
+    return;
+  }
+  try {
+    await pool.query(
+      `INSERT INTO prompt_access_log (user_email, plan, ip, user_agent)
+       VALUES ($1, $2, $3, $4)`,
+      [email, plan, ip || null, userAgent || null]
+    );
+  } catch(err) {
+    // Non-fatal — log the error but don't break the prompt response
+    console.error('logPromptAccess error:', err.message);
+  }
+}
+
+// ── getPromptAccessLog (admin use) ───────
+async function getPromptAccessLog(limit = 100) {
+  if (!useDb) return [];
+  const r = await pool.query(
+    `SELECT user_email, plan, ip, accessed_at
+     FROM prompt_access_log
+     ORDER BY accessed_at DESC LIMIT $1`,
+    [limit]
+  );
+  return r.rows;
+}
+
 module.exports = {
   initDb, getUser, upsertUser,
   upgradePlan, downgradePlan, incrementMessages,
   resetMonthlyUsage, createSession, getSession,
-  deleteSession, cleanExpiredSessions
+  deleteSession, cleanExpiredSessions,
+  logPromptAccess, getPromptAccessLog
 };

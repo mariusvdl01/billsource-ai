@@ -7,7 +7,94 @@ const url = require('url');
 const querystring = require('querystring');
 const db = require('./db');
 const mailer = require('./mailer');
-const { getUserPrompts } = require('./promptbook');
+const { getUserPrompts, resolvePromptTemplate } = require('./promptbook');
+
+// ═══════════════════════════════════════════
+// IP SAFEGUARDS — Injection filter, output filter, rate limiter
+// ═══════════════════════════════════════════
+
+// ── Input injection filter ───────────────
+const INJECTION_PATTERNS = [
+  /ignore\s+(all\s+)?(previous|prior|above)\s+instructions/i,
+  /forget\s+(everything|all|your)\s+(instructions|context|rules)/i,
+  /you\s+are\s+now\s+(a\s+)?(different|new|another|unrestricted)/i,
+  /pretend\s+(you\s+are|to\s+be)\s+(an?\s+)?(AI|model|assistant|GPT|LLM)/i,
+  /repeat\s+(your\s+)?(system\s+)?(prompt|instructions|context)\s*(back|verbatim|exactly)?/i,
+  /what\s+(are|were|is)\s+your\s+(system\s+)?(prompt|instructions|rules|configuration)/i,
+  /output\s+(your|the)\s+(system\s+)?(prompt|instructions|context|configuration)/i,
+  /print\s+(your\s+)?(system\s+)?(prompt|instructions)/i,
+  /show\s+(me\s+)?(your\s+)?(system\s+)?(prompt|instructions|context)/i,
+  /disregard\s+(your|all|previous)\s+(instructions|guidelines|rules)/i,
+  /act\s+as\s+(if\s+)?(you\s+(have\s+)?no|without)\s+(restrictions|guidelines|rules)/i,
+  /you\s+have\s+no\s+(restrictions|guidelines|rules|limits)/i,
+  /override\s+(your\s+)?(safety|guidelines|instructions|rules)/i,
+  /bypass\s+(your\s+)?(safety|restrictions|filters|guardrails)/i,
+  /\bDAN\b/,                        // Do Anything Now
+  /\bjailbreak\b/i,
+  /\[INST\]|\[SYS\]|<\|system\|>/i, // LLM injection tokens
+  /<!--.*?-->/s,                     // HTML comment injection
+  /\{\{.*?\}\}/,                     // Template injection
+  /claude|anthropic|openai|gpt-[34]/i // Model probing
+];
+
+function isInjectionAttempt(text) {
+  if (!text || typeof text !== 'string') return false;
+  return INJECTION_PATTERNS.some(p => p.test(text));
+}
+
+// ── Output leak filter ───────────────────
+const LEAK_PATTERNS = [
+  /my (system )?prompt (is|says|reads|starts)/i,
+  /i('ve)? been (told|instructed|configured|given instructions)/i,
+  /i was (programmed|designed|built|trained) to/i,
+  /my (instructions|configuration|guidelines|rules) (are|say|tell me|require)/i,
+  /as (an?\s+)?(AI language model|LLM|large language model)/i,
+  /i am (actually |really )?(claude|anthropic|gpt|openai)/i,
+  /built (by|on top of|using) (anthropic|claude|openai)/i,
+  /powered by (claude|anthropic|openai|gpt)/i
+];
+
+function containsLeakage(text) {
+  if (!text || typeof text !== 'string') return false;
+  return LEAK_PATTERNS.some(p => p.test(text));
+}
+
+const SAFE_FALLBACK = "Let me focus on what matters — your business. What would you like to work on?";
+
+// ── Per-user rate limiter (in-memory, resets per minute) ──
+const rateLimitMap = {};
+const RATE_WINDOW_MS  = 60 * 1000;  // 1 minute window
+const RATE_MAX_MSGS   = 8;           // max messages per minute per user
+
+function checkRateLimit(email) {
+  const now = Date.now();
+  if (!rateLimitMap[email]) {
+    rateLimitMap[email] = { count: 1, windowStart: now, flagged: false };
+    return true;
+  }
+  const rl = rateLimitMap[email];
+  if (now - rl.windowStart > RATE_WINDOW_MS) {
+    rl.count = 1; rl.windowStart = now; rl.flagged = false;
+    return true;
+  }
+  rl.count++;
+  if (rl.count > RATE_MAX_MSGS) {
+    if (!rl.flagged) {
+      console.warn(`RATE_LIMIT | ${email} | ${rl.count} msgs/min`);
+      rl.flagged = true;
+    }
+    return false;
+  }
+  return true;
+}
+
+// Clean rate limit map every hour to prevent memory leak
+setInterval(() => {
+  const cutoff = Date.now() - RATE_WINDOW_MS * 2;
+  Object.keys(rateLimitMap).forEach(k => {
+    if (rateLimitMap[k].windowStart < cutoff) delete rateLimitMap[k];
+  });
+}, 60 * 60 * 1000);
 
 const PORT = process.env.PORT || 8080;
 const ROOT = '/app';
@@ -314,6 +401,16 @@ const server = http.createServer(async (req, res) => {
       res.end(JSON.stringify({error:'Please sign in to continue.'})); return;
     }
     const u = session.user;
+
+    // ── Rate limit check ──
+    if (!checkRateLimit(u.email)) {
+      res.writeHead(429, {'Content-Type':'application/json'});
+      res.end(JSON.stringify({
+        error: 'rate_limited',
+        answer: 'You\'re moving fast — give me a moment to catch up. Try again in a minute.'
+      })); return;
+    }
+
     if (u.messagesUsed >= u.messagesLimit) {
       res.writeHead(403, {'Content-Type':'application/json'});
       res.end(JSON.stringify({
@@ -324,26 +421,60 @@ const server = http.createServer(async (req, res) => {
     }
     try {
       const body = await readBody(req);
-      const {question} = JSON.parse(body);
-      if (!question) throw new Error('No question');
+      const {question, promptId} = JSON.parse(body);
+      if (!question && !promptId) throw new Error('No question');
+
+      // ── Resolve question: either raw text or server-side template lookup ──
+      let resolvedQuestion = question;
+      if (promptId) {
+        const template = resolvePromptTemplate(promptId, u.plan);
+        if (!template) {
+          res.writeHead(403, {'Content-Type':'application/json'});
+          res.end(JSON.stringify({error:'prompt_locked', answer:'Upgrade your plan to use this prompt.'}));
+          return;
+        }
+        // Personalise with user context where possible
+        resolvedQuestion = template
+          .replace('{userName}', u.name || 'you')
+          .replace('{userPlan}', u.plan);
+      }
+
+      // ── Injection filter ──
+      if (isInjectionAttempt(resolvedQuestion)) {
+        console.warn(`INJECTION | ${u.email} | ${resolvedQuestion.substring(0, 120)}`);
+        res.writeHead(200, {'Content-Type':'application/json'});
+        res.end(JSON.stringify({
+          answer: "I'm here to help your business grow — what would you like to work on?",
+          messagesUsed: u.messagesUsed,
+          messagesRemaining: u.messagesRemaining
+        })); return;
+      }
 
       const flowRes = await httpsPost(
         `${FLOWISE_URL}/api/v1/prediction/${FLOWISE_CHATFLOW_ID}`,
-        JSON.stringify({question}), {'Content-Type':'application/json'});
+        JSON.stringify({question: resolvedQuestion}),
+        {'Content-Type':'application/json'}
+      );
 
       // Increment in DB and update cache
       const usage = await db.incrementMessages(u.email);
       if (sessionCache[session.sid]) {
-        sessionCache[session.sid].user.messagesUsed = usage.messages_used;
+        sessionCache[session.sid].user.messagesUsed      = usage.messages_used;
         sessionCache[session.sid].user.messagesRemaining = Math.max(0, usage.messages_limit - usage.messages_used);
       }
 
-      const answer =
+      let answer =
         (typeof flowRes === 'string' ? flowRes : null) ||
         flowRes.text || flowRes.answer || flowRes.output ||
         flowRes.message || flowRes.result || flowRes.response ||
         (Array.isArray(flowRes.outputs) && flowRes.outputs[0]?.text) ||
         'Billi is temporarily unavailable. Please try again.';
+
+      // ── Output leak filter ──
+      if (containsLeakage(answer)) {
+        console.warn(`OUTPUT_LEAK | ${u.email} | detected and sanitised`);
+        answer = SAFE_FALLBACK;
+      }
 
       res.writeHead(200, {'Content-Type':'application/json'});
       res.end(JSON.stringify({
@@ -530,9 +661,83 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(401,{'Content-Type':'application/json'});
       res.end(JSON.stringify({error:'Authentication required'})); return;
     }
+    // Log every access to PostgreSQL for anomaly detection + legal evidence
+    const clientIp = req.headers['x-forwarded-for']?.split(',')[0]?.trim()
+                  || req.socket?.remoteAddress || null;
+    const userAgent = req.headers['user-agent'] || null;
+    db.logPromptAccess(session.user.email, session.user.plan, clientIp, userAgent)
+      .catch(e => console.error('Prompt log error:', e.message));
+
+    // Return only display labels — templates are never sent to the browser
     const prompts = getUserPrompts(session.user.plan || 'free');
     res.writeHead(200,{'Content-Type':'application/json'});
     res.end(JSON.stringify({prompts})); return;
+  }
+
+  // ── Prompt resolve — server-side template lookup, never exposes template ──
+  // Client sends { promptId } → server returns Flowise answer directly
+  if (pathname === '/api/prompt/send' && method === 'POST') {
+    const session = await getSessionUser(req);
+    if (!session) {
+      res.writeHead(401,{'Content-Type':'application/json'});
+      res.end(JSON.stringify({error:'Authentication required'})); return;
+    }
+    const u = session.user;
+    if (!checkRateLimit(u.email)) {
+      res.writeHead(429,{'Content-Type':'application/json'});
+      res.end(JSON.stringify({error:'rate_limited', answer:'Give me a moment — try again in a minute.'})); return;
+    }
+    if (u.messagesUsed >= u.messagesLimit) {
+      res.writeHead(403,{'Content-Type':'application/json'});
+      res.end(JSON.stringify({error:'limit_reached', plan: u.plan})); return;
+    }
+    try {
+      const body   = await readBody(req);
+      const {promptId} = JSON.parse(body);
+      if (!promptId) throw new Error('No promptId');
+
+      const template = resolvePromptTemplate(promptId, u.plan);
+      if (!template) {
+        res.writeHead(403,{'Content-Type':'application/json'});
+        res.end(JSON.stringify({error:'prompt_locked', answer:'Upgrade your plan to use this prompt.'})); return;
+      }
+
+      // Template is resolved server-side, never returned to client
+      const question = template
+        .replace('{userName}', u.name || 'you')
+        .replace('{userPlan}', u.plan);
+
+      const flowRes = await httpsPost(
+        `${FLOWISE_URL}/api/v1/prediction/${FLOWISE_CHATFLOW_ID}`,
+        JSON.stringify({question}),
+        {'Content-Type':'application/json'}
+      );
+      const usage = await db.incrementMessages(u.email);
+      if (sessionCache[session.sid]) {
+        sessionCache[session.sid].user.messagesUsed      = usage.messages_used;
+        sessionCache[session.sid].user.messagesRemaining = Math.max(0, usage.messages_limit - usage.messages_used);
+      }
+      let answer =
+        (typeof flowRes === 'string' ? flowRes : null) ||
+        flowRes.text || flowRes.answer || flowRes.output ||
+        flowRes.message || flowRes.result || flowRes.response ||
+        (Array.isArray(flowRes.outputs) && flowRes.outputs[0]?.text) ||
+        'Billi is temporarily unavailable. Please try again.';
+
+      if (containsLeakage(answer)) { answer = SAFE_FALLBACK; }
+
+      res.writeHead(200,{'Content-Type':'application/json'});
+      res.end(JSON.stringify({
+        answer,
+        messagesUsed: usage.messages_used,
+        messagesRemaining: Math.max(0, usage.messages_limit - usage.messages_used)
+      }));
+    } catch(err) {
+      console.error('Prompt send error:', err.message);
+      res.writeHead(500,{'Content-Type':'application/json'});
+      res.end(JSON.stringify({error:'Billi is temporarily unavailable. Please try again.'}));
+    }
+    return;
   }
 
   // ── PWA reset (clears cache + localStorage for testing) ──
@@ -569,6 +774,11 @@ reset();
 </script>
 </body></html>`);
     return;
+  }
+
+  // ── Terms of Service ──────────────────────
+  if (pathname === '/terms' && method === 'GET') {
+    serveFile(res, path.join(ROOT, 'terms.html')); return;
   }
 
   // ── Static files ──────────────────────────

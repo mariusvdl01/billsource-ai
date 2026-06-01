@@ -8,6 +8,7 @@ const CACHE_URLS = [
   '/app',
   '/billi-avatar.svg',
   '/billi-logo.svg',
+  '/billi-network.svg',
   '/favicon.svg',
   '/favicon.png',
   'https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js'

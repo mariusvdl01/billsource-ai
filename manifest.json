@@ -1,27 +1,43 @@
 {
-  "name": "Billi — Your Business Associate Team",
+  "name": "Billi \u2014 Your Business Associate Team",
   "short_name": "Billi",
-  "description": "Bean Counter, Brand Guru, Deal Maker, The Rule Book and The Fixer — five AI business advisors in one conversation. Built for SA SMEs.",
+  "description": "Bean Counter \u00b7 Brand Guru \u00b7 Deal Maker \u00b7 The Rule Book \u00b7 The Fixer \u00b7 The IT Guy \u2014 six AI business advisors in one conversation. Built for SA SMEs.",
   "start_url": "/app",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0D0D0D",
+  "background_color": "#F59E0B",
   "theme_color": "#F59E0B",
   "icons": [
-    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" },
-    { "src": "favicon.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "billi-avatar.svg", "sizes": "any", "type": "image/svg+xml" }
-  ],
-  "screenshots": [
     {
       "src": "favicon.svg",
-      "sizes": "512x512",
+      "sizes": "any",
       "type": "image/svg+xml",
-      "form_factor": "narrow",
-      "label": "Billi chat interface"
+      "purpose": "any"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },
+    {
+      "src": "favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "billi-avatar.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ],
-  "categories": ["business", "finance", "productivity"],
+  "categories": [
+    "business",
+    "finance",
+    "productivity"
+  ],
   "lang": "en-ZA",
   "dir": "ltr",
   "scope": "/",
