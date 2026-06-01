@@ -381,8 +381,9 @@
         <div class="plan-opt-price">R39</div>
         <div class="plan-opt-msgs">
           <span class="role">Bean Counter</span>
-          <span class="role">Deal Maker</span>
-          <span class="meta">.ac.za email · 2 reports · 100 msg/mo</span>
+          <span class="role">The IT Guy</span>
+          <span class="meta">.ac.za email · 100 msg/mo</span>
+          <span class="meta">IT Guy: 1st line + Tech Guide</span>
         </div>
       </div>
       <div class="plan-opt sel" onclick="selectPlan('professional',this)">
@@ -391,7 +392,9 @@
         <div class="plan-opt-msgs">
           <span class="role">Bean Counter</span>
           <span class="role">The Rule Book</span>
-          <span class="meta">5 reports · 300 msg/mo</span>
+          <span class="role">The IT Guy</span>
+          <span class="meta">300 msg/mo · Top-up R50 = 200</span>
+          <span class="meta">IT Guy: 1st &amp; 2nd line + Tech Guide</span>
         </div>
       </div>
       <div class="plan-opt" onclick="selectPlan('business',this)">
@@ -401,22 +404,22 @@
           <span class="role">Bean Counter</span>
           <span class="role">The Rule Book</span>
           <span class="role">Brand Guru</span>
-          <span class="meta">20 reports · 1 000 msg/mo</span>
+          <span class="role">The IT Guy</span>
+          <span class="meta">1 000 msg/mo · Top-up R50 = 200</span>
+          <span class="meta">IT Guy: 1st &amp; 2nd line + Tech Guide</span>
+          <span class="meta" style="color:var(--orange);font-weight:600;margin-top:4px">&#10003; Billsource Small Business Plan (R85/mo value)</span>
+          <span class="meta" style="font-size:10px">SSO — one login for Billi + Billsource.com</span>
         </div>
       </div>
       <div class="plan-opt" onclick="selectPlan('enterprise',this)">
         <div class="plan-opt-name">Enterprise</div>
         <div class="plan-opt-price">R599</div>
         <div class="plan-opt-msgs">
-          <span class="role">Bean Counter</span>
-          <span class="role">The Rule Book</span>
-          <span class="role">Brand Guru</span>
-          <span class="role">Deal Maker</span>
-          <span class="role">The Fixer</span>
-          <span class="role">The IT Guy</span>
-          <span class="meta">Unlimited · 5 000 msg/mo · All 3 IT support lines</span>
-          <span class="meta" style="color:var(--orange);font-weight:600;margin-top:4px">&#10003; Includes Billsource Small Profile (R85/mo value)</span>
-          <span class="meta" style="font-size:10px">SSO — one login for Billi + Billsource 2.0</span>
+          <span class="role">All 6 advisors</span>
+          <span class="meta">5 000 msg/mo · Top-up R50 = 200</span>
+          <span class="meta">IT Guy: all 3 lines + Tech Guide</span>
+          <span class="meta" style="color:var(--orange);font-weight:600;margin-top:4px">&#10003; Billsource Medium Business Plan (R150/mo value)</span>
+          <span class="meta" style="font-size:10px">SSO — one login for Billi + Billsource.com</span>
         </div>
       </div>
     </div>
@@ -1097,7 +1100,10 @@
     var ssoNote = document.getElementById('sso-note');
     if (plan === 'enterprise') {
       btn.textContent = 'Pay R599/mo — Activate Enterprise + Billsource ▶';
-      if (ssoNote) ssoNote.style.display = 'block';
+      if (ssoNote) { ssoNote.innerHTML = 'Your Enterprise plan includes single sign-on access to Billsource 2.0 (Medium Business — R150/mo value).<br>After payment you will be redirected to complete your Billsource profile.'; ssoNote.style.display = 'block'; }
+    } else if (plan === 'business') {
+      btn.textContent = 'Pay R299/mo — Activate Business + Billsource ▶';
+      if (ssoNote) { ssoNote.innerHTML = 'Your Business plan includes single sign-on access to Billsource 2.0 (Small Business — R85/mo value).<br>After payment you will be redirected to complete your Billsource profile.'; ssoNote.style.display = 'block'; }
     } else {
       btn.textContent = 'Pay ' + (prices[plan]||'') + '/mo with Paystack ▶';
       if (ssoNote) ssoNote.style.display = 'none';
@@ -1115,9 +1121,8 @@
       });
       const data = await res.json();
       if (data.url) {
-        // For Enterprise: after Paystack success, redirect to Billsource SSO profile page
-        if (selectedPlan === 'enterprise') {
-          // Store SSO redirect intent — server webhook will handle the actual account link
+        // For Business/Enterprise: after Paystack success, redirect to Billsource SSO profile page
+        if (selectedPlan === 'enterprise' || selectedPlan === 'business') {
           sessionStorage.setItem('billi-post-payment', 'sso-billsource');
         }
         window.location.href = data.url;
