@@ -78,11 +78,17 @@
     .msg-av-user{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
     .msg-bubble{max-width:78%;padding:11px 15px;border-radius:12px;font-size:14px;line-height:1.65}
     .msg-bubble.ai{background:var(--msg-ai);border:0.5px solid var(--border);color:var(--text);position:relative}
-    .msg-copy{position:absolute;top:6px;right:8px;background:transparent;border:none;color:var(--muted);cursor:pointer;padding:3px;border-radius:4px;opacity:0;transition:opacity 0.2s;display:flex;align-items:center;justify-content:center}
-    .msg-copy:hover{color:var(--orange);opacity:1!important}
-    .msg-copy svg{width:13px;height:13px}
-    .msg:hover .msg-copy{opacity:0.5}
-    @media(hover:none){.msg-copy{opacity:0.4!important}}
+    .msg-copy{display:none}
+    .msg-copy-bar{display:flex;justify-content:flex-end;margin-top:8px;padding-top:6px;border-top:0.5px solid var(--border)}
+    .msg-copy-btn{background:transparent;border:0.5px solid var(--border);color:var(--muted);cursor:pointer;padding:4px 10px;border-radius:20px;font-size:11px;font-family:var(--font);display:flex;align-items:center;gap:5px;transition:all 0.18s}
+    .msg-copy-btn:hover{border-color:var(--orange);color:var(--orange)}
+    .msg-copy-btn svg{width:11px;height:11px;flex-shrink:0}
+    .msg-dl-picker{position:absolute;bottom:36px;right:0;background:var(--card);border:0.5px solid var(--border);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.12);padding:6px;display:none;flex-direction:column;gap:4px;z-index:200;min-width:130px}
+    .msg-dl-picker.open{display:flex}
+    .msg-dl-opt{background:transparent;border:none;color:var(--text);cursor:pointer;padding:7px 12px;border-radius:6px;font-size:12px;font-family:var(--font);text-align:left;display:flex;align-items:center;gap:8px;transition:background 0.15s}
+    .msg-dl-opt:hover{background:var(--bg2);color:var(--orange)}
+    .msg-dl-opt svg{width:13px;height:13px;flex-shrink:0}
+    .msg-dl-wrap{position:relative}
     .msg-bubble.user{background:var(--orange);color:#fff}
     .msg-bubble.ai p{margin:0 0 0.6em 0;text-align:left}
     .msg-bubble.ai p:last-child{margin-bottom:0}
@@ -649,12 +655,117 @@
 
   function copyBubble(btn) {
     var bubble = btn.closest('.msg-bubble');
-    var text = bubble ? (bubble.innerText || bubble.textContent || '').replace(/^Copy\n?/, '').trim() : '';
+    var text = '';
+    if (bubble) {
+      var clone = bubble.cloneNode(true);
+      var bar = clone.querySelector('.msg-copy-bar');
+      if (bar) bar.remove();
+      text = (clone.innerText || clone.textContent || '').trim();
+    }
     navigator.clipboard.writeText(text).then(function() {
-      var icon = btn.querySelector('svg');
-      btn.innerHTML = '<svg viewBox="0 0 13 13" fill="none"><polyline points="1,7 4,10 11,3" stroke="#2ecc71" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-      setTimeout(function(){ btn.innerHTML = '<svg viewBox="0 0 13 13" fill="none"><rect x="1" y="4" width="7" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 4V2.5a1 1 0 011-1h5.5a1 1 0 011 1V9a1 1 0 01-1 1H10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>'; }, 1800);
+      btn.innerHTML = '<svg viewBox="0 0 13 13" fill="none"><polyline points="1,7 4,10 11,3" stroke="#2ecc71" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Copied!';
+      btn.style.color = '#2ecc71'; btn.style.borderColor = '#2ecc71';
+      setTimeout(function(){
+        btn.innerHTML = '<svg viewBox="0 0 13 13" fill="none"><rect x="1" y="4" width="7" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 4V2.5a1 1 0 011-1h5.5a1 1 0 011 1V9a1 1 0 01-1 1H10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg> Copy';
+        btn.style.color = ''; btn.style.borderColor = '';
+      }, 1800);
     });
+  }
+
+  function toggleDlPicker(btn) {
+    var picker = btn.closest('.msg-dl-wrap').querySelector('.msg-dl-picker');
+    var isOpen = picker.classList.contains('open');
+    // Close all other pickers first
+    document.querySelectorAll('.msg-dl-picker.open').forEach(function(p){ p.classList.remove('open'); });
+    if (!isOpen) picker.classList.add('open');
+  }
+
+  // Close download picker when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.msg-dl-wrap')) {
+      document.querySelectorAll('.msg-dl-picker.open').forEach(function(p){ p.classList.remove('open'); });
+    }
+  });
+
+  function downloadBubble(btn, format) {
+    // Get clean text from bubble
+    var bubble = btn.closest('.msg-bubble');
+    var clone = bubble.cloneNode(true);
+    var bar = clone.querySelector('.msg-copy-bar');
+    if (bar) bar.remove();
+    var plainText = (clone.innerText || clone.textContent || '').trim();
+    var htmlContent = clone.innerHTML;
+
+    // Get chat title for filename
+    var title = document.getElementById('chat-title') ?
+      document.getElementById('chat-title').textContent.trim().replace(/[^a-zA-Z0-9 ]/g,'').trim() : 'Billi';
+    var filename = 'Billi — ' + (title.slice(0,40) || 'Response');
+
+    // Close picker
+    document.querySelectorAll('.msg-dl-picker.open').forEach(function(p){ p.classList.remove('open'); });
+
+    if (format === 'pdf') {
+      downloadAsPDF(plainText, htmlContent, filename);
+    } else {
+      downloadAsDocx(plainText, filename);
+    }
+  }
+
+  function downloadAsPDF(plainText, htmlContent, filename) {
+    // Build a clean printable HTML page and trigger print-to-PDF
+    var win = window.open('', '_blank');
+    win.document.write(\`<!DOCTYPE html><html><head>
+      <meta charset="UTF-8"/>
+      <title>\${filename}</title>
+      <style>
+        body{font-family:Helvetica,Arial,sans-serif;font-size:14px;line-height:1.7;color:#1c1c1e;max-width:680px;margin:40px auto;padding:0 24px}
+        h1,h2,h3{font-weight:700;margin:1.2em 0 0.4em}
+        p{margin:0 0 0.8em}
+        ul,ol{margin:0.4em 0 0.8em 1.4em}
+        li{margin-bottom:0.3em}
+        strong{font-weight:700}
+        hr{border:none;border-top:1px solid #ddd;margin:1.2em 0}
+        a{color:#E8621A;text-decoration:none}
+        .header{border-bottom:2px solid #E8621A;padding-bottom:12px;margin-bottom:24px}
+        .logo{font-size:18px;font-weight:800;color:#E8621A;letter-spacing:1px}
+        .meta{font-size:11px;color:#888;margin-top:4px}
+        @media print{body{margin:20px}}
+      </style>
+    </head><body>
+      <div class="header">
+        <div class="logo">Billi — Business Associate Intelligence</div>
+        <div class="meta">billsource.ai &middot; \${new Date().toLocaleDateString('en-ZA',{day:'numeric',month:'long',year:'numeric'})}</div>
+      </div>
+      \${htmlContent}
+    </body></html>\`);
+    win.document.close();
+    setTimeout(function(){ win.print(); }, 400);
+  }
+
+  function downloadAsDocx(plainText, filename) {
+    // Build a simple RTF file (opens in Word on all platforms, no library needed)
+    var rtf = '{\\rtf1\\ansi\\deff0' +
+      '{\\fonttbl{\\f0 Helvetica;}}' +
+      '{\\colortbl ;\\red232\\green98\\blue26;}' +
+      '\\f0\\fs28 ' +
+      '{\\b\\cf1 Billi \\emdash  Business Associate Intelligence}\\line' +
+      '\\fs20 billsource.ai \\bullet  ' + new Date().toLocaleDateString('en-ZA') + '\\par\\par' +
+      '\\fs24 ' +
+      plainText
+        .replace(/\\/g, '\\\\')
+        .replace(/[{}]/g, '\\$&')
+        .replace(/
+
+/g, '\\par\\par ')
+        .replace(/
+/g, '\\line ') +
+      '}';
+    var blob = new Blob([rtf], {type: 'application/rtf'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename + '.rtf';
+    a.click();
+    URL.revokeObjectURL(a.href);
   }
 
   function addBubble(text, role) {
@@ -665,15 +776,37 @@
     const av = role === 'user'
       ? `<div class="msg-av-user">${init}</div>`
       : billiAv();
-    const copyBtn = role === 'ai'
-      ? `<button class="msg-copy" onclick="copyBubble(this)" title="Copy response">
-           <svg viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-             <rect x="1" y="4" width="7" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
-             <path d="M4 4V2.5a1 1 0 011-1h5.5a1 1 0 011 1V9a1 1 0 01-1 1H10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-           </svg>
-         </button>`
+    const copyBar = role === 'ai'
+      ? `<div class="msg-copy-bar">
+           <button class="msg-copy-btn" onclick="copyBubble(this)" title="Copy response">
+             <svg viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <rect x="1" y="4" width="7" height="8" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
+               <path d="M4 4V2.5a1 1 0 011-1h5.5a1 1 0 011 1V9a1 1 0 01-1 1H10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+             </svg>
+             Copy
+           </button>
+           <div class="msg-dl-wrap">
+             <button class="msg-copy-btn" onclick="toggleDlPicker(this)" title="Download response">
+               <svg viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                 <path d="M6.5 1v7M4 6l2.5 2.5L9 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                 <path d="M1 10h11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+               </svg>
+               Download
+             </button>
+             <div class="msg-dl-picker">
+               <button class="msg-dl-opt" onclick="downloadBubble(this,'pdf')">
+                 <svg viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="2" stroke="currentColor" stroke-width="1.1"/><text x="6.5" y="9" text-anchor="middle" font-size="5" font-weight="700" fill="currentColor">PDF</text></svg>
+                 Download PDF
+               </button>
+               <button class="msg-dl-opt" onclick="downloadBubble(this,'docx')">
+                 <svg viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="11" rx="2" stroke="currentColor" stroke-width="1.1"/><text x="6.5" y="9" text-anchor="middle" font-size="4.5" font-weight="700" fill="currentColor">DOC</text></svg>
+                 Download Word
+               </button>
+             </div>
+           </div>
+         </div>`
       : '';
-    d.innerHTML = av + `<div class="msg-bubble ${role}">${copyBtn}${renderText(text, role)}</div>`;
+    d.innerHTML = av + `<div class="msg-bubble ${role}">${renderText(text, role)}${copyBar}</div>`;
     msgs.appendChild(d);
     msgs.scrollTop = msgs.scrollHeight;
     return d;
