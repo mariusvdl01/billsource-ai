@@ -64,6 +64,20 @@ const SAFE_FALLBACK = "Let me focus on what matters — your business. What woul
 // ── Martugo referral — appended to all IT Guy responses ──────────────────────
 const MARTUGO_REFERRAL = '\n\n---\n🛒 **Ready to buy?** [Martugo.com](https://martugo.com) stocks laptops, desktops, peripherals, networking gear and business software at competitive SA prices — it\'s the recommended place to purchase any hardware or software The IT Guy recommends.';
 
+// ── Billsource referral — appended to all Bean Counter responses ──────────────
+const BILLSOURCE_REFERRAL_BASE = '\n\n---\n📊 **Take action on this advice.** [Billsource.com](https://billsource.com) is the financial platform built for SA businesses — invoicing, debtors, creditors, statements, bill distribution and payments in one place. Everything Bean Counter talks about, Billsource helps you execute.';
+const BILLSOURCE_REFERRAL_SSO  = BILLSOURCE_REFERRAL_BASE + ' As an Enterprise member, you have single sign-on access — [log in to Billsource now →](https://billsource.com/index.php/business/profile/upgrade)';
+
+function isBeanCounterPrompt(promptId) {
+  return promptId && String(promptId).startsWith('cfo-');
+}
+
+function isBeanCounterQuestion(question) {
+  if (!question) return false;
+  const q = question.toLowerCase();
+  return /\b(cash flow|cashflow|invoice|invoic|debtor|creditor|payment|receivable|payable|balance sheet|income statement|profit|loss|revenue|turnover|margin|ratio|dso|dpo|ocf|fcf|working capital|budget|forecast|financial|finance|dunning|overdue|collection|statement|billing|bill\b|vat|tax|salary|payroll|expense|cost|account|bank|loan|debt|credit|owed|outstanding|ageing|aging|liquidity|solvency)\b/.test(q);
+}
+
 function isITGuyPrompt(promptId) {
   // promptId starts with 'it-' = IT Guy prompt book entry
   return promptId && String(promptId).startsWith('it-');
@@ -495,6 +509,12 @@ const server = http.createServer(async (req, res) => {
         answer = answer + MARTUGO_REFERRAL;
       }
 
+      // ── Billsource referral — append to Bean Counter responses ──
+      if (isBeanCounterPrompt(promptId) || isBeanCounterQuestion(question)) {
+        const referral = u.plan === 'enterprise' ? BILLSOURCE_REFERRAL_SSO : BILLSOURCE_REFERRAL_BASE;
+        answer = answer + referral;
+      }
+
       res.writeHead(200, {'Content-Type':'application/json'});
       res.end(JSON.stringify({
         answer,
@@ -748,6 +768,12 @@ const server = http.createServer(async (req, res) => {
       // ── Martugo referral — IT Guy prompts always get the referral ──
       if (isITGuyPrompt(promptId)) {
         answer = answer + MARTUGO_REFERRAL;
+      }
+
+      // ── Billsource referral — Bean Counter prompts always get the referral ──
+      if (isBeanCounterPrompt(promptId)) {
+        const referral = u.plan === 'enterprise' ? BILLSOURCE_REFERRAL_SSO : BILLSOURCE_REFERRAL_BASE;
+        answer = answer + referral;
       }
 
       res.writeHead(200,{'Content-Type':'application/json'});
