@@ -82,10 +82,10 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:0 2.5r
 .btn-lg.secondary:hover{border-color:var(--orange);color:var(--orange)}
 
 /* ── HERO ── */
-.hero{padding:4rem 2.5rem 3rem;position:relative;overflow:hidden;min-height:460px}
-.hero-inner{display:flex;align-items:center;gap:3rem;max-width:1000px;margin:0 auto}
-.hero-logo-col{flex-shrink:0;display:flex;align-items:center;justify-content:center}
-.hero-text-col{flex:1;text-align:left}
+.hero{padding:3.5rem 2.5rem 3rem;position:relative;overflow:hidden;min-height:440px}
+.hero-inner{display:flex;align-items:center;justify-content:space-between;gap:2rem;max-width:1000px;margin:0 auto;width:100%}
+.hero-logo-col{flex:0 0 340px;display:flex;align-items:center;justify-content:center}
+.hero-text-col{flex:0 0 440px;text-align:left}
 .badge{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:500;
        letter-spacing:.08em;text-transform:uppercase;color:var(--orange);
        background:var(--orange-dim);border:0.5px solid var(--orange-border);
@@ -98,7 +98,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:0 2.5r
 .hero h1 span{color:var(--orange)}
 .hero-sub{font-size:1rem;color:var(--muted);line-height:1.7;margin-bottom:1.5rem;max-width:500px}
 /* Hero text — two compact stacked frosted cards on the right */
-.hero-cards-col{display:flex;flex-direction:column;gap:12px}
+.hero-cards-col{display:flex;flex-direction:column;gap:10px;width:100%}
 .hero-card{
   background:rgba(26,22,20,0.65);
   backdrop-filter:blur(16px);
@@ -136,11 +136,13 @@ body.light .hero-trust-line strong{color:var(--text)!important}
             font-size:14px;font-weight:600;font-family:Helvetica,Arial,sans-serif;
             text-decoration:none;transition:opacity .2s;box-shadow:0 1px 4px rgba(0,0,0,.1)}
 .google-btn:hover{opacity:.9}
-@media(max-width:740px){
-  .hero-inner{flex-direction:column;text-align:center}
-  .hero-sub{margin-left:auto;margin-right:auto}
-  .hero-cta{justify-content:center}
+@media(max-width:900px){
+  .hero-inner{flex-direction:column;align-items:center;gap:1.5rem}
+  .hero-logo-col{flex:0 0 auto}
+  .hero-text-col{flex:0 0 auto;width:100%;max-width:540px}
   .hero-cards-col{width:100%}
+  .hero-sub{margin-left:0;margin-right:0}
+  .hero-cta{justify-content:flex-start}
 }
 
 /* ── GAUGE STRIP ── */
