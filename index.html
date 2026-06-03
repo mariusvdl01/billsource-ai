@@ -82,10 +82,11 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:0 2.5r
 .btn-lg.secondary:hover{border-color:var(--orange);color:var(--orange)}
 
 /* ── HERO ── */
-.hero{padding:3.5rem 2.5rem 3rem;position:relative;overflow:hidden;min-height:440px}
-.hero-inner{display:flex;align-items:center;justify-content:space-between;gap:2rem;max-width:1000px;margin:0 auto;width:100%}
-.hero-logo-col{flex:0 0 340px;display:flex;align-items:center;justify-content:center}
-.hero-text-col{flex:0 0 440px;text-align:left}
+/* ── HERO ── */
+.hero{padding:4rem 2.5rem 3rem;position:relative;overflow:hidden;background:linear-gradient(135deg,#2A1F10 0%,#1C1C1E 60%,#0D2030 100%)}
+.hero-inner{display:flex;align-items:center;gap:3rem;max-width:1000px;margin:0 auto}
+.hero-logo-col{flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.hero-text-col{flex:1;text-align:left}
 .badge{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:500;
        letter-spacing:.08em;text-transform:uppercase;color:var(--orange);
        background:var(--orange-dim);border:0.5px solid var(--orange-border);
@@ -97,53 +98,50 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:0 2.5r
          line-height:1.1;margin-bottom:1rem;color:var(--text)}
 .hero h1 span{color:var(--orange)}
 .hero-sub{font-size:1rem;color:var(--muted);line-height:1.7;margin-bottom:1.5rem;max-width:500px}
-/* Hero text — two compact stacked frosted cards on the right */
-.hero-cards-col{display:flex;flex-direction:column;gap:10px;width:100%}
-.hero-card{
-  background:rgba(26,22,20,0.65);
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
-  border:0.5px solid rgba(255,255,255,0.12);
-  border-radius:14px;
-  padding:1.25rem 1.5rem;
-  box-shadow:0 6px 24px rgba(0,0,0,0.32);
-}
-body.light .hero-card{
-  background:rgba(245,240,235,0.78);
-  border-color:rgba(255,255,255,0.55);
-  box-shadow:0 6px 24px rgba(80,50,20,0.15);
-}
-/* Text colours inside hero cards — dark mode */
-.hero-card h1{color:#F0EDE8;text-shadow:none;font-size:clamp(1.25rem,2.8vw,1.9rem);line-height:1.15;margin:0}
-.hero-card h1 span{color:#E8621A}
-.hero-card .hero-sub{color:rgba(240,237,232,0.88);text-shadow:none;margin-bottom:.75rem;max-width:none}
-.hero-card .hero-sub em{color:#F0EDE8}
-.hero-card .badge{background:rgba(232,98,26,0.25);border-color:rgba(232,98,26,0.5);color:#FFAA60;margin-bottom:.875rem}
-.hero-card .badge-dot{background:#FFAA60}
-/* Text colours inside hero cards — light mode */
-body.light .hero-card h1{color:var(--text)}
-body.light .hero-card .hero-sub{color:var(--muted)}
-body.light .hero-card .badge{background:var(--orange-dim);border-color:var(--orange-border);color:var(--orange)}
-body.light .hero-card .badge-dot{background:var(--orange)}
-.hero-trust-line{color:rgba(240,237,232,0.75)!important}
-.hero-trust-line strong{color:#F0EDE8!important}
-body.light .hero-trust-line{color:var(--muted)!important}
-body.light .hero-trust-line strong{color:var(--text)!important}
 .hero-sub em{font-style:italic;color:var(--text)}
-.hero-cta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1rem}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:1.5rem}
 .google-btn{display:inline-flex;align-items:center;gap:10px;background:#fff;
             border:0.5px solid #D8D0C8;color:#333;padding:11px 22px;border-radius:8px;
             font-size:14px;font-weight:600;font-family:Helvetica,Arial,sans-serif;
             text-decoration:none;transition:opacity .2s;box-shadow:0 1px 4px rgba(0,0,0,.1)}
 .google-btn:hover{opacity:.9}
-@media(max-width:900px){
-  .hero-inner{flex-direction:column;align-items:center;gap:1.5rem}
-  .hero-logo-col{flex:0 0 auto}
-  .hero-text-col{flex:0 0 auto;width:100%;max-width:540px}
-  .hero-cards-col{width:100%}
-  .hero-sub{margin-left:0;margin-right:0}
-  .hero-cta{justify-content:flex-start}
+.hero-trust-line{color:var(--muted)!important}
+.hero-trust-line strong{color:var(--text)!important}
+/* Hero text contrast on photo backgrounds */
+.hero .hero-sub{text-shadow:0 1px 4px rgba(0,0,0,0.35)}
+.hero h1{text-shadow:0 2px 6px rgba(0,0,0,0.3)}
+@media(max-width:740px){
+  .hero-inner{flex-direction:column;text-align:center}
+  .hero-sub{margin-left:auto;margin-right:auto}
+  .hero-cta{justify-content:center}
 }
+
+/* ── HERO CARDS ── */
+.hero-card{
+  background:rgba(20,16,14,0.72);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,0.18);
+  border-radius:14px;
+  padding:1.1rem 1.4rem;
+  box-shadow:0 4px 24px rgba(0,0,0,0.4);
+  margin-bottom:10px;
+}
+/* text inside cards always readable regardless of photo */
+.hero-card h1{color:#F0EDE8!important;text-shadow:none}
+.hero-card h1 span{color:#E8621A!important}
+.hero-card .hero-sub{color:rgba(240,237,232,0.9)!important;text-shadow:none}
+.hero-card .hero-sub em{color:#F0EDE8!important}
+.hero-card .badge{background:rgba(232,98,26,0.28)!important;border-color:rgba(232,98,26,0.6)!important;color:#FFAA60!important}
+.hero-card .badge-dot{background:#FFAA60!important}
+.hero-card .hero-trust-line{color:rgba(240,237,232,0.72)!important}
+.hero-card .hero-trust-line strong{color:#F0EDE8!important}
+body.light .hero-card{
+  background:rgba(26,22,20,0.68);
+  border-color:rgba(255,255,255,0.18);
+  box-shadow:0 4px 24px rgba(0,0,0,0.38);
+}
+.hero-card:last-child{margin-bottom:0}
 
 /* ── GAUGE STRIP ── */
 .gauge-strip{background:var(--alt);border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border);padding:2rem 1.5rem}
@@ -552,29 +550,15 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
 <!-- ══════════════════════════════════ PAGE: HOME ══════════════════════════════════ -->
 <div class="page active" id="page-home">
 <section class="hero">
-    <!-- Scenic slideshow — 4 African landscapes cycling behind hero -->
+  <!-- Scenic slideshow backgrounds -->
   <div class="hero-scenes">
-    <div class="hero-scene">
-      <img class="scene-photo" src="https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=1600&q=80" alt="Namibia desert dunes, Sossusvlei, red sand" loading="eager"/>
-      <div class="scene-cast"></div>
-    </div>
-    <div class="hero-scene">
-      <img class="scene-photo" src="https://images.unsplash.com/photo-1682687218608-5e2522b04673?auto=format&fit=crop&w=1600&q=80" alt="Saharan rocky moon landscape, Algeria" loading="lazy"/>
-      <div class="scene-cast"></div>
-    </div>
-    <div class="hero-scene">
-      <img class="scene-photo" src="https://images.unsplash.com/photo-1580502304784-8985b7eb7260?auto=format&fit=crop&w=1600&q=80" alt="African great lake, East Africa" loading="lazy"/>
-      <div class="scene-cast"></div>
-    </div>
-    <div class="hero-scene">
-      <img class="scene-photo" src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1600&q=80" alt="Victoria Falls, Zimbabwe" loading="lazy"/>
-      <div class="scene-cast"></div>
-    </div>
-    <!-- Billi network diagram — animated, layered over photos -->
-    <div style="position:absolute;inset:0;z-index:3;pointer-events:none;
-         display:flex;align-items:center;justify-content:center;overflow:hidden">
-      <div style="width:min(900px,110%);opacity:0.14;filter:blur(0.4px)">
-        <svg xmlns="http://www.w3.org/2000/svg"
+    <div class="hero-scene"><img class="scene-photo" src="https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=1600&q=80" alt="Namibia desert dunes" loading="eager"/><div class="scene-cast"></div></div>
+    <div class="hero-scene"><img class="scene-photo" src="https://images.unsplash.com/photo-1682687218608-5e2522b04673?auto=format&fit=crop&w=1600&q=80" alt="Saharan rocky landscape" loading="lazy"/><div class="scene-cast"></div></div>
+    <div class="hero-scene"><img class="scene-photo" src="https://images.unsplash.com/photo-1580502304784-8985b7eb7260?auto=format&fit=crop&w=1600&q=80" alt="African great lake" loading="lazy"/><div class="scene-cast"></div></div>
+    <div class="hero-scene"><img class="scene-photo" src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1600&q=80" alt="Victoria Falls" loading="lazy"/><div class="scene-cast"></div></div>
+    <!-- Billi network overlay -->
+    <div style="position:absolute;inset:0;z-index:3;pointer-events:none;display:flex;align-items:center;justify-content:center;overflow:hidden">
+      <div style="width:min(900px,110%);opacity:0.14;filter:blur(0.4px)">        <svg xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 900 940"
   width="100%" height="100%"
   style="max-width:900px;display:block;margin:0 auto"
@@ -815,67 +799,77 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
 </g>
 
 </svg>
+      </div>
     </div>
     <div class="hero-scene-tint" style="z-index:4"></div>
   </div>
-  <div class="hero-inner" style="position:relative;z-index:1">
 
-    <!-- Animated 6-node orbit — visual power of 6-in-1 conversation -->
+  <!-- Hero content: Billi left, text right -->
+  <div class="hero-inner" style="position:relative;z-index:5">
     <div class="hero-logo-col">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="-200 -260 400 460" width="320" height="320" aria-label="Billi mascot" style="filter:drop-shadow(0 8px 32px rgba(245,158,11,0.25));overflow:visible">
-        <style>
-          @keyframes billi-eye-ball{0%{transform:scaleY(1)}12%,18%{transform:scaleY(0.05)}24%,40%{transform:scaleY(1)}46%,52%{transform:scaleY(0.05)}58%,100%{transform:scaleY(0)}}
-          @keyframes billi-eye-hi{0%{opacity:1}12%,18%{opacity:0}24%,40%{opacity:1}46%,52%{opacity:0}58%,100%{opacity:0}}
-          @keyframes billi-wink-bar{0%{opacity:0}12%,18%{opacity:1}24%,40%{opacity:0}46%,100%{opacity:1}}
-          .billi-eye-ball{animation:billi-eye-ball 3.5s ease-in-out 1s forwards;transform-box:fill-box;transform-origin:center}
-          .billi-eye-hi{animation:billi-eye-hi 3.5s ease-in-out 1s forwards}
-          .billi-wink-bar{animation:billi-wink-bar 3.5s ease-in-out 1s forwards;opacity:0}
-        </style>
-        <circle cx="0" cy="0" r="170" fill="#F59E0B" stroke="#92400E" stroke-width="12"/>
-        <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(-18,-87,-160)"/>
-        <rect x="-16"  y="-230" width="52" height="124" rx="26" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(5,10,-168)"/>
-        <rect x="72"   y="-208" width="42" height="96"  rx="21" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(22,93,-160)"/>
-        <ellipse cx="0" cy="50" rx="144" ry="96" fill="#FEF3C7" stroke="#92400E" stroke-width="10"/>
-        <rect x="-118" y="32" width="96" height="22" rx="11" fill="#92400E"/>
-        <rect x="-108" y="14" width="72" height="10" rx="5" fill="#92400E" opacity="0.2"/>
-        <circle class="billi-eye-ball" cx="-72" cy="46" r="46" fill="#92400E"/>
-        <circle class="billi-eye-hi"   cx="-56" cy="28" r="15" fill="#FEF3C7"/>
-        <circle class="billi-eye-hi"   cx="-78" cy="58" r="5"  fill="#FEF3C7" opacity="0.55"/>
-        <rect class="billi-wink-bar" x="-118" y="40" width="92" height="12" rx="6" fill="#92400E"/>
-        <circle cx="72" cy="46" r="46" fill="#92400E"/>
-        <circle cx="88" cy="28" r="15" fill="#FEF3C7"/>
-        <circle cx="66" cy="58" r="5"  fill="#FEF3C7" opacity="0.55"/>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="-200 -260 400 440" width="320" height="320"
+           style="filter:drop-shadow(0 8px 32px rgba(245,158,11,0.3));overflow:visible" aria-hidden="true">
+        <defs>
+          <radialGradient id="hbody" cx="36%" cy="28%" r="68%">
+            <stop offset="0%"  stop-color="#FFD060"/>
+            <stop offset="40%" stop-color="#F59E0B"/>
+            <stop offset="100%" stop-color="#7A4200"/>
+          </radialGradient>
+          <radialGradient id="hface" cx="40%" cy="35%" r="62%">
+            <stop offset="0%"  stop-color="#FFF8E8"/>
+            <stop offset="100%" stop-color="#EDD080"/>
+          </radialGradient>
+          <radialGradient id="hear" cx="38%" cy="28%" r="65%">
+            <stop offset="0%"  stop-color="#FFF0C8"/>
+            <stop offset="100%" stop-color="#D4A830"/>
+          </radialGradient>
+          <radialGradient id="heye" cx="30%" cy="28%" r="65%">
+            <stop offset="0%"  stop-color="#6B3010"/>
+            <stop offset="100%" stop-color="#3A1800"/>
+          </radialGradient>
+          <style>
+            @keyframes hbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+            .hbob{animation:hbob 3.5s ease-in-out infinite}
+          </style>
+        </defs>
+        <g class="hbob">
+          <circle cx="0" cy="0" r="170" fill="url(#hbody)" stroke="#92400E" stroke-width="22"/>
+          <rect x="-110" y="-214" width="46" height="108" rx="23" fill="url(#hear)" stroke="#92400E" stroke-width="11" transform="rotate(-18,-87,-160)"/>
+          <rect x="-16"  y="-230" width="52" height="124" rx="26" fill="url(#hear)" stroke="#92400E" stroke-width="11" transform="rotate(5,10,-168)"/>
+          <rect x="72"   y="-208" width="42" height="96"  rx="21" fill="url(#hear)" stroke="#92400E" stroke-width="11" transform="rotate(22,93,-160)"/>
+          <ellipse cx="0" cy="50" rx="144" ry="96" fill="url(#hface)" stroke="#92400E" stroke-width="14"/>
+          <ellipse cx="-55" cy="-40" rx="52" ry="34" fill="#FFE090" opacity="0.22"/>
+          <rect x="-118" y="32" width="96" height="22" rx="11" fill="#92400E"/>
+          <rect x="-108" y="14" width="72" height="10" rx="5"  fill="#92400E" opacity="0.2"/>
+          <circle cx="72" cy="46" r="46" fill="url(#heye)"/>
+          <circle cx="88" cy="28" r="15" fill="#FEF3C7"/>
+          <circle cx="66" cy="58" r="5"  fill="#FEF3C7" opacity="0.55"/>
+        </g>
       </svg>
-    </div>      </div>
     </div>
-
     <div class="hero-text-col">
-      <div class="hero-cards-col">
-        <!-- Card 1: Headline -->
-        <div class="hero-card">
-          <div class="badge"><span class="badge-dot"></span>Live now &mdash; free to try, no card required</div>
-          <h1>Meet <span>Billi</span> &mdash; the AI that has your back</h1>
+      <div class="hero-card">
+        <div class="badge"><span class="badge-dot"></span>Live now &mdash; free to try, no card required</div>
+        <h1>Meet <span>Billi</span> &mdash; the AI that has your back</h1>
+      </div>
+      <div class="hero-card">
+        <p class="hero-sub">Bean Counter &middot; Brand Guru &middot; Deal Maker &middot; The Rule Book &middot; The Fixer &middot; The IT Guy &mdash; six business advisors in one conversation. Built for the owner who says: <em>&ldquo;the sales are kak, what do we do?&rdquo;</em></p>
+        <div class="hero-cta">
+          <button class="btn-lg primary" onclick="showPage('demo')">&#8593; Try Billi free</button>
+          <button class="btn-lg secondary" onclick="showPage('cost')">See what it costs you &#8595;</button>
         </div>
-        <!-- Card 2: Advisors, quote, CTAs -->
-        <div class="hero-card">
-          <p class="hero-sub">Bean Counter &middot; Brand Guru &middot; Deal Maker &middot; The Rule Book &middot; The Fixer &middot; The IT Guy &mdash; six business advisors in one conversation. Built for the owner who says: <em>&ldquo;the sales are kak, what do we do?&rdquo;</em></p>
-          <div class="hero-cta">
-            <button class="btn-lg primary" onclick="showPage('demo')">&#8593; Try Billi free</button>
-            <button class="btn-lg secondary" onclick="showPage('cost')">See what it costs you &#8595;</button>
-          </div>
-          <a class="google-btn" href="/auth/google">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-          <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
-          <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
-          <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
-          <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
-        </svg>
-            Sign in with Google &mdash; it&rsquo;s free
-          </a>
-          <p class="hero-trust-line" style="margin-top:.75rem;font-size:11px;font-family:Helvetica,Arial,sans-serif"><strong style="color:var(--text)">23,000+</strong> businesses registered interest &middot; Bean Counter basics always free &middot; Top-up packs R50 = 200 messages</p>
-          <div style="margin-top:1rem">
-            <img src="logo2.png" alt="Billsource" height="26" style="display:block;filter:var(--logo-filter,none);opacity:0.85;"/>
-          </div>
+        <a class="google-btn" href="/auth/google">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
+            <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
+            <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+            <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+          </svg>
+          Sign in with Google &mdash; it&rsquo;s free
+        </a>
+        <p class="hero-trust-line" style="margin-top:.75rem;font-size:11px;font-family:Helvetica,Arial,sans-serif"><strong>23,000+</strong> businesses registered interest &middot; Bean Counter basics always free &middot; Top-up packs R50 = 200 messages</p>
+        <div style="margin-top:1.25rem">
+          <img src="logo2.png" alt="Billsource" height="28" style="display:block;filter:var(--logo-filter,none);opacity:0.9;"/>
         </div>
       </div>
     </div>
