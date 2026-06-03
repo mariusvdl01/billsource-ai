@@ -84,7 +84,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:0 2.5r
 /* ── HERO ── */
 .hero{padding:5rem 2.5rem 4rem;position:relative;overflow:hidden;min-height:520px}
 .hero-inner{display:flex;align-items:center;gap:3rem;max-width:1000px;margin:0 auto}
-.hero-logo-col{flex-shrink:0}
+.hero-logo-col{flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .hero-text-col{flex:1}
 .badge{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:500;
        letter-spacing:.08em;text-transform:uppercase;color:var(--orange);
@@ -97,13 +97,37 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:0 2.5r
          line-height:1.1;margin-bottom:1rem;color:var(--text)}
 .hero h1 span{color:var(--orange)}
 .hero-sub{font-size:1rem;color:var(--muted);line-height:1.7;margin-bottom:1.5rem;max-width:500px}
-/* Hero text contrast boost — text reads over any photo scene */
-.hero .hero-text-col .hero-sub{color:rgba(255,255,255,0.88);text-shadow:0 1px 4px rgba(0,0,0,0.5)}
-.hero .hero-text-col h1{text-shadow:0 2px 8px rgba(0,0,0,0.45)}
-.hero .hero-text-col .badge{background:rgba(232,98,26,0.25);border-color:rgba(232,98,26,0.5);color:#FFAA60;backdrop-filter:blur(4px)}
-.hero .hero-text-col .badge-dot{background:#FFAA60}
-.hero-trust-line{color:rgba(255,255,255,0.72)!important;text-shadow:0 1px 3px rgba(0,0,0,0.5)}
-.hero-trust-line strong{color:#fff!important}
+/* Hero text panel — frosted glass card behind text column */
+.hero-text-panel{
+  background:rgba(26,22,20,0.62);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border:0.5px solid rgba(255,255,255,0.10);
+  border-radius:16px;
+  padding:2rem 2rem 1.75rem;
+  box-shadow:0 8px 32px rgba(0,0,0,0.35);
+}
+body.light .hero-text-panel{
+  background:rgba(245,240,235,0.72);
+  border-color:rgba(255,255,255,0.45);
+  box-shadow:0 8px 32px rgba(80,50,20,0.18);
+}
+/* Text colours inside the panel — dark mode */
+.hero-text-panel h1{color:#F0EDE8;text-shadow:none}
+.hero-text-panel h1 span{color:#E8621A}
+.hero-text-panel .hero-sub{color:rgba(240,237,232,0.88);text-shadow:none}
+.hero-text-panel .hero-sub em{color:#F0EDE8}
+.hero-text-panel .badge{background:rgba(232,98,26,0.25);border-color:rgba(232,98,26,0.5);color:#FFAA60}
+.hero-text-panel .badge-dot{background:#FFAA60}
+/* Text colours inside the panel — light mode */
+body.light .hero-text-panel h1{color:var(--text)}
+body.light .hero-text-panel .hero-sub{color:var(--muted)}
+body.light .hero-text-panel .badge{background:var(--orange-dim);border-color:var(--orange-border);color:var(--orange)}
+body.light .hero-text-panel .badge-dot{background:var(--orange)}
+.hero-trust-line{color:rgba(240,237,232,0.75)!important}
+.hero-trust-line strong{color:#F0EDE8!important}
+body.light .hero-trust-line{color:var(--muted)!important}
+body.light .hero-trust-line strong{color:var(--text)!important}
 .hero-sub em{font-style:italic;color:var(--text)}
 .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:1.5rem}
 .google-btn{display:inline-flex;align-items:center;gap:10px;background:#fff;
@@ -147,9 +171,9 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:0 2.5r
           padding:1.25rem;transition:border-color .2s,transform .2s;
           backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
           position:relative;overflow:hidden}
-.adv-card-avatar{position:absolute;top:12px;right:12px;opacity:0.18;
-                 transition:opacity .25s}
-.adv-card:hover .adv-card-avatar{opacity:0.35}
+.adv-card-avatar{position:absolute;top:10px;right:10px;opacity:0.55;
+                 transition:opacity .3s}
+.adv-card:hover .adv-card-avatar{opacity:0.85}
 .adv-card:hover{border-color:var(--orange);transform:translateY(-2px)}
 .adv-icon{font-size:1.4rem;margin-bottom:.5rem}
 .adv-name{font-weight:700;font-size:.9rem;margin-bottom:.25rem}
@@ -176,6 +200,8 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:0 2.5r
 .pc-aspire::before{content:"\2192";font-weight:700;flex-shrink:0}
 .pc-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:.6rem}
 .pc-tag{font-size:9px;padding:2px 6px;border-radius:3px}
+.pc-tag-billi{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:600;padding:2px 7px 2px 3px;border-radius:20px;line-height:1}
+.pc-tag-billi img{display:block;flex-shrink:0;border-radius:50%}
 
 /* ── LOGO SLIDER ── */
 .logo-slider-section{padding:1.75rem 0;border-top:0.5px solid var(--border);
@@ -782,7 +808,6 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
 </g>
 
 </svg>
-      </div>
     </div>
     <div class="hero-scene-tint" style="z-index:4"></div>
   </div>
@@ -790,7 +815,7 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
 
     <!-- Animated 6-node orbit — visual power of 6-in-1 conversation -->
     <div class="hero-logo-col">
-      <!-- Billi winking avatar — plain, left-justified, as approved -->
+      <!-- Billi avatar -->
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="-200 -260 400 440" width="210" height="231" aria-hidden="true">
 <defs>
   <radialGradient id="hbody" cx="36%" cy="28%" r="68%">
@@ -838,9 +863,10 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
   <circle cx="66" cy="58" r="5"  fill="#FEF3C7" opacity="0.55"/>
 </g>
 </svg>
+      </div>
     </div>
 
-    <div class="hero-text-col">
+    <div class="hero-text-col"><div class="hero-text-panel">
       <div class="badge"><span class="badge-dot"></span>Live now &mdash; free to try, no card required</div>
       <h1>Meet <span>Billi</span> &mdash; the AI that has your back</h1>
       <p class="hero-sub">Bean Counter &middot; Brand Guru &middot; Deal Maker &middot; The Rule Book &middot; The Fixer &middot; The IT Guy &mdash; six business advisors in one conversation. Built for the owner who says: <em>&ldquo;the sales are kak, what do we do?&rdquo;</em></p>
@@ -861,7 +887,7 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
       <div style="margin-top:1.5rem">
         <img src="logo2.png" alt="Billsource" height="28" style="display:block;filter:var(--logo-filter,none);opacity:0.9;"/>
       </div>
-    </div>
+    </div></div>
   </div>
 </section>
 
@@ -967,48 +993,12 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
     <div class="section-title">Six associates. One conversation.</div>
     
     <div class="adv-grid">
-      <div class="adv-card"><div class="adv-card-avatar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-200 -260 400 440" width="54" height="59" aria-hidden="true"><g transform="translate(0,0)"><circle cx="0" cy="0" r="170" fill="#1a7a44" stroke="#0d4024" stroke-width="14"/>
-    <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#d4f7e4" stroke="#0d4024" stroke-width="11" transform="rotate(-18,-87,-160)"/>
-    <rect x="-16"  y="-230" width="52" height="124" rx="26" fill="#d4f7e4" stroke="#0d4024" stroke-width="11" transform="rotate(5,10,-168)"/>
-    <rect x="72"   y="-208" width="42" height="96"  rx="21" fill="#d4f7e4" stroke="#0d4024" stroke-width="11" transform="rotate(22,93,-160)"/>
-    <ellipse cx="0" cy="50" rx="144" ry="96" fill="#d4f7e4" stroke="#0d4024" stroke-width="11"/>
-    <circle cx="-72" cy="46" r="46" fill="#0d4024"/><circle cx="-56" cy="28" r="15" fill="#d4f7e4"/>
-    <circle cx="72"  cy="46" r="46" fill="#0d4024"/><circle cx="88"  cy="28" r="15" fill="#d4f7e4"/></g></svg></div><div class="adv-icon">&#128176;</div><div class="adv-name" style="color:#1A5FA8">Bean Counter</div><p class="adv-desc">Is your cash running out? Who owes you money? Are you actually making a profit? Bean Counter tells you straight &mdash; and helps you chase debtors too.</p><span class="adv-plan" style="background:#E6F1FB;color:#0C447C">Free + all plans</span></div>
-      <div class="adv-card"><div class="adv-card-avatar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-200 -260 400 440" width="54" height="59" aria-hidden="true"><g transform="translate(0,0)"><circle cx="0" cy="0" r="170" fill="#0a6080" stroke="#043348" stroke-width="14"/>
-    <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#d4f0fa" stroke="#043348" stroke-width="11" transform="rotate(-18,-87,-160)"/>
-    <rect x="-16"  y="-230" width="52" height="124" rx="26" fill="#d4f0fa" stroke="#043348" stroke-width="11" transform="rotate(5,10,-168)"/>
-    <rect x="72"   y="-208" width="42" height="96"  rx="21" fill="#d4f0fa" stroke="#043348" stroke-width="11" transform="rotate(22,93,-160)"/>
-    <ellipse cx="0" cy="50" rx="144" ry="96" fill="#d4f0fa" stroke="#043348" stroke-width="11"/>
-    <circle cx="-72" cy="46" r="46" fill="#043348"/><circle cx="-56" cy="28" r="15" fill="#d4f0fa"/>
-    <circle cx="72"  cy="46" r="46" fill="#043348"/><circle cx="88"  cy="28" r="15" fill="#d4f0fa"/></g></svg></div><div class="adv-icon">&#128203;</div><div class="adv-name" style="color:#7C3AED">The Rule Book</div><p class="adv-desc">Am I breaking any rules I don&rsquo;t know about? POPIA, CIPC, B-BBEE, labour law &mdash; The Rule Book keeps you out of trouble. Always says: talk to a professional for the serious stuff.</p><span class="adv-plan" style="background:#F3E8FF;color:#6D28D9">Professional+</span></div>
-      <div class="adv-card"><div class="adv-card-avatar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-200 -260 400 440" width="54" height="59" aria-hidden="true"><g transform="translate(0,0)"><circle cx="0" cy="0" r="170" fill="#6b2fa0" stroke="#3d1260" stroke-width="14"/>
-    <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#ead4f7" stroke="#3d1260" stroke-width="11" transform="rotate(-18,-87,-160)"/>
-    <rect x="-16"  y="-230" width="52" height="124" rx="26" fill="#ead4f7" stroke="#3d1260" stroke-width="11" transform="rotate(5,10,-168)"/>
-    <rect x="72"   y="-208" width="42" height="96"  rx="21" fill="#ead4f7" stroke="#3d1260" stroke-width="11" transform="rotate(22,93,-160)"/>
-    <ellipse cx="0" cy="50" rx="144" ry="96" fill="#ead4f7" stroke="#3d1260" stroke-width="11"/>
-    <circle cx="-72" cy="46" r="46" fill="#3d1260"/><circle cx="-56" cy="28" r="15" fill="#ead4f7"/>
-    <circle cx="72"  cy="46" r="46" fill="#3d1260"/><circle cx="88"  cy="28" r="15" fill="#ead4f7"/></g></svg></div><div class="adv-icon">&#128227;</div><div class="adv-name" style="color:#EA580C">Brand Guru</div><p class="adv-desc">Nobody knows about you. How do you get more customers? What should you post on social media? Brand Guru helps you get noticed in the SA market without blowing your budget.</p><span class="adv-plan" style="background:var(--orange-dim);color:var(--orange)">Business+</span></div>
-      <div class="adv-card"><div class="adv-card-avatar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-200 -260 400 440" width="54" height="59" aria-hidden="true"><g transform="translate(0,0)"><circle cx="0" cy="0" r="170" fill="#a06600" stroke="#5a3700" stroke-width="14"/>
-    <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#faecd4" stroke="#5a3700" stroke-width="11" transform="rotate(-18,-87,-160)"/>
-    <rect x="-16"  y="-230" width="52" height="124" rx="26" fill="#faecd4" stroke="#5a3700" stroke-width="11" transform="rotate(5,10,-168)"/>
-    <rect x="72"   y="-208" width="42" height="96"  rx="21" fill="#faecd4" stroke="#5a3700" stroke-width="11" transform="rotate(22,93,-160)"/>
-    <ellipse cx="0" cy="50" rx="144" ry="96" fill="#faecd4" stroke="#5a3700" stroke-width="11"/>
-    <circle cx="-72" cy="46" r="46" fill="#5a3700"/><circle cx="-56" cy="28" r="15" fill="#faecd4"/>
-    <circle cx="72"  cy="46" r="46" fill="#5a3700"/><circle cx="88"  cy="28" r="15" fill="#faecd4"/></g></svg></div><div class="adv-icon">&#127919;</div><div class="adv-name" style="color:#16A34A">Deal Maker</div><p class="adv-desc">How do you close more deals? What do you say when the client says you&rsquo;re too expensive? Deal Maker helps you write proposals, handle objections and keep clients coming back.</p><span class="adv-plan" style="background:#DCFCE7;color:#166534">Enterprise</span></div>
-      <div class="adv-card"><div class="adv-card-avatar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-200 -260 400 440" width="54" height="59" aria-hidden="true"><g transform="translate(0,0)"><circle cx="0" cy="0" r="170" fill="#a03030" stroke="#5a1010" stroke-width="14"/>
-    <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#fad4d4" stroke="#5a1010" stroke-width="11" transform="rotate(-18,-87,-160)"/>
-    <rect x="-16"  y="-230" width="52" height="124" rx="26" fill="#fad4d4" stroke="#5a1010" stroke-width="11" transform="rotate(5,10,-168)"/>
-    <rect x="72"   y="-208" width="42" height="96"  rx="21" fill="#fad4d4" stroke="#5a1010" stroke-width="11" transform="rotate(22,93,-160)"/>
-    <ellipse cx="0" cy="50" rx="144" ry="96" fill="#fad4d4" stroke="#5a1010" stroke-width="11"/>
-    <circle cx="-72" cy="46" r="46" fill="#5a1010"/><circle cx="-56" cy="28" r="15" fill="#fad4d4"/>
-    <circle cx="72"  cy="46" r="46" fill="#5a1010"/><circle cx="88"  cy="28" r="15" fill="#fad4d4"/></g></svg></div><div class="adv-icon">&#9881;&#65039;</div><div class="adv-name" style="color:#DC2626">The Fixer</div><p class="adv-desc">Your business feels chaotic &mdash; where do you start fixing it? The Fixer helps you sort out your processes, deal with dodgy suppliers, and keep things running when load shedding hits.</p><span class="adv-plan" style="background:#FEE2E2;color:#991B1B">Enterprise</span></div>
-      <div class="adv-card"><div class="adv-card-avatar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-200 -260 400 440" width="54" height="59" aria-hidden="true"><g transform="translate(0,0)"><circle cx="0" cy="0" r="170" fill="#0a6868" stroke="#044040" stroke-width="14"/>
-    <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#d4f7f7" stroke="#044040" stroke-width="11" transform="rotate(-18,-87,-160)"/>
-    <rect x="-16"  y="-230" width="52" height="124" rx="26" fill="#d4f7f7" stroke="#044040" stroke-width="11" transform="rotate(5,10,-168)"/>
-    <rect x="72"   y="-208" width="42" height="96"  rx="21" fill="#d4f7f7" stroke="#044040" stroke-width="11" transform="rotate(22,93,-160)"/>
-    <ellipse cx="0" cy="50" rx="144" ry="96" fill="#d4f7f7" stroke="#044040" stroke-width="11"/>
-    <circle cx="-72" cy="46" r="46" fill="#044040"/><circle cx="-56" cy="28" r="15" fill="#d4f7f7"/>
-    <circle cx="72"  cy="46" r="46" fill="#044040"/><circle cx="88"  cy="28" r="15" fill="#d4f7f7"/></g></svg></div><div class="adv-icon">&#128187;</div><div class="adv-name" style="color:#0891B2">The IT Guy</div><p class="adv-desc">Printer not working? Can&rsquo;t get into your email? Need to know which laptop to buy? The IT Guy fixes your tech problems and tells you what to buy &mdash; without the technical rubbish. Recommends via <a href="https://martugo.com" target="_blank" rel="noopener" style="color:#0891B2;text-decoration:none;font-weight:600">Martugo.com</a>.</p><span class="adv-plan" style="background:#E0F2FE;color:#075985">Free + all plans</span></div>
+      <div class="adv-card"><div class="adv-card-avatar"><img src="billi-bean-counter.png" alt="" width="54" height="54" style="display:block"/></div><div class="adv-icon">&#128176;</div><div class="adv-name" style="color:#1A5FA8">Bean Counter</div><p class="adv-desc">Is your cash running out? Who owes you money? Are you actually making a profit? Bean Counter tells you straight &mdash; and helps you chase debtors too.</p><span class="adv-plan" style="background:#E6F1FB;color:#0C447C">Free + all plans</span></div>
+      <div class="adv-card"><div class="adv-card-avatar"><img src="billi-rule-book.png" alt="" width="54" height="54" style="display:block"/></div><div class="adv-icon">&#128203;</div><div class="adv-name" style="color:#7C3AED">The Rule Book</div><p class="adv-desc">Am I breaking any rules I don&rsquo;t know about? POPIA, CIPC, B-BBEE, labour law &mdash; The Rule Book keeps you out of trouble. Always says: talk to a professional for the serious stuff.</p><span class="adv-plan" style="background:#F3E8FF;color:#6D28D9">Professional+</span></div>
+      <div class="adv-card"><div class="adv-card-avatar"><img src="billi-brand-guru.png" alt="" width="54" height="54" style="display:block"/></div><div class="adv-icon">&#128227;</div><div class="adv-name" style="color:#EA580C">Brand Guru</div><p class="adv-desc">Nobody knows about you. How do you get more customers? What should you post on social media? Brand Guru helps you get noticed in the SA market without blowing your budget.</p><span class="adv-plan" style="background:var(--orange-dim);color:var(--orange)">Business+</span></div>
+      <div class="adv-card"><div class="adv-card-avatar"><img src="billi-deal-maker.png" alt="" width="54" height="54" style="display:block"/></div><div class="adv-icon">&#127919;</div><div class="adv-name" style="color:#16A34A">Deal Maker</div><p class="adv-desc">How do you close more deals? What do you say when the client says you&rsquo;re too expensive? Deal Maker helps you write proposals, handle objections and keep clients coming back.</p><span class="adv-plan" style="background:#DCFCE7;color:#166534">Enterprise</span></div>
+      <div class="adv-card"><div class="adv-card-avatar"><img src="billi-the-fixer.png" alt="" width="54" height="54" style="display:block"/></div><div class="adv-icon">&#9881;&#65039;</div><div class="adv-name" style="color:#DC2626">The Fixer</div><p class="adv-desc">Your business feels chaotic &mdash; where do you start fixing it? The Fixer helps you sort out your processes, deal with dodgy suppliers, and keep things running when load shedding hits.</p><span class="adv-plan" style="background:#FEE2E2;color:#991B1B">Enterprise</span></div>
+      <div class="adv-card"><div class="adv-card-avatar"><img src="billi-it-guy.png" alt="" width="54" height="54" style="display:block"/></div><div class="adv-icon">&#128187;</div><div class="adv-name" style="color:#0891B2">The IT Guy</div><p class="adv-desc">Printer not working? Can&rsquo;t get into your email? Need to know which laptop to buy? The IT Guy fixes your tech problems and tells you what to buy &mdash; without the technical rubbish. Recommends via <a href="https://martugo.com" target="_blank" rel="noopener" style="color:#0891B2;text-decoration:none;font-weight:600">Martugo.com</a>.</p><span class="adv-plan" style="background:#E0F2FE;color:#075985">Free + all plans</span></div>
     </div>
 
   </div>
@@ -1021,14 +1011,14 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
     <div class="section-title">Every size. Every stage. Every ambition.</div>
     <p style="font-size:13px;color:var(--muted);margin-bottom:1.25rem;line-height:1.6">From a sole-proprietor caterer in Soweto to a 45-person healthcare group in Pretoria &mdash; and every ambition in between.</p>
     <div class="pc-grid">
-      <div class="pc"><span class="pc-tier" style="background:var(--teal-light);color:var(--teal)">SMME</span><div class="pc-avatar" style="background:var(--teal-light);color:var(--teal)">N</div><p class="pc-name">Nomsa</p><p class="pc-role">Caterer &middot; Soweto &middot; Sole proprietor</p><p class="pc-pain">Quotes on WhatsApp. No cash visibility until the account is empty. Borrowing from family to cover suppliers.</p><p class="pc-aspire">Stop the bleeding. Keep every rand she earns.</p><div class="pc-tags"><span class="pc-tag" style="background:var(--teal-light);color:var(--teal)">Bean Counter</span></div></div>
-      <div class="pc"><span class="pc-tier" style="background:var(--teal-light);color:var(--teal)">SMME</span><div class="pc-avatar" style="background:var(--purp-light);color:var(--purp)">S</div><p class="pc-name">Sipho</p><p class="pc-role">Electrical contractor &middot; Pretoria &middot; 8 staff</p><p class="pc-pain">Debtors pay at 75 days. Suppliers demand 30. The gap is compounding silently.</p><p class="pc-aspire">Win government tenders with confidence and a clean book.</p><div class="pc-tags"><span class="pc-tag" style="background:var(--purp-light);color:var(--purp)">The Fixer</span><span class="pc-tag" style="background:var(--teal-light);color:var(--teal)">Bean Counter</span></div></div>
-      <div class="pc"><span class="pc-tier" style="background:var(--amb-light);color:var(--amb)">Medium</span><div class="pc-avatar" style="background:#E1F5EE;color:#085041">T</div><p class="pc-name">Thabo</p><p class="pc-role">Civil engineering &middot; Joburg &middot; 38 staff</p><p class="pc-pain">Three debtors = 80% of revenue. One default is existential. No consolidated project cost view.</p><p class="pc-aspire">Build a business his children can inherit. Eligible for infrastructure bonds.</p><div class="pc-tags"><span class="pc-tag" style="background:var(--teal-light);color:var(--teal)">Bean Counter</span><span class="pc-tag" style="background:var(--purp-light);color:var(--purp)">The Fixer</span><span class="pc-tag" style="background:var(--amb-light);color:var(--amb)">Rule Book</span></div></div>
-      <div class="pc"><span class="pc-tier" style="background:var(--amb-light);color:var(--amb)">Medium</span><div class="pc-avatar" style="background:#FBEAF0;color:#72243E">L</div><p class="pc-name">Lerato</p><p class="pc-role">Healthcare group &middot; Pretoria &middot; 3 clinics &middot; 45 staff</p><p class="pc-pain">Medical aids pay at 75 days. Suppliers at 30. No single financial view across 3 entities.</p><p class="pc-aspire">Investor-grade reporting. Franchise the model nationally.</p><div class="pc-tags"><span class="pc-tag" style="background:var(--teal-light);color:var(--teal)">Bean Counter</span><span class="pc-tag" style="background:var(--orange-dim);color:var(--orange)">Brand Guru</span><span class="pc-tag" style="background:var(--amb-light);color:var(--amb)">Rule Book</span></div></div>
+      <div class="pc"><span class="pc-tier" style="background:var(--teal-light);color:var(--teal)">SMME</span><div class="pc-avatar" style="background:var(--teal-light);color:var(--teal)">N</div><p class="pc-name">Nomsa</p><p class="pc-role">Caterer &middot; Soweto &middot; Sole proprietor</p><p class="pc-pain">Quotes on WhatsApp. No cash visibility until the account is empty. Borrowing from family to cover suppliers.</p><p class="pc-aspire">Stop the bleeding. Keep every rand she earns.</p><div class="pc-tags"><span class="pc-tag-billi" style="background:var(--teal-light);color:var(--teal)"><img src="billi-bean-counter.png" width="20" height="20" alt="Bean Counter"/>Bean Counter</span></div></div>
+      <div class="pc"><span class="pc-tier" style="background:var(--teal-light);color:var(--teal)">SMME</span><div class="pc-avatar" style="background:var(--purp-light);color:var(--purp)">S</div><p class="pc-name">Sipho</p><p class="pc-role">Electrical contractor &middot; Pretoria &middot; 8 staff</p><p class="pc-pain">Debtors pay at 75 days. Suppliers demand 30. The gap is compounding silently.</p><p class="pc-aspire">Win government tenders with confidence and a clean book.</p><div class="pc-tags"><span class="pc-tag-billi" style="background:#FEE2E2;color:#991B1B"><img src="billi-the-fixer.png" width="20" height="20" alt="The Fixer"/>The Fixer</span><span class="pc-tag-billi" style="background:var(--teal-light);color:var(--teal)"><img src="billi-bean-counter.png" width="20" height="20" alt="Bean Counter"/>Bean Counter</span></div></div>
+      <div class="pc"><span class="pc-tier" style="background:var(--amb-light);color:var(--amb)">Medium</span><div class="pc-avatar" style="background:#E1F5EE;color:#085041">T</div><p class="pc-name">Thabo</p><p class="pc-role">Civil engineering &middot; Joburg &middot; 38 staff</p><p class="pc-pain">Three debtors = 80% of revenue. One default is existential. No consolidated project cost view.</p><p class="pc-aspire">Build a business his children can inherit. Eligible for infrastructure bonds.</p><div class="pc-tags"><span class="pc-tag-billi" style="background:var(--teal-light);color:var(--teal)"><img src="billi-bean-counter.png" width="20" height="20" alt="Bean Counter"/>Bean Counter</span><span class="pc-tag-billi" style="background:#FEE2E2;color:#991B1B"><img src="billi-the-fixer.png" width="20" height="20" alt="The Fixer"/>The Fixer</span><span class="pc-tag-billi" style="background:#F3E8FF;color:#6D28D9"><img src="billi-rule-book.png" width="20" height="20" alt="Rule Book"/>Rule Book</span></div></div>
+      <div class="pc"><span class="pc-tier" style="background:var(--amb-light);color:var(--amb)">Medium</span><div class="pc-avatar" style="background:#FBEAF0;color:#72243E">L</div><p class="pc-name">Lerato</p><p class="pc-role">Healthcare group &middot; Pretoria &middot; 3 clinics &middot; 45 staff</p><p class="pc-pain">Medical aids pay at 75 days. Suppliers at 30. No single financial view across 3 entities.</p><p class="pc-aspire">Investor-grade reporting. Franchise the model nationally.</p><div class="pc-tags"><span class="pc-tag-billi" style="background:var(--teal-light);color:var(--teal)"><img src="billi-bean-counter.png" width="20" height="20" alt="Bean Counter"/>Bean Counter</span><span class="pc-tag-billi" style="background:var(--orange-dim);color:var(--orange)"><img src="billi-brand-guru.png" width="20" height="20" alt="Brand Guru"/>Brand Guru</span><span class="pc-tag-billi" style="background:#F3E8FF;color:#6D28D9"><img src="billi-rule-book.png" width="20" height="20" alt="Rule Book"/>Rule Book</span></div></div>
       <!-- Persona 5: Photography mum -->
-      <div class="pc"><span class="pc-tier" style="background:#FEF3C7;color:#92400E">Home business</span><div class="pc-avatar" style="background:#FEF9ED;color:#92400E">T</div><p class="pc-name">Trudie</p><p class="pc-role">Photographer &middot; Cape Town &middot; Solo, home-based</p><p class="pc-pain">Runs shoots on weekends around school drop-offs. Invoicing on her phone between edits. No idea if she&rsquo;s actually making money once data and petrol are stripped out.</p><p class="pc-aspire">Turn her passion into something that pays school fees — predictably.</p><div class="pc-tags"><span class="pc-tag" style="background:#E6F1FB;color:#0C447C">Bean Counter</span><span class="pc-tag" style="background:var(--orange-dim);color:var(--orange)">Brand Guru</span><span class="pc-tag" style="background:#E0F2FE;color:#075985">The IT Guy</span></div></div>
+      <div class="pc"><span class="pc-tier" style="background:#FEF3C7;color:#92400E">Home business</span><div class="pc-avatar" style="background:#FEF9ED;color:#92400E">T</div><p class="pc-name">Trudie</p><p class="pc-role">Photographer &middot; Cape Town &middot; Solo, home-based</p><p class="pc-pain">Runs shoots on weekends around school drop-offs. Invoicing on her phone between edits. No idea if she&rsquo;s actually making money once data and petrol are stripped out.</p><p class="pc-aspire">Turn her passion into something that pays school fees — predictably.</p><div class="pc-tags"><span class="pc-tag-billi" style="background:var(--teal-light);color:var(--teal)"><img src="billi-bean-counter.png" width="20" height="20" alt="Bean Counter"/>Bean Counter</span><span class="pc-tag-billi" style="background:var(--orange-dim);color:var(--orange)"><img src="billi-brand-guru.png" width="20" height="20" alt="Brand Guru"/>Brand Guru</span><span class="pc-tag-billi" style="background:#E0F2FE;color:#075985"><img src="billi-it-guy.png" width="20" height="20" alt="The IT Guy"/>The IT Guy</span></div></div>
       <!-- Persona 6: Student -->
-      <div class="pc"><span class="pc-tier" style="background:#F0F4FF;color:#3730A3">Student</span><div class="pc-avatar" style="background:#F0F4FF;color:#3730A3">X</div><p class="pc-name">Xavier</p><p class="pc-role">Commerce student &middot; Potchefstroom &middot; Side hustle, R0 capital</p><p class="pc-pain">R180k in student loans. Starts a tutoring side hustle to chip away at them. No clue what to charge, how to register, or whether SARS will come for him one day.</p><p class="pc-aspire">Graduate debt-free. Build something real before the degree is even framed.</p><div class="pc-tags"><span class="pc-tag" style="background:#E6F1FB;color:#0C447C">Bean Counter</span><span class="pc-tag" style="background:#F3E8FF;color:#6D28D9">Rule Book</span><span class="pc-tag" style="background:#E0F2FE;color:#075985">The IT Guy</span></div></div>
+      <div class="pc"><span class="pc-tier" style="background:#F0F4FF;color:#3730A3">Student</span><div class="pc-avatar" style="background:#F0F4FF;color:#3730A3">X</div><p class="pc-name">Xavier</p><p class="pc-role">Commerce student &middot; Potchefstroom &middot; Side hustle, R0 capital</p><p class="pc-pain">R180k in student loans. Starts a tutoring side hustle to chip away at them. No clue what to charge, how to register, or whether SARS will come for him one day.</p><p class="pc-aspire">Graduate debt-free. Build something real before the degree is even framed.</p><div class="pc-tags"><span class="pc-tag-billi" style="background:var(--teal-light);color:var(--teal)"><img src="billi-bean-counter.png" width="20" height="20" alt="Bean Counter"/>Bean Counter</span><span class="pc-tag-billi" style="background:#F3E8FF;color:#6D28D9"><img src="billi-rule-book.png" width="20" height="20" alt="Rule Book"/>Rule Book</span><span class="pc-tag-billi" style="background:#E0F2FE;color:#075985"><img src="billi-it-guy.png" width="20" height="20" alt="The IT Guy"/>The IT Guy</span></div></div>
     </div>
   </div>
 </section>
