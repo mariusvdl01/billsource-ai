@@ -1313,11 +1313,11 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
             <div style="font-size:10px;color:var(--muted);line-height:1.4">Billi&rsquo;s top action. Sign up for the full report</div>
           </div>
         </div>
-        <div class="upload-zone" id="upload-zone" onclick="showNumberForm()" ondragover="event.preventDefault();this.style.borderColor='var(--orange)'" ondragleave="this.style.borderColor=''" ondrop="handleDrop(event)">
+        <div class="upload-zone" id="upload-zone" onclick="triggerUpload()" ondragover="event.preventDefault();this.style.borderColor='var(--orange)'" ondragleave="this.style.borderColor=''" ondrop="handleDrop(event)">
           <span class="upload-icon">&#128196;</span>
           <div class="upload-title">Drop your income statement or balance sheet here</div>
-          <div class="upload-sub">or click to browse &mdash; we handle the rest</div>
-          <div class="upload-types"><span class="upload-type">PDF</span><span class="upload-type">CSV</span><span class="upload-type">XLSX</span><span class="upload-type">JPG / PNG</span></div>
+          <div class="upload-sub">XLSX &amp; CSV read automatically &mdash; figures pre-filled for you</div>
+          <div class="upload-types"><span class="upload-type">XLSX</span><span class="upload-type">CSV</span><span class="upload-type">PDF</span><span class="upload-type">JPG / PNG</span></div>
         </div>
         <input type="file" id="file-input" accept=".pdf,.csv,.xlsx,.jpg,.jpeg,.png" style="display:none" onchange="handleFileSelect(this)"/>
         <div class="score-preview" id="score-preview" style="display:block;opacity:0.45;pointer-events:none;transition:opacity .4s">
@@ -1685,44 +1685,206 @@ function showLock(){
 }
 
 // ── FINANCIAL HEALTH FORM — real /api/demo-analyse ──
-function triggerUpload(){
-  // Instead of file upload (needs OCR pipeline), show a quick-entry number form
-  showNumberForm();
+function triggerUpload(){ document.getElementById('file-input').click(); }
+
+function handleFileSelect(inp){
+  if(inp.files && inp.files[0]) parseAndPopulate(inp.files[0]);
 }
-function handleFileSelect(inp){if(inp.files&&inp.files[0])showNumberForm(inp.files[0].name);}
 function handleDrop(e){
-  e.preventDefault();document.getElementById('upload-zone').style.borderColor='';
-  var f=e.dataTransfer.files[0];if(f)showNumberForm(f.name);
+  e.preventDefault();
+  document.getElementById('upload-zone').style.borderColor='';
+  var f=e.dataTransfer.files[0];
+  if(f) parseAndPopulate(f);
 }
 
-function showNumberForm(fileName){
-  var z=document.getElementById('upload-zone');
-  var fileNote=fileName?('<div style="font-size:11px;color:var(--muted);margin-bottom:.75rem">📎 '+fileName+' — enter your numbers below to calculate</div>'):'';
-  z.innerHTML=fileNote+
+// ── XLSX/CSV file parser — reads workbook, maps to form fields ──
+function parseAndPopulate(file){
+  var name = file.name;
+  var ext  = name.split('.').pop().toLowerCase();
+  if(['xlsx','xls','csv'].includes(ext) && typeof XLSX !== 'undefined'){
+    var reader = new FileReader();
+    reader.onload = function(e){
+      try{
+        var wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+        var extracted = extractFromWorkbook(wb);
+        showNumberForm(name, extracted.values, extracted.notes, extracted.missing);
+      }catch(err){
+        showNumberForm(name, {}, ['Could not parse file — please enter numbers manually.'], []);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    showNumberForm(name, {}, ['PDF and image files cannot be read automatically — please enter your figures below.'], []);
+  }
+}
+
+function extractFromWorkbook(wb){
+  var values={}, notes=[], missing=[];
+  var lookup={};
+
+  wb.SheetNames.forEach(function(sname){
+    var rows=XLSX.utils.sheet_to_json(wb.Sheets[sname],{header:1,defval:null});
+    if(!rows.length) return;
+    var hdr=rows[0]||[];
+    // find numeric year columns
+    var numCols=[];
+    hdr.forEach(function(v,i){ if(v && String(v).match(/^20\d{2}$/)) numCols.push(i); });
+    var useLastCol = numCols.length===0;
+    rows.slice(1).forEach(function(row){
+      var label=String(row[0]||'').trim().toLowerCase();
+      if(!label) return;
+      var vals=[];
+      if(useLastCol){
+        for(var i=row.length-1;i>=1;i--){
+          if(row[i]!==null && row[i]!=='' && !isNaN(Number(row[i]))){vals=[Number(row[i])];break;}
+        }
+      } else {
+        numCols.forEach(function(ci){if(row[ci]!==null)vals.push(Number(row[ci]));});
+      }
+      if(vals.length) lookup[label]=vals;
+    });
+  });
+
+  function get(label){
+    if(!lookup[label]) return null;
+    var arr=lookup[label];
+    for(var i=arr.length-1;i>=0;i--){
+      if(arr[i]!==null && !isNaN(arr[i])) return arr[i];
+    }
+    return null;
+  }
+  function find(){
+    for(var pi=0;pi<arguments.length;pi++){
+      var pat=arguments[pi].toLowerCase();
+      var keys=Object.keys(lookup);
+      for(var ki=0;ki<keys.length;ki++){
+        if(keys[ki].includes(pat)){var v=get(keys[ki]);if(v!==null)return v;}
+      }
+    }
+    return null;
+  }
+
+  var rawRev    = find('revenue','turnover','total income','total revenue','sales');
+  var rawCos    = find('cost of goods','cost of sales','cogs','direct cost');
+  var rawOpex   = find('operating expense','operating cost','opex');
+  var rawNp     = find('net income','net profit','profit after','profit/(loss)','net loss');
+  var rawGp     = find('gross profit','gross income');
+  var rawCa     = find('total current assets','current assets');
+  var rawCl     = find('total current liab','current liab');
+  var rawAr     = find('accounts receivable','trade receivable','debtors');
+  var rawAp     = find('accounts payable','trade payable','creditors');
+  var rawInv    = find('inventory','stock');
+  var rawEq     = find('equity','shareholders','net assets');
+  var rawStDebt = find('short-term debt','short term debt','current portion','overdraft');
+  var rawLtDebt = find('long-term debt','long term debt','non-current liab','term loan');
+  var rawDebt   = find('total debt') ||
+                  (rawStDebt!==null && rawLtDebt!==null ? rawStDebt+rawLtDebt : rawStDebt||rawLtDebt);
+
+  // Derive net profit from gross profit - opex if not found directly
+  if(rawNp===null && rawGp!==null && rawOpex!==null) rawNp = rawGp - rawOpex;
+
+  var isAnnual = rawRev!==null && rawRev > 500000;
+  var div = isAnnual ? 12 : 1;
+  if(isAnnual) notes.push('Annual figures detected — Revenue, Cost of Sales, Operating Expenses and Net Profit divided by 12 to give monthly averages. Annual Revenue kept as-is for Debtor/Creditor Days.');
+
+  if(rawRev  !==null){values['nf-rev']   =Math.round(rawRev  /div);}
+  if(rawCos  !==null){values['nf-cos']   =Math.round(rawCos  /div);}
+  if(rawOpex !==null){values['nf-opex']  =Math.round(rawOpex /div);}
+  if(rawNp   !==null){values['nf-np']    =Math.round(rawNp   /div);}
+  if(rawCa   !==null){values['nf-ca']    =rawCa;}
+  if(rawCl   !==null){values['nf-cl']    =rawCl;}
+  if(rawAr   !==null){values['nf-ar']    =rawAr;}
+  if(rawAp   !==null){values['nf-ap']    =rawAp;}
+  if(rawInv  !==null){values['nf-inv']   =rawInv;}
+  if(rawEq   !==null){values['nf-eq']    =rawEq;}
+  if(rawDebt !==null){values['nf-debt']  =rawDebt;}
+  if(rawRev  !==null){values['nf-annrev']=rawRev;}
+
+  var fieldNames={'nf-rev':'Monthly Revenue','nf-cos':'Cost of Sales',
+    'nf-opex':'Operating Expenses','nf-np':'Net Profit',
+    'nf-ca':'Current Assets','nf-cl':'Current Liabilities',
+    'nf-ar':'Accounts Receivable','nf-ap':'Accounts Payable',
+    'nf-inv':'Inventory','nf-eq':'Total Equity',
+    'nf-debt':'Total Debt','nf-annrev':'Annual Revenue'};
+  Object.keys(fieldNames).forEach(function(id){
+    if(values[id]===undefined) missing.push(fieldNames[id]);
+  });
+  return {values:values, notes:notes, missing:missing};
+}
+
+function showNumberForm(fileName, prefill, notes, missing){
+  prefill  = prefill  || {};
+  notes    = notes    || [];
+  missing  = missing  || [];
+  var z = document.getElementById('upload-zone');
+
+  // ── Data quality banners ──
+  var banners = '';
+  if(fileName){
+    var populated = Object.keys(prefill).length;
+    if(populated > 0){
+      banners += '<div style="display:flex;align-items:flex-start;gap:8px;background:#d1fae5;border:1px solid #6ee7b7;border-radius:7px;padding:10px 12px;margin-bottom:10px">'+
+        '<span style="font-size:16px;flex-shrink:0">✅</span>'+
+        '<div style="font-size:11px;color:#065f46;line-height:1.5">'+
+        '<strong>'+populated+'/12 fields read from '+fileName+'</strong><br>'+
+        'Values below are auto-populated from your most recent year. Review and adjust if needed.'+
+        '</div></div>';
+    }
+    notes.forEach(function(n){
+      banners += '<div style="display:flex;align-items:flex-start;gap:8px;background:#fef3c7;border:1px solid #fcd34d;border-radius:7px;padding:10px 12px;margin-bottom:8px">'+
+        '<span style="font-size:14px;flex-shrink:0">ℹ️</span>'+
+        '<div style="font-size:11px;color:#78350f;line-height:1.5">'+n+'</div></div>';
+    });
+    if(missing.length){
+      banners += '<div style="display:flex;align-items:flex-start;gap:8px;background:#fee2e2;border:1px solid #fca5a5;border-radius:7px;padding:10px 12px;margin-bottom:8px">'+
+        '<span style="font-size:14px;flex-shrink:0">⚠️</span>'+
+        '<div style="font-size:11px;color:#991b1b;line-height:1.5">'+
+        '<strong>Missing from file — please enter manually:</strong><br>'+
+        missing.join(' · ')+
+        '</div></div>';
+    }
+  }
+
+  var fileNote = fileName
+    ? '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">📎 <strong>'+fileName+'</strong></div>'
+    : '';
+
+  z.innerHTML =
+    fileNote + banners +
     '<div style="text-align:left;width:100%">'+
-    '<div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:.75rem">Enter your last month\'s figures (R)</div>'+
+    '<div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:.75rem">'+
+    (Object.keys(prefill).length > 0 ? 'Review and confirm your figures (R)' : "Enter your last month's figures (R)")+
+    '</div>'+
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px">'+
-    numField('nf-rev','Monthly Revenue','e.g. 250000')+
-    numField('nf-cos','Cost of Sales','e.g. 160000')+
-    numField('nf-opex','Operating Expenses','e.g. 45000')+
-    numField('nf-np','Net Profit','e.g. 20000')+
-    numField('nf-ca','Current Assets','e.g. 180000')+
-    numField('nf-cl','Current Liabilities','e.g. 120000')+
-    numField('nf-ar','Accounts Receivable','e.g. 95000')+
-    numField('nf-ap','Accounts Payable','e.g. 60000')+
-    numField('nf-inv','Inventory','e.g. 30000')+
-    numField('nf-debt','Total Debt','e.g. 80000')+
-    numField('nf-eq','Total Equity','e.g. 100000')+
-    numField('nf-annrev','Annual Revenue','e.g. 3000000')+
+    numField('nf-rev',   'Monthly Revenue',      'e.g. 250000',  prefill['nf-rev'],   missing.includes('Monthly Revenue'))+
+    numField('nf-cos',   'Cost of Sales',        'e.g. 160000',  prefill['nf-cos'],   missing.includes('Cost of Sales'))+
+    numField('nf-opex',  'Operating Expenses',   'e.g. 45000',   prefill['nf-opex'],  missing.includes('Operating Expenses'))+
+    numField('nf-np',    'Net Profit',           'e.g. 20000',   prefill['nf-np'],    missing.includes('Net Profit'))+
+    numField('nf-ca',    'Current Assets',       'e.g. 180000',  prefill['nf-ca'],    missing.includes('Current Assets'))+
+    numField('nf-cl',    'Current Liabilities',  'e.g. 120000',  prefill['nf-cl'],    missing.includes('Current Liabilities'))+
+    numField('nf-ar',    'Accounts Receivable',  'e.g. 95000',   prefill['nf-ar'],    missing.includes('Accounts Receivable'))+
+    numField('nf-ap',    'Accounts Payable',     'e.g. 60000',   prefill['nf-ap'],    missing.includes('Accounts Payable'))+
+    numField('nf-inv',   'Inventory',            'e.g. 30000',   prefill['nf-inv'],   missing.includes('Inventory'))+
+    numField('nf-debt',  'Total Debt',           'e.g. 80000',   prefill['nf-debt'],  missing.includes('Total Debt'))+
+    numField('nf-eq',    'Total Equity',         'e.g. 100000',  prefill['nf-eq'],    missing.includes('Total Equity'))+
+    numField('nf-annrev','Annual Revenue',       'e.g. 3000000', prefill['nf-annrev'],missing.includes('Annual Revenue'))+
     '</div>'+
     '<button onclick="runDemoAnalyse()" style="margin-top:12px;width:100%;padding:10px;background:var(--orange);color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;font-family:Helvetica,Arial,sans-serif">Calculate my financial health score &rarr;</button>'+
     '<div id="nf-error" style="font-size:11px;color:#c0392b;margin-top:6px;display:none"></div>'+
     '</div>';
 }
 
-function numField(id,label,placeholder){
-  return '<div><label style="display:block;font-size:10px;color:var(--muted);margin-bottom:2px">'+label+'</label>'+
-    '<input id="'+id+'" type="number" placeholder="'+placeholder+'" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;background:var(--bg);color:var(--text);font-family:Helvetica,Arial,sans-serif;box-sizing:border-box"></div>';
+function numField(id, label, placeholder, prefillVal, isMissing){
+  var hasPrefill = prefillVal !== undefined && prefillVal !== null;
+  var borderColor = isMissing  ? '1px solid #fca5a5' :
+                   hasPrefill  ? '1px solid #6ee7b7' : '1px solid var(--border)';
+  var bgColor     = isMissing  ? '#fff5f5' :
+                   hasPrefill  ? '#f0fdf4' : 'var(--bg)';
+  var valAttr     = hasPrefill ? ' value="'+prefillVal+'"' : '';
+  return '<div><label style="display:block;font-size:10px;color:var(--muted);margin-bottom:2px">'+
+    label+(isMissing?' <span style="color:#c0392b">*</span>':'')+'</label>'+
+    '<input id="'+id+'" type="number" placeholder="'+placeholder+'"'+valAttr+
+    ' style="width:100%;padding:5px 8px;border:'+borderColor+';border-radius:5px;font-size:12px;background:'+bgColor+';color:var(--text);font-family:Helvetica,Arial,sans-serif;box-sizing:border-box"></div>';
 }
 
 function numVal(id){return parseFloat(document.getElementById(id)?.value)||0;}
@@ -1908,5 +2070,6 @@ async function checkoutMerch(){
   }catch(e){errEl.textContent='Network error. Please try again.';errEl.style.display='block';btn.disabled=false;btn.textContent='Pay with Paystack \u2192';}
 }
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </body>
 </html>
