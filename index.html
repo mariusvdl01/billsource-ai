@@ -1313,33 +1313,33 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
             <div style="font-size:10px;color:var(--muted);line-height:1.4">Billi&rsquo;s top action. Sign up for the full report</div>
           </div>
         </div>
-        <div class="upload-zone" id="upload-zone" onclick="triggerUpload()" ondragover="event.preventDefault();this.style.borderColor='var(--orange)'" ondragleave="this.style.borderColor=''" ondrop="handleDrop(event)">
+        <div class="upload-zone" id="upload-zone" onclick="showNumberForm()" ondragover="event.preventDefault();this.style.borderColor='var(--orange)'" ondragleave="this.style.borderColor=''" ondrop="handleDrop(event)">
           <span class="upload-icon">&#128196;</span>
           <div class="upload-title">Drop your income statement or balance sheet here</div>
           <div class="upload-sub">or click to browse &mdash; we handle the rest</div>
           <div class="upload-types"><span class="upload-type">PDF</span><span class="upload-type">CSV</span><span class="upload-type">XLSX</span><span class="upload-type">JPG / PNG</span></div>
         </div>
         <input type="file" id="file-input" accept=".pdf,.csv,.xlsx,.jpg,.jpeg,.png" style="display:none" onchange="handleFileSelect(this)"/>
-        <div class="score-preview" id="score-preview">
+        <div class="score-preview" id="score-preview" style="display:block;opacity:0.45;pointer-events:none;transition:opacity .4s">
           <div class="score-header">
-            <div><div style="font-size:13px;font-weight:700;font-family:Helvetica,Arial,sans-serif;color:var(--text)">Sample Business &mdash; March 2026</div><div style="font-size:11px;color:var(--muted);margin-top:2px">Analysis complete &middot; 12 ratios calculated</div></div>
-            <span class="score-badge amber">&#127993; WATCH</span>
+            <div><div style="font-size:13px;font-weight:700;font-family:Helvetica,Arial,sans-serif;color:var(--text)" id="sp-title">Your Business &mdash; Live Analysis</div><div style="font-size:11px;color:var(--muted);margin-top:2px" id="sp-sub">Fill in your numbers to calculate</div></div>
+            <span class="score-badge amber" style="opacity:0.4" id="sp-badge">&#127993; WATCH</span>
           </div>
           <div class="risk-meter">
-            <div class="risk-meter-label"><span>Risk Score</span><span>0.42 / 1.0</span></div>
-            <div class="risk-bar"><div class="risk-fill" id="risk-fill"></div></div>
+            <div class="risk-meter-label"><span>Risk Score</span><span id="risk-score-label">—</span></div>
+            <div class="risk-bar"><div class="risk-fill" id="risk-fill" style="width:0%;transition:width 0.8s ease,background 0.4s"></div></div>
           </div>
-          <div class="ratio-grid">
-            <div class="ratio-item"><div class="ratio-label">Gross Margin</div><div class="ratio-value">34%</div><div class="ratio-warn">&#9679; Below 40% target</div></div>
-            <div class="ratio-item"><div class="ratio-label">Current Ratio</div><div class="ratio-value">1.2</div><div class="ratio-warn">&#9679; Watch &mdash; below 1.5</div></div>
-            <div class="ratio-item"><div class="ratio-label">Debtor Days</div><div class="ratio-value">58d</div><div class="ratio-bad">&#9679; Critical &mdash; above 30d</div></div>
-            <div class="ratio-item"><div class="ratio-label">Net Margin</div><div class="ratio-value">8%</div><div class="ratio-ok">&#9679; Healthy</div></div>
-            <div class="ratio-item"><div class="ratio-label">Debt-to-Equity</div><div class="ratio-value">0.8</div><div class="ratio-ok">&#9679; Healthy</div></div>
-            <div class="ratio-item"><div class="ratio-label">Cash Conv. Cycle</div><div class="ratio-value">36d</div><div class="ratio-warn">&#9679; Cash gap risk</div></div>
+          <div class="ratio-grid" id="ratio-grid">
+            <div class="ratio-item"><div class="ratio-label">Gross Margin</div><div class="ratio-value">—</div><div class="ratio-warn">Enter your numbers above</div></div>
+            <div class="ratio-item"><div class="ratio-label">Current Ratio</div><div class="ratio-value">—</div><div class="ratio-warn"></div></div>
+            <div class="ratio-item"><div class="ratio-label">Debtor Days</div><div class="ratio-value">—</div><div class="ratio-warn"></div></div>
+            <div class="ratio-item"><div class="ratio-label">Net Margin</div><div class="ratio-value">—</div><div class="ratio-warn"></div></div>
+            <div class="ratio-item"><div class="ratio-label">Debt-to-Equity</div><div class="ratio-value">—</div><div class="ratio-warn"></div></div>
+            <div class="ratio-item"><div class="ratio-label">Cash Conv. Cycle</div><div class="ratio-value">—</div><div class="ratio-warn"></div></div>
           </div>
           <div style="margin-top:1rem;padding:.875rem;background:var(--orange-dim);border-radius:8px;border:0.5px solid var(--orange-border)">
             <div style="font-size:12px;font-weight:700;font-family:Helvetica,Arial,sans-serif;color:var(--orange);margin-bottom:4px">Billi&rsquo;s top recommendation</div>
-            <div style="font-size:12.5px;color:var(--text);line-height:1.6">Your 36-day cash gap is your biggest risk. You&rsquo;re collecting in 58 days but paying suppliers in 22. Tighten debtor terms to 30 days and negotiate 45-day terms with your top 3 suppliers. Sign up to get your full action plan.</div>
+            <div class="health-rec-text" style="font-size:12.5px;color:var(--text);line-height:1.6">Fill in your numbers and click calculate to get your personalised insight.</div>
           </div>
           <button class="btn-lg primary" style="width:100%;margin-top:1rem;border-radius:8px;font-size:14px" onclick="openLogin()">Get my full health report &rarr;</button>
         </div>
@@ -1615,23 +1615,9 @@ function compute(){
 compute();
 
 // ── DEMO CHAT ──
+// ── DEMO CHAT — real Flowise via /api/demo-chat ──
 var demoCount=0,maxDemo=3,isTyping=false;
-var FLOWISE_API='https://billsource.ai/api/v1/prediction/YOUR-CHATFLOW-ID-HERE';
-var fb={
-  debtor:'A client unpaid at 60 days needs immediate escalation. Send a firm payment request today referencing the specific invoice number and amount. If no response in 7 days, issue a formal letter of demand. Under South African law, you must serve a Section 129 notice before legal action on credit agreements. Want me to draft the letter?',
-  ratio:'Your current ratio compares short-term assets to short-term liabilities. Above 1.5 is healthy. Between 1.0\u20131.5 \u2014 watch closely. Below 1.0 means your short-term debts exceed short-term assets \u2014 a cash flow danger signal. Upload your balance sheet and I\'ll calculate yours precisely.',
-  cashflow:'Cash flow gap risk shows up in your Cash Conversion Cycle \u2014 days between paying suppliers and collecting from customers. Paying in 22 days but collecting in 58 means a 36-day gap you must fund from reserves or credit. Upload your income statement and I\'ll calculate your exact position.',
-  supplier:'When cash is tight on supplier payments you have options: negotiate extended terms (45\u201360 days), offer partial payment to maintain the relationship, look at invoice factoring on your receivables to generate immediate cash, or explore Business Rescue if it\'s systemic. Which of these makes sense for your situation?',
-  def:'That\'s a great question for your advisory team. Based on typical SA SMME patterns, this touches on cash flow management, financial ratios, debt management, and business rescue options in South Africa. Upload your latest statement and I\'ll give you a specific answer based on your actual numbers.'
-};
-function getFallback(msg){
-  var l=(msg||'').toLowerCase();
-  if(l.includes('paid')||l.includes('debtor')||l.includes('60 day')||l.includes('overdue')||l.includes('invoice'))return fb.debtor;
-  if(l.includes('ratio')||l.includes('current ratio')||l.includes('what does'))return fb.ratio;
-  if(l.includes('cash flow')||l.includes('cashflow')||l.includes('gap'))return fb.cashflow;
-  if(l.includes('supplier')||l.includes("can't pay")||l.includes('options'))return fb.supplier;
-  return fb.def;
-}
+
 function billiAv(){
   return '<img src="billi-avatar.svg" alt="Billi" width="28" height="28" style="object-fit:contain;flex-shrink:0" onerror="this.style.display=\'none\'"/>';
 }
@@ -1639,8 +1625,19 @@ function addMsg(text,role){
   var ms=document.getElementById('chat-messages');
   var d=document.createElement('div');
   d.className='msg'+(role==='user'?' user':'');
-  if(role==='ai'){d.innerHTML=billiAv()+'<div class="msg-bubble ai">'+text+'</div>';}
-  else{d.innerHTML='<div class="msg-avatar-user">U</div><div class="msg-bubble user">'+text+'</div>';}
+  if(role==='ai'){
+    // Render basic markdown: **bold**, *italic*, line breaks, bullet dashes
+    var html=text
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g,'<em>$1</em>')
+      .replace(/^---$/gm,'<hr style="border:none;border-top:1px solid var(--border);margin:.5rem 0">')
+      .replace(/^[\-\*] (.+)/gm,'<li style="margin-left:1rem;margin-bottom:.2rem">$1</li>')
+      .replace(/\n/g,'<br>');
+    d.innerHTML=billiAv()+'<div class="msg-bubble ai">'+html+'</div>';
+  } else {
+    d.innerHTML='<div class="msg-avatar-user">U</div><div class="msg-bubble user">'+text+'</div>';
+  }
   ms.appendChild(d);ms.scrollTop=ms.scrollHeight;
 }
 function showTyping(){
@@ -1650,42 +1647,237 @@ function showTyping(){
   ms.appendChild(d);ms.scrollTop=ms.scrollHeight;
 }
 function removeTyping(){var t=document.getElementById('typing-indicator');if(t)t.remove();}
-function sendMessage(){
+
+async function sendMessage(){
   if(isTyping)return;
   var inp=document.getElementById('chat-input');
   var msg=inp.value.trim();if(!msg)return;
   if(demoCount>=maxDemo){openLogin();return;}
-  inp.value='';demoCount++;
+  inp.value='';
   document.getElementById('suggestions').style.display='none';
   addMsg(msg,'user');isTyping=true;showTyping();
-  var r=getFallback(msg);
-  setTimeout(function(){removeTyping();addMsg(r,'ai');isTyping=false;if(demoCount>=maxDemo)showLock();},1400);
+  try{
+    var res=await fetch('/api/demo-chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({question:msg})
+    });
+    var data=await res.json();
+    removeTyping();isTyping=false;
+    if(res.status===429||data.error==='demo_limit'){
+      addMsg(data.answer||"You've used all 3 demo messages. Sign up free to continue.",'ai');
+      showLock();return;
+    }
+    if(!res.ok||data.error){
+      addMsg(data.error||'Billi is briefly unavailable — please try again.','ai');return;
+    }
+    demoCount++;
+    addMsg(data.answer,'ai');
+    if(demoCount>=maxDemo) showLock();
+  }catch(err){
+    removeTyping();isTyping=false;
+    addMsg('Connection issue — please check your internet and try again.','ai');
+  }
 }
 function sendSuggestion(el){document.getElementById('chat-input').value=el.textContent;sendMessage();}
 function showLock(){
-  document.getElementById('chat-input-area').innerHTML='<div style="width:100%;text-align:center;padding:1rem"><div style="font-size:13px;color:var(--muted);margin-bottom:10px"><strong style="color:var(--text)">You\'ve used all 3 demo messages.</strong><br>Sign up free to meet all six advisors \u2014 no card needed.</div><button class="btn-primary" style="padding:10px 24px;border-radius:7px;font-size:13px" onclick="openLogin()">Create free account</button></div>';
+  document.getElementById('chat-input-area').innerHTML='<div style="width:100%;text-align:center;padding:1rem 0"><div style="font-size:13px;color:var(--muted);margin-bottom:12px"><strong style="color:var(--text)">You\'ve used all 3 demo messages.</strong><br>Sign up free to meet all six advisors — no card needed.</div><button class="btn-primary" style="padding:10px 28px;border-radius:7px;font-size:13px" onclick="openLogin()">Create free account</button></div>';
 }
 
-// ── UPLOAD ──
-function triggerUpload(){document.getElementById('file-input').click();}
-function handleFileSelect(inp){if(inp.files&&inp.files[0])showUploadResult(inp.files[0].name);}
+// ── FINANCIAL HEALTH FORM — real /api/demo-analyse ──
+function triggerUpload(){
+  // Instead of file upload (needs OCR pipeline), show a quick-entry number form
+  showNumberForm();
+}
+function handleFileSelect(inp){if(inp.files&&inp.files[0])showNumberForm(inp.files[0].name);}
 function handleDrop(e){
   e.preventDefault();document.getElementById('upload-zone').style.borderColor='';
-  var f=e.dataTransfer.files[0];if(f)showUploadResult(f.name);
+  var f=e.dataTransfer.files[0];if(f)showNumberForm(f.name);
 }
-function showUploadResult(name){
+
+function showNumberForm(fileName){
   var z=document.getElementById('upload-zone');
-  z.innerHTML='<span class="upload-icon">&#10003;</span><div class="upload-title" style="color:var(--orange)">'+name+' uploaded</div><div class="upload-sub">Analysing your financials\u2026 Sign up to get your full report.</div>';
-  var p=document.getElementById('score-preview');p.classList.add('visible');
-  setTimeout(function(){document.getElementById('risk-fill').style.width='42%';},300);
-  setTimeout(function(){openLogin();},3000);
+  var fileNote=fileName?('<div style="font-size:11px;color:var(--muted);margin-bottom:.75rem">📎 '+fileName+' — enter your numbers below to calculate</div>'):'';
+  z.innerHTML=fileNote+
+    '<div style="text-align:left;width:100%">'+
+    '<div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:.75rem">Enter your last month\'s figures (R)</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px">'+
+    numField('nf-rev','Monthly Revenue','e.g. 250000')+
+    numField('nf-cos','Cost of Sales','e.g. 160000')+
+    numField('nf-opex','Operating Expenses','e.g. 45000')+
+    numField('nf-np','Net Profit','e.g. 20000')+
+    numField('nf-ca','Current Assets','e.g. 180000')+
+    numField('nf-cl','Current Liabilities','e.g. 120000')+
+    numField('nf-ar','Accounts Receivable','e.g. 95000')+
+    numField('nf-ap','Accounts Payable','e.g. 60000')+
+    numField('nf-inv','Inventory','e.g. 30000')+
+    numField('nf-debt','Total Debt','e.g. 80000')+
+    numField('nf-eq','Total Equity','e.g. 100000')+
+    numField('nf-annrev','Annual Revenue','e.g. 3000000')+
+    '</div>'+
+    '<button onclick="runDemoAnalyse()" style="margin-top:12px;width:100%;padding:10px;background:var(--orange);color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;font-family:Helvetica,Arial,sans-serif">Calculate my financial health score &rarr;</button>'+
+    '<div id="nf-error" style="font-size:11px;color:#c0392b;margin-top:6px;display:none"></div>'+
+    '</div>';
+}
+
+function numField(id,label,placeholder){
+  return '<div><label style="display:block;font-size:10px;color:var(--muted);margin-bottom:2px">'+label+'</label>'+
+    '<input id="'+id+'" type="number" placeholder="'+placeholder+'" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;background:var(--bg);color:var(--text);font-family:Helvetica,Arial,sans-serif;box-sizing:border-box"></div>';
+}
+
+function numVal(id){return parseFloat(document.getElementById(id)?.value)||0;}
+
+async function runDemoAnalyse(){
+  var data={
+    revenue:numVal('nf-rev'), costOfSales:numVal('nf-cos'),
+    operatingExpenses:numVal('nf-opex'), netProfit:numVal('nf-np'),
+    currentAssets:numVal('nf-ca'), currentLiabilities:numVal('nf-cl'),
+    accountsReceivable:numVal('nf-ar'), accountsPayable:numVal('nf-ap'),
+    inventory:numVal('nf-inv'), totalDebt:numVal('nf-debt'),
+    equity:numVal('nf-eq'), annualRevenue:numVal('nf-annrev')
+  };
+  var errEl=document.getElementById('nf-error');
+  if(!data.revenue||!data.currentLiabilities||!data.equity||!data.annualRevenue){
+    errEl.textContent='Please fill in Revenue, Current Liabilities, Equity, and Annual Revenue at minimum.';
+    errEl.style.display='block';return;
+  }
+  errEl.style.display='none';
+  var btn=document.querySelector('#upload-zone button');
+  if(btn){btn.disabled=true;btn.textContent='Calculating\u2026';}
+  try{
+    var res=await fetch('/api/demo-analyse',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(data)
+    });
+    var result=await res.json();
+    if(!res.ok||result.error){
+      errEl.textContent=result.error||'Calculation failed — please check your numbers.';
+      errEl.style.display='block';
+      if(btn){btn.disabled=false;btn.textContent='Calculate my financial health score \u2192';}
+      return;
+    }
+    renderDemoScore(result);
+  }catch(e){
+    errEl.textContent='Network error — please try again.';errEl.style.display='block';
+    if(btn){btn.disabled=false;btn.textContent='Calculate my financial health score \u2192';}
+  }
+}
+
+function renderDemoScore(r){
+  var ratios=r.ratios;
+  var pct=r.score;
+  var colour=r.colour;
+  var colMap={green:'var(--green)',amber:'var(--amber-c)',orange:'#e67e22',red:'var(--red-c)'};
+  var badgeMap={green:'&#128994; HEALTHY',amber:'&#127993; WATCH',orange:'&#128992; ELEVATED',red:'&#128308; CRITICAL'};
+  var bgMap={green:'#d1fae5',amber:'#fef3c7',orange:'#fde8d0',red:'#fee2e2'};
+  var txtMap={green:'#065f46',amber:'#92400e',orange:'#9a3412',red:'#991b1b'};
+  var col=colMap[colour]||'var(--amber-c)';
+  var badge=badgeMap[colour]||'&#127993; WATCH';
+
+  // Activate the panel
+  var sp=document.getElementById('score-preview');
+  if(sp){sp.style.opacity='1';sp.style.pointerEvents='auto';}
+
+  // Header
+  var tEl=document.getElementById('sp-title');if(tEl)tEl.textContent='Your Business \u2014 Live Analysis';
+  var sEl=document.getElementById('sp-sub');if(sEl)sEl.textContent='Analysis complete \u00b7 '+r.score+'/100 health score';
+  var bEl=document.getElementById('sp-badge');
+  if(bEl){bEl.innerHTML=badge;bEl.style.opacity='1';bEl.style.background=bgMap[colour]||'#fef3c7';bEl.style.color=txtMap[colour]||'#92400e';}
+
+  // Risk bar
+  var fill=document.getElementById('risk-fill');
+  if(fill){fill.style.background=col;setTimeout(function(){fill.style.width=Math.round(pct)+'%';},50);}
+  var scoreLabel=document.getElementById('risk-score-label');
+  if(scoreLabel)scoreLabel.textContent=Math.round(pct)+' / 100';
+
+  // Ratio grid
+  var grid=document.getElementById('ratio-grid');
+  if(grid){
+    grid.innerHTML=
+      ratioCard('Gross Margin',Math.round(ratios.grossMargin)+'%',
+        ratios.grossMargin>=40?'ok':'warn',ratios.grossMargin>=40?'Healthy':'Below 40% target')+
+      ratioCard('Current Ratio',ratios.currentRatio.toFixed(1),
+        ratios.currentRatio>=1.5?'ok':ratios.currentRatio>=1?'warn':'bad',
+        ratios.currentRatio>=1.5?'Healthy':ratios.currentRatio>=1?'Watch \u2014 below 1.5':'Critical \u2014 below 1.0')+
+      ratioCard('Debtor Days',Math.round(ratios.dso)+'d',
+        ratios.dso<=30?'ok':ratios.dso<=45?'warn':'bad',
+        ratios.dso<=30?'Healthy':ratios.dso<=45?'Watch':'Critical \u2014 above 30d')+
+      ratioCard('Net Margin',Math.round(ratios.netMargin)+'%',
+        ratios.netMargin>=10?'ok':ratios.netMargin>=5?'warn':'bad',
+        ratios.netMargin>=10?'Healthy':ratios.netMargin>=5?'Watch \u2014 below 10%':'Low margin risk')+
+      ratioCard('Debt-to-Equity',ratios.debtToEquity.toFixed(1),
+        ratios.debtToEquity<=1?'ok':ratios.debtToEquity<=1.5?'warn':'bad',
+        ratios.debtToEquity<=1?'Healthy':ratios.debtToEquity<=1.5?'Watch':'High leverage')+
+      ratioCard('Cash Conv. Cycle',Math.round(ratios.cashConversionCycle)+'d',
+        ratios.cashConversionCycle<=20?'ok':ratios.cashConversionCycle<=40?'warn':'bad',
+        ratios.cashConversionCycle<=20?'Healthy':ratios.cashConversionCycle<=40?'Cash gap risk':'Critical cash gap');
+  }
+
+  // Recommendation
+  var rec=sp?sp.querySelector('.health-rec-text'):null;
+  if(rec)rec.textContent=buildRec(ratios);
+
+  // Reset upload zone
+  var z=document.getElementById('upload-zone');
+  if(z)z.innerHTML='<span class="upload-icon" style="color:'+col+'">&#10003;</span>'+
+    '<div class="upload-title" style="color:'+col+'">Analysis complete \u2014 '+r.rating+'</div>'+
+    '<div class="upload-sub">Sign up to save your report and get Billi\u2019s full action plan.</div>';
+
+  if(sp)sp.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function ratioCard(label,val,status,note){
+  return '<div class="ratio-item"><div class="ratio-label">'+label+'</div><div class="ratio-value">'+val+'</div><div class="ratio-'+status+'">&#9679; '+note+'</div></div>';
+}
+
+function buildRec(r){
+  var issues=[];
+  if(r.dso>30)issues.push('collecting in '+Math.round(r.dso)+' days — above the 30-day target');
+  if(r.dpo<r.dso)issues.push('paying suppliers in '+Math.round(r.dpo)+' days but collecting in '+Math.round(r.dso)+' — a '+Math.round(r.cashConversionCycle)+'-day cash gap');
+  if(r.currentRatio<1.5)issues.push('current ratio of '+r.currentRatio.toFixed(1)+' — short-term liquidity needs attention');
+  if(r.grossMargin<40)issues.push('gross margin of '+Math.round(r.grossMargin)+'% — below the 40% benchmark');
+  if(issues.length===0)return 'Your ratios are in good shape. Sign up to get Billi\'s 90-day growth plan.';
+  return 'Your biggest risks: '+issues.slice(0,2).join('; ')+'. Sign up to get Billi\'s full action plan.';
 }
 
 // ── AUTH ──
 function openLogin(){document.getElementById('login-modal').classList.add('open');}
-function emailSignIn(){
-  var email=document.getElementById('email-input').value;if(!email)return;
-  document.getElementById('login-box').innerHTML='<div style="font-size:3rem;margin-bottom:1rem">&#9993;</div><div class="login-title">Check your inbox</div><div class="login-sub" style="margin-top:.5rem">Magic link sent to <strong>'+email+'</strong><br>Click it to access Billi \u2014 no password needed.</div>';
+
+async function emailSignIn(){
+  var email=(document.getElementById('email-input').value||'').trim();
+  var errEl=document.getElementById('email-error');
+  if(!errEl){
+    errEl=document.createElement('div');
+    errEl.id='email-error';
+    errEl.style.cssText='font-size:11px;color:#c0392b;margin-top:6px;text-align:center;display:none';
+    document.getElementById('email-input').parentNode.appendChild(errEl);
+  }
+  if(!email||!email.includes('@')){errEl.textContent='Please enter a valid email address.';errEl.style.display='block';return;}
+  errEl.style.display='none';
+  var btn=document.querySelector('#login-box .btn-primary');
+  if(btn){btn.disabled=true;btn.textContent='Sending\u2026';}
+  try{
+    var res=await fetch('/api/magic-link',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email:email})
+    });
+    var data=await res.json();
+    if(!res.ok||data.error){
+      errEl.textContent=data.error||'Could not send link. Try Google sign-in instead.';
+      errEl.style.display='block';
+      if(btn){btn.disabled=false;btn.textContent='Send magic link';}
+      return;
+    }
+    document.getElementById('login-box').innerHTML=
+      '<div style="font-size:3rem;margin-bottom:1rem">&#9993;</div>'+
+      '<div class="login-title">Check your inbox</div>'+
+      '<div class="login-sub" style="margin-top:.5rem">Magic link sent to <strong>'+email+'</strong><br>Click it to access Billi — no password needed.<br><span style="font-size:11px;color:var(--muted)">Link expires in 30 minutes.</span></div>';
+  }catch(e){
+    errEl.textContent='Network error — please try again or use Google sign-in.';errEl.style.display='block';
+    if(btn){btn.disabled=false;btn.textContent='Send magic link';}
+  }
 }
 
 // ── MERCH ──
