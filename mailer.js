@@ -179,6 +179,64 @@ function formatItem(item, size) {
   return `${names[item]||item}${size?' — '+(sizes[size]||size):''}`;
 }
 
+// ── Magic link login email ──
+async function sendMagicLink({ email, magicUrl }) {
+  if (!RESEND_API_KEY) {
+    console.log(`RESEND_API_KEY not set — magic link for ${email}: ${magicUrl}`);
+    return;
+  }
+
+  await resendPost({
+    from:    MAIL_FROM,
+    to:      [email],
+    subject: 'Your Billi sign-in link',
+    html: `
+      <div style="font-family:Helvetica,Arial,sans-serif;max-width:520px;margin:0 auto">
+        <div style="background:#C45200;padding:20px 24px;border-radius:10px 10px 0 0;text-align:center">
+          <div style="font-size:48px">🔐</div>
+          <h2 style="color:#fff;margin:8px 0 0;font-size:20px">Sign in to Billi</h2>
+        </div>
+        <div style="background:#fff;padding:28px 24px;border:1px solid #eee;border-radius:0 0 10px 10px">
+          <p style="color:#333;font-size:15px;margin:0 0 8px">
+            Click the button below to sign in to your Billi account.
+          </p>
+          <p style="color:#666;font-size:13px;margin:0 0 28px">
+            No password needed — one click and you're in.
+          </p>
+          <div style="text-align:center;margin-bottom:28px">
+            <a href="${magicUrl}"
+               style="background:#C45200;color:#fff;padding:14px 36px;border-radius:8px;
+                      text-decoration:none;font-weight:700;font-size:15px;display:inline-block;
+                      letter-spacing:0.01em">
+              Sign in to Billi →
+            </a>
+          </div>
+          <div style="background:#fef9f0;border:1px solid #f0d9c8;border-radius:8px;
+                      padding:14px 16px;margin-bottom:20px">
+            <p style="margin:0;font-size:12px;color:#92400E;line-height:1.6">
+              <strong>This link expires in 30 minutes</strong> and can only be used once.
+              If you did not request this, you can safely ignore this email — no account changes were made.
+            </p>
+          </div>
+          <p style="color:#999;font-size:12px;margin:0 0 4px">
+            If the button above does not work, copy and paste this URL into your browser:
+          </p>
+          <p style="color:#C45200;font-size:11px;word-break:break-all;margin:0 0 24px;
+                    font-family:monospace">
+            ${magicUrl}
+          </p>
+          <hr style="border:none;border-top:1px solid #eee;margin:0 0 16px"/>
+          <p style="color:#999;font-size:11px;text-align:center;margin:0">
+            Billi · Business Associate Intelligence · 
+            <a href="${BASE_URL}" style="color:#C45200;text-decoration:none">billsource.ai</a>
+          </p>
+        </div>
+      </div>`
+  });
+
+  console.log(`Magic link email sent: ${email}`);
+}
+
 function capitalize(s) { return s ? s.charAt(0).toUpperCase()+s.slice(1) : s; }
 
-module.exports = { sendMerchOrderEmails, sendPlanUpgradeEmail };
+module.exports = { sendMerchOrderEmails, sendPlanUpgradeEmail, sendMagicLink };
