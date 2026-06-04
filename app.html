@@ -42,6 +42,39 @@
     .sidebar-item:hover .sidebar-item-del{opacity:0.5}
     .sidebar-item-del:hover{opacity:1!important;color:var(--orange)}
     .sidebar-bottom{margin-top:auto;border-top:0.5px solid var(--border);padding:0.75rem 0.875rem}
+
+    /* ── Sidebar tabs ── */
+    .sidebar-tabs{display:flex;gap:2px;padding:6px 8px;border-bottom:0.5px solid var(--border);flex-shrink:0}
+    .sb-tab{flex:1;background:transparent;border:0.5px solid transparent;border-radius:6px;color:var(--muted);font-size:11px;font-weight:600;padding:6px 4px;cursor:pointer;font-family:var(--font);transition:all .15s;white-space:nowrap}
+    .sb-tab:hover{background:var(--card);color:var(--text)}
+    .sb-tab.active{background:rgba(196,82,0,0.12);color:var(--orange);border-color:rgba(196,82,0,0.2)}
+    .sb-panel{flex:1;overflow-y:auto}
+
+    /* ── Report / file items in sidebar ── */
+    .sb-report-item{padding:9px 0.875rem;border-radius:8px;cursor:pointer;margin:1px 0.5rem;transition:all .2s;border:none;background:transparent}
+    .sb-report-item:hover{background:var(--card)}
+    .sb-report-name{font-size:12.5px;color:var(--text);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:2px}
+    .sb-report-meta{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px}
+    .sb-score-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block}
+    .sb-item-actions{display:flex;gap:4px;margin-top:5px}
+    .sb-item-btn{font-size:10px;padding:2px 8px;border-radius:4px;border:0.5px solid var(--border);background:var(--bg2);color:var(--text);cursor:pointer;font-family:var(--font);transition:all .15s}
+    .sb-item-btn:hover{border-color:var(--orange);color:var(--orange)}
+    .sb-item-btn.danger:hover{border-color:#dc2626;color:#dc2626}
+    .sb-empty{font-size:12px;color:var(--muted);padding:1.25rem 1rem;text-align:center;line-height:1.6}
+
+    /* ── File attach button in chat ── */
+    .attach-btn{background:transparent;border:0.5px solid var(--border);color:var(--muted);width:34px;height:34px;border-radius:7px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+    .attach-btn:hover{border-color:var(--orange);color:var(--orange)}
+
+    /* ── Analysis panel (inline in chat) ── */
+    .analysis-card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:1rem 1.25rem;margin-top:8px;font-size:13px}
+    .analysis-card-title{font-weight:700;font-size:13px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+    .analysis-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px}
+    .analysis-cell{background:var(--bg2);border-radius:6px;padding:6px 8px}
+    .analysis-cell-label{font-size:9px;color:var(--muted);margin-bottom:1px}
+    .analysis-cell-val{font-size:14px;font-weight:800;color:var(--text)}
+    .analysis-cell-note{font-size:9px;margin-top:1px}
+    .analysis-rec{background:rgba(196,82,0,0.08);border:0.5px solid rgba(196,82,0,0.25);border-radius:7px;padding:8px 10px;font-size:12px;line-height:1.6;color:var(--text)}
     .sso-reminder{display:none;background:rgba(232,98,26,0.08);border:0.5px solid rgba(232,98,26,0.35);border-radius:8px;padding:8px 10px 8px 10px;margin-bottom:8px;font-size:10.5px;line-height:1.55;color:var(--text);position:relative}
     .sso-reminder a{color:var(--orange);font-weight:600;text-decoration:none}
     .sso-reminder a:hover{text-decoration:underline}
@@ -311,8 +344,15 @@
       <button class="sb-btn" onclick="openSettings()" title="Account Settings">&#9881;</button>
     </div>
 
-    <div class="sidebar-section">Chat history</div>
-    <div id="history-list" style="flex:1;overflow-y:auto"></div>
+    <div class="sidebar-tabs">
+      <button class="sb-tab active" id="tab-history" onclick="switchSidebarTab('history')">&#128172; Chats</button>
+      <button class="sb-tab" id="tab-reports"  onclick="switchSidebarTab('reports')">&#128200; Reports</button>
+      <button class="sb-tab" id="tab-files"    onclick="switchSidebarTab('files')">&#128196; Files</button>
+    </div>
+
+    <div id="history-list"  class="sb-panel active-panel" style="flex:1;overflow-y:auto"></div>
+    <div id="reports-list"  class="sb-panel" style="flex:1;overflow-y:auto;display:none"></div>
+    <div id="files-list"    class="sb-panel" style="flex:1;overflow-y:auto;display:none"></div>
 
     <div class="sidebar-bottom">
       <!-- SSO activation reminder — shown for business/enterprise until Billsource profile is set up -->
@@ -364,6 +404,8 @@
 
       <div class="input-area">
         <div class="input-row">
+          <button class="attach-btn" onclick="triggerFileAttach()" title="Attach a financial statement — XLSX or CSV auto-analysed">📎</button>
+          <input type="file" id="chat-file-input" accept=".xlsx,.xls,.csv,.pdf" style="display:none" onchange="handleChatFileAttach(this)"/>
           <textarea class="chat-input" id="chat-input"
             placeholder="Ask Billi about finance, marketing, sales, governance or operations..."
             rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
@@ -843,7 +885,7 @@
     URL.revokeObjectURL(a.href);
   }
 
-    function addBubble(text, role) {
+    function addBubble(text, role, rawHtml) {
     const msgs = document.getElementById('chat-messages');
     const d = document.createElement('div');
     d.className = 'msg' + (role === 'user' ? ' user' : '');
@@ -882,6 +924,13 @@
            </div>
          </div>`
       : '';
+    if (rawHtml) {
+      // Raw HTML mode — for analysis cards; no copy/download bar
+      d.innerHTML = av + `<div class="msg-bubble ${role}">${text}</div>`;
+      msgs.appendChild(d);
+      msgs.scrollTop = msgs.scrollHeight;
+      return d;
+    }
     d.innerHTML = av + `<div class="msg-bubble ${role}">${renderText(text, role)}${copyBar}</div>`;
     msgs.appendChild(d);
     msgs.scrollTop = msgs.scrollHeight;
@@ -1618,6 +1667,495 @@
       if (allTab) allTab.classList.add('active');
     }
   };
+
+  // ══════════════════════════════════════════
+  // SIDEBAR TABS — Chat History / Reports / Files
+  // ══════════════════════════════════════════
+  let activeSidebarTab = 'history';
+
+  function switchSidebarTab(tab) {
+    activeSidebarTab = tab;
+    ['history','reports','files'].forEach(t => {
+      document.getElementById('tab-'+t).classList.toggle('active', t===tab);
+      const panel = document.getElementById(t+'-list');
+      panel.style.display = t===tab ? '' : 'none';
+      if (t===tab) panel.classList.add('active-panel');
+      else panel.classList.remove('active-panel');
+    });
+    if (tab === 'reports') loadReportsList();
+    if (tab === 'files')   loadFilesList();
+  }
+
+  // ══════════════════════════════════════════
+  // MY REPORTS
+  // ══════════════════════════════════════════
+  const colDot = {green:'#16a34a', amber:'#d97706', orange:'#ea580c', red:'#dc2626'};
+  const colLbl  = {green:'Low Risk', amber:'Moderate', orange:'Elevated', red:'Critical'};
+
+  async function loadReportsList() {
+    const list = document.getElementById('reports-list');
+    list.innerHTML = '<div class="sb-empty">Loading…</div>';
+    try {
+      const res  = await fetch('/api/reports');
+      const data = await res.json();
+      if (!data.reports || data.reports.length === 0) {
+        list.innerHTML = '<div class="sb-empty">No saved reports yet.<br><br>Run a financial analysis in chat (use 📎 to upload a statement) and save the result.</div>';
+        return;
+      }
+      list.innerHTML = '';
+      data.reports.forEach(r => {
+        const d   = new Date(r.created_at);
+        const dStr = d.toLocaleDateString('en-ZA',{day:'2-digit',month:'short',year:'numeric'});
+        const dot  = colDot[r.colour] || '#d97706';
+        const lbl  = colLbl[r.colour] || 'Moderate';
+        const item = document.createElement('div');
+        item.className = 'sb-report-item';
+        item.innerHTML = `
+          <div class="sb-report-name" title="${r.name}">${r.name}</div>
+          <div class="sb-report-meta">
+            <span class="sb-score-dot" style="background:${dot}"></span>
+            <span style="color:${dot};font-weight:700">${r.score}/100</span>
+            <span>${lbl}</span>
+            <span style="margin-left:auto">${dStr}</span>
+          </div>
+          ${r.source_file ? `<div style="font-size:9px;color:var(--muted);margin-top:2px">📎 ${r.source_file}</div>` : ''}
+          <div class="sb-item-actions">
+            <button class="sb-item-btn" onclick="downloadReport(${r.id},'${r.name.replace(/'/g,"\\'")}')">⬇ Download</button>
+            <button class="sb-item-btn" onclick="loadReportIntoChat(${r.id})">💬 Discuss</button>
+            <button class="sb-item-btn danger" onclick="deleteReport(${r.id})">🗑</button>
+          </div>`;
+        list.appendChild(item);
+      });
+    } catch(e) {
+      list.innerHTML = '<div class="sb-empty">Could not load reports.</div>';
+    }
+  }
+
+  async function downloadReport(id, name) {
+    window.open('/api/reports/' + id, '_blank');
+  }
+
+  async function loadReportIntoChat(id) {
+    try {
+      const res  = await fetch('/api/reports/' + id);
+      // If server returns HTML, we just use the metadata from the list
+      // Instead fetch JSON metadata via the list and inject into chat
+      const list = await (await fetch('/api/reports')).json();
+      const r = list.reports.find(x => x.id === id);
+      if (!r) return;
+      const summary = `📊 **Financial Health Report — ${r.name}**\n\nScore: **${r.score}/100** (${colLbl[r.colour]||'Moderate'} Risk — ${r.colour?.toUpperCase()||''})\nSource: ${r.source_file||'Manual entry'}\nDate: ${new Date(r.created_at).toLocaleDateString('en-ZA')}\n\nBased on this report, what would you like to work on?`;
+      newChat();
+      await new Promise(resolve => setTimeout(resolve, 100));
+      document.getElementById('chat-input').value = summary;
+      document.getElementById('chat-title').textContent = r.name;
+      switchSidebarTab('history');
+      handleMobileClose();
+    } catch(e) { console.error('loadReportIntoChat', e); }
+  }
+
+  async function deleteReport(id) {
+    if (!confirm('Delete this report? This cannot be undone.')) return;
+    await fetch('/api/reports/' + id, {method:'DELETE'});
+    loadReportsList();
+  }
+
+  // ── Save report (called from analysis card in chat) ──
+  async function saveReportToDB(payload) {
+    try {
+      const res  = await fetch('/api/reports/save', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.ok) {
+        showToast('✅ Report saved to My Reports');
+        if (activeSidebarTab === 'reports') loadReportsList();
+      }
+    } catch(e) { showToast('Could not save report — please try again.'); }
+  }
+
+  // ══════════════════════════════════════════
+  // MY FILES
+  // ══════════════════════════════════════════
+  const FILE_ICONS = {xlsx:'📊', xls:'📊', csv:'📋', pdf:'📄', default:'📎'};
+
+  async function loadFilesList() {
+    const list = document.getElementById('files-list');
+    list.innerHTML = '<div class="sb-empty">Loading…</div>';
+    try {
+      const res  = await fetch('/api/files');
+      const data = await res.json();
+      if (!data.files || data.files.length === 0) {
+        list.innerHTML = '<div class="sb-empty">No files saved yet.<br><br>Click 📎 in the chat input to upload a financial statement — it\'ll be saved here and used in your analysis.</div>';
+        return;
+      }
+      list.innerHTML = '';
+      data.files.forEach(f => {
+        const ext  = f.name.split('.').pop().toLowerCase();
+        const icon = FILE_ICONS[ext] || FILE_ICONS.default;
+        const d    = new Date(f.created_at);
+        const dStr = d.toLocaleDateString('en-ZA',{day:'2-digit',month:'short',year:'numeric'});
+        const kb   = f.size_bytes ? (f.size_bytes/1024).toFixed(0)+'KB' : '';
+        const item = document.createElement('div');
+        item.className = 'sb-report-item';
+        item.innerHTML = `
+          <div class="sb-report-name">${icon} ${f.name}</div>
+          <div class="sb-report-meta">
+            <span>${f.type||ext}</span>
+            ${kb ? `<span>${kb}</span>` : ''}
+            <span style="margin-left:auto">${dStr}</span>
+          </div>
+          <div class="sb-item-actions">
+            <button class="sb-item-btn" onclick="useFileInChat(${f.id},'${f.name.replace(/'/g,"\\'")}')">📎 Use in chat</button>
+            <button class="sb-item-btn danger" onclick="deleteFile(${f.id})">🗑</button>
+          </div>`;
+        list.appendChild(item);
+      });
+    } catch(e) {
+      list.innerHTML = '<div class="sb-empty">Could not load files.</div>';
+    }
+  }
+
+  async function useFileInChat(id, name) {
+    // Inject a reference into the chat input so the user can ask Billi about it
+    document.getElementById('chat-input').value =
+      `Analyse my financial statement: ${name} (saved file #${id})`;
+    document.getElementById('chat-input').focus();
+    switchSidebarTab('history');
+    handleMobileClose();
+  }
+
+  async function deleteFile(id) {
+    if (!confirm('Remove this file? This cannot be undone.')) return;
+    await fetch('/api/files/' + id, {method:'DELETE'});
+    loadFilesList();
+  }
+
+  // ══════════════════════════════════════════
+  // FILE ATTACH — 📎 in chat input
+  // ══════════════════════════════════════════
+  // SheetJS — load lazily if not already present
+  function ensureSheetJS(cb) {
+    if (window.XLSX) { cb(); return; }
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.onload = cb;
+    document.head.appendChild(s);
+  }
+
+  function triggerFileAttach() {
+    document.getElementById('chat-file-input').click();
+  }
+
+  function handleChatFileAttach(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (['xlsx','xls','csv'].includes(ext)) {
+      ensureSheetJS(() => parseChatFile(file));
+    } else {
+      // PDF — save metadata only, prompt user to enter numbers
+      saveChatFileToDB(file, null, null);
+      showToast('📎 ' + file.name + ' saved to My Files');
+      addBubble(`📎 I've saved **${file.name}** to My Files. It's a PDF — please enter your key figures in the message and I'll analyse them for you.`, 'ai');
+    }
+    input.value = '';
+  }
+
+  function parseChatFile(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const wb       = window.XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+        const extracted = extractFinancials(wb);
+        const b64      = btoa(String.fromCharCode(...new Uint8Array(e.target.result)));
+        saveChatFileToDB(file, b64, extracted);
+        renderAnalysisInChat(extracted, file.name);
+        showToast('📎 ' + file.name + ' analysed and saved to My Files');
+      } catch(err) {
+        showToast('Could not read file — please check the format.');
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  async function saveChatFileToDB(file, contentB64, analysis) {
+    try {
+      await fetch('/api/files/save', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          name:       file.name,
+          type:       file.name.split('.').pop().toLowerCase(),
+          sizeBytes:  file.size,
+          contentB64: contentB64,
+          analysisJson: analysis ? JSON.stringify(analysis) : null
+        })
+      });
+      if (activeSidebarTab === 'files') loadFilesList();
+    } catch(e) { console.error('saveChatFileToDB', e); }
+  }
+
+  // ── Extract financials from workbook (same logic as index.html) ──
+  function extractFinancials(wb) {
+    const lookup = {};
+    wb.SheetNames.forEach(sname => {
+      const rows = window.XLSX.utils.sheet_to_json(wb.Sheets[sname],{header:1,defval:null});
+      if (!rows.length) return;
+      const hdr = rows[0]||[];
+      let numCols = [];
+      hdr.forEach((v,i) => { if (v && String(v).match(/^20\d{2}$/)) numCols.push(i); });
+      const useLastCol = numCols.length === 0;
+      rows.slice(1).forEach(row => {
+        const label = String(row[0]||'').trim().toLowerCase();
+        if (!label) return;
+        let vals = [];
+        if (useLastCol) {
+          for (let i=row.length-1;i>=1;i--) {
+            if (row[i]!==null && !isNaN(Number(row[i]))) { vals=[Number(row[i])]; break; }
+          }
+        } else {
+          numCols.forEach(ci => { if(row[ci]!==null) vals.push(Number(row[ci])); });
+        }
+        if (vals.length) lookup[label] = vals;
+      });
+    });
+
+    const get = label => {
+      if (!lookup[label]) return null;
+      const arr = lookup[label];
+      for (let i=arr.length-1;i>=0;i--) { if(arr[i]!==null && !isNaN(arr[i])) return arr[i]; }
+      return null;
+    };
+    const find = (...patterns) => {
+      for (const pat of patterns) {
+        const keys = Object.keys(lookup);
+        for (const k of keys) {
+          if (k.includes(pat.toLowerCase())) { const v=get(k); if(v!==null) return v; }
+        }
+      }
+      return null;
+    };
+
+    const rawRev   = find('revenue','turnover','total income','total revenue','sales');
+    const rawCos   = find('cost of goods','cost of sales','cogs','direct cost');
+    const rawOpex  = find('operating expense','operating cost','opex');
+    const rawNp    = find('net income','net profit','profit after','profit/(loss)','net loss') ||
+                     (() => { const gp=find('gross profit','gross income'); return (gp!==null && rawOpex!==null) ? gp-rawOpex : null; })();
+    const rawCa    = find('total current assets','current assets');
+    const rawCl    = find('total current liab','current liab');
+    const rawAr    = find('accounts receivable','trade receivable','debtors');
+    const rawAp    = find('accounts payable','trade payable','creditors');
+    const rawInv   = find('inventory','stock');
+    const rawEq    = find('equity','shareholders','net assets');
+    const rawStD   = find('short-term debt','short term debt','current portion','overdraft');
+    const rawLtD   = find('long-term debt','long term debt','non-current liab','term loan');
+    const rawDebt  = find('total debt') || (rawStD!==null&&rawLtD!==null ? rawStD+rawLtD : rawStD||rawLtD);
+
+    const isAnnual = rawRev !== null && rawRev > 500000;
+    const div = isAnnual ? 12 : 1;
+
+    return {
+      revenue:           rawRev   !== null ? Math.round(rawRev/div)   : null,
+      costOfSales:       rawCos   !== null ? Math.round(rawCos/div)   : null,
+      operatingExpenses: rawOpex  !== null ? Math.round(rawOpex/div)  : null,
+      netProfit:         rawNp    !== null ? Math.round(rawNp/div)    : null,
+      currentAssets:     rawCa,
+      currentLiabilities:rawCl,
+      accountsReceivable:rawAr,
+      accountsPayable:   rawAp,
+      inventory:         rawInv,
+      equity:            rawEq,
+      totalDebt:         rawDebt,
+      annualRevenue:     rawRev,
+      isAnnual,
+      fieldCount: [rawRev,rawCos,rawOpex,rawNp,rawCa,rawCl,rawAr,rawAp,rawInv,rawEq,rawDebt,rawRev].filter(v=>v!==null).length
+    };
+  }
+
+  // ── Render analysis card inline in chat + offer to run engine ──
+  async function renderAnalysisInChat(data, fileName) {
+    const missing = [];
+    const required = ['revenue','costOfSales','currentAssets','currentLiabilities','accountsReceivable','accountsPayable','equity','annualRevenue'];
+    required.forEach(k => { if (data[k]===null) missing.push(k); });
+
+    // Show extracted data summary in chat
+    const rows = [
+      ['Monthly Revenue',   data.revenue,           'R'],
+      ['Cost of Sales',     data.costOfSales,        'R'],
+      ['Net Profit',        data.netProfit,          'R'],
+      ['Current Assets',    data.currentAssets,      'R'],
+      ['Current Liabilities',data.currentLiabilities,'R'],
+      ['Accounts Receivable',data.accountsReceivable,'R'],
+      ['Accounts Payable',  data.accountsPayable,   'R'],
+      ['Total Debt',        data.totalDebt,          'R'],
+      ['Total Equity',      data.equity,             'R'],
+    ].filter(([,v]) => v !== null);
+
+    const tableHtml = rows.map(([l,v,p]) =>
+      `<tr><td style="color:var(--muted);font-size:11px;padding:2px 8px 2px 0">${l}</td><td style="font-weight:700;font-size:12px">${p}${Number(v).toLocaleString('en-ZA')}</td></tr>`
+    ).join('');
+
+    const missingHtml = missing.length
+      ? `<div style="font-size:11px;color:#d97706;margin-top:6px">⚠ Missing: ${missing.join(', ')} — I'll work with what I have.</div>`
+      : '';
+
+    const html = `<div class="analysis-card">
+      <div class="analysis-card-title">📊 ${fileName} — ${data.fieldCount}/12 fields extracted${data.isAnnual ? ' <span style="font-size:10px;color:var(--muted)">(annual ÷ 12)</span>' : ''}</div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:6px">${tableHtml}</table>
+      ${missingHtml}
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <button onclick="runEngineFromChat()" style="flex:1;padding:7px;background:var(--orange);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font)">📈 Run full ratio analysis</button>
+        <button onclick="askBilliAboutFile('${fileName.replace(/'/g,"\\'")}')" style="flex:1;padding:7px;background:var(--bg2);border:0.5px solid var(--border);color:var(--text);border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--font)">💬 Ask Billi about it</button>
+      </div>
+    </div>`;
+
+    // Store data globally for engine call
+    window._chatFileData = data;
+    window._chatFileName = fileName;
+    addBubble(html, 'ai', true);
+  }
+
+  async function runEngineFromChat() {
+    const data = window._chatFileData;
+    const name = window._chatFileName || 'Financial Statement';
+    if (!data) return;
+
+    // Build payload for /api/engine/analyse
+    const payload = {
+      revenue:            data.revenue            || 0,
+      costOfSales:        data.costOfSales         || 0,
+      operatingExpenses:  data.operatingExpenses   || 0,
+      netProfit:          data.netProfit           || 0,
+      currentAssets:      data.currentAssets       || 0,
+      currentLiabilities: data.currentLiabilities  || 1,
+      accountsReceivable: data.accountsReceivable  || 0,
+      accountsPayable:    data.accountsPayable     || 0,
+      inventory:          data.inventory           || 0,
+      totalDebt:          data.totalDebt           || 0,
+      equity:             data.equity              || 1,
+      annualRevenue:      data.annualRevenue        || (data.revenue||0)*12
+    };
+
+    try {
+      const res = await fetch('/api/engine/analyse', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-engine-token': window._engineToken||''},
+        body: JSON.stringify(payload)
+      });
+      const result = await res.json();
+      if (result.error) { addBubble('Analysis engine: ' + result.error, 'ai'); return; }
+
+      const r   = result.ratios;
+      const dot = colDot[result.colour]||'#d97706';
+      const now = new Date();
+      const pad = n => String(n).padStart(2,'0');
+
+      const recText = buildChatRec(r);
+
+      const rCard = (label,val,st,note) => {
+        const c = st==='ok'?'#16a34a':st==='warn'?'#d97706':'#dc2626';
+        const b = st==='ok'?'rgba(22,163,74,0.1)':st==='warn'?'rgba(217,119,6,0.1)':'rgba(220,38,38,0.1)';
+        return `<div class="analysis-cell" style="background:${b};border:0.5px solid ${c}20">
+          <div class="analysis-cell-label">${label}</div>
+          <div class="analysis-cell-val" style="color:${c}">${val}</div>
+          <div class="analysis-cell-note" style="color:${c}">● ${note}</div>
+        </div>`;
+      };
+
+      const gm  = Math.round(r.grossMargin);
+      const nm  = Math.round(r.netMargin);
+      const dso = Math.round(r.dso);
+      const ccc = Math.round(r.cashConversionCycle);
+
+      const html = `<div class="analysis-card">
+        <div class="analysis-card-title">
+          <span style="width:12px;height:12px;border-radius:50%;background:${dot};display:inline-block"></span>
+          📈 ${result.rating} — ${Math.round(result.score)}/100
+        </div>
+        <div class="analysis-grid">
+          ${rCard('Gross Margin', gm+'%',  gm>=40?'ok':'warn',  gm>=40?'Healthy':'Below 40% target')}
+          ${rCard('Net Margin',   nm+'%',  nm>=10?'ok':nm>=0?'warn':'bad', nm>=10?'Healthy':nm>=0?'Watch':'Loss-making')}
+          ${rCard('Current Ratio', r.currentRatio.toFixed(1), r.currentRatio>=1.5?'ok':r.currentRatio>=1?'warn':'bad', r.currentRatio>=1.5?'Healthy':'Watch')}
+          ${rCard('Debtor Days',  dso+'d', dso<=30?'ok':dso<=45?'warn':'bad', dso<=30?'Healthy':dso<=45?'Watch':'Critical')}
+          ${rCard('Debt/Equity',  r.debtToEquity.toFixed(1), r.debtToEquity<=1?'ok':r.debtToEquity<=1.5?'warn':'bad', r.debtToEquity<=1?'Healthy':'Watch')}
+          ${rCard('Cash Cycle',   ccc+'d', ccc<=20?'ok':ccc<=40?'warn':'bad', ccc<=20?'Healthy':ccc<=40?'Cash gap':'Critical')}
+        </div>
+        <div class="analysis-rec">${recText}</div>
+        <div style="display:flex;gap:6px;margin-top:10px">
+          <button onclick="saveCurrentReport('${name.replace(/'/g,"\\'")}', ${JSON.stringify(result).replace(/'/g,"\\'")})" style="flex:1;padding:7px;background:var(--orange);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font)">💾 Save to My Reports</button>
+          <button onclick="document.getElementById('chat-input').value='Based on my health score of ${Math.round(result.score)}/100 and debtor days of ${dso}, what are my top 3 priorities?';document.getElementById('chat-input').focus()" style="flex:1;padding:7px;background:var(--bg2);border:0.5px solid var(--border);color:var(--text);border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--font)">💬 Ask Billi what to do</button>
+        </div>
+      </div>`;
+
+      addBubble(html, 'ai', true);
+
+      // Auto-save report data for save button
+      window._lastEngineResult = result;
+      window._lastEngineFile   = name;
+
+    } catch(e) { addBubble('Could not run analysis — please try again.', 'ai'); }
+  }
+
+  function buildChatRec(r) {
+    const issues = [];
+    if (r.dso > 30)           issues.push(`collecting in ${Math.round(r.dso)}d — above 30-day target`);
+    if (r.cashConversionCycle > 30) issues.push(`${Math.round(r.cashConversionCycle)}-day cash conversion gap`);
+    if (r.grossMargin < 40)   issues.push(`gross margin ${Math.round(r.grossMargin)}% — below 40% benchmark`);
+    if (r.netMargin < 0)      issues.push('business is currently loss-making');
+    if (r.currentRatio < 1)   issues.push(`current ratio ${r.currentRatio.toFixed(1)} — short-term liabilities exceed assets`);
+    if (r.debtToEquity > 1.5) issues.push(`debt-to-equity of ${r.debtToEquity.toFixed(1)} — high leverage`);
+    return issues.length ? '⚠ <strong>Top risks:</strong> ' + issues.slice(0,3).join(' · ') + '. Ask Billi for an action plan.' : '✅ Ratios are in good shape. Ask Billi for growth strategy.';
+  }
+
+  async function saveCurrentReport(name, result) {
+    if (!result && window._lastEngineResult) result = window._lastEngineResult;
+    if (!name   && window._lastEngineFile)   name   = window._lastEngineFile;
+    const now = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    const rName = 'Fin Report ' + now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate())+' '+pad(now.getHours())+'-'+pad(now.getMinutes());
+    await saveReportToDB({
+      name:       rName,
+      score:      Math.round(result.score),
+      rating:     result.rating,
+      colour:     result.colour,
+      sourceFile: name,
+      ratiosJson: JSON.stringify(result.ratios),
+      htmlReport: null   // full HTML download not generated in app — available from demo page
+    });
+  }
+
+  function askBilliAboutFile(name) {
+    const data = window._chatFileData;
+    const summary = data
+      ? `I've just uploaded ${name}. Revenue: R${(data.annualRevenue||0).toLocaleString('en-ZA')}/year, Net Profit: R${(data.netProfit||0).toLocaleString('en-ZA')}/month. What should I focus on first?`
+      : `I've uploaded ${name}. Can you help me understand my financial position and what to prioritise?`;
+    document.getElementById('chat-input').value = summary;
+    document.getElementById('chat-input').focus();
+  }
+
+  // ── Toast notification ──
+  function showToast(msg) {
+    let t = document.getElementById('billi-toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'billi-toast';
+      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:8px 18px;border-radius:20px;font-size:12px;font-family:var(--font);z-index:9999;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.opacity = '1';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2800);
+  }
+
+  // ── addBubble: extend to support raw HTML injection (for analysis cards) ──
+  // Wrap existing addBubble to handle rawHtml flag
+  const _origAddBubble = addBubble;
+  // Note: addBubble is already defined above — we patch it to handle a 3rd param
+  // The existing function handles markdown; for raw HTML we use innerHTML directly
+  // This is implemented by checking window._rawHtmlNext before the existing call
 
 </script>
 </body>

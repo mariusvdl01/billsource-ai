@@ -447,190 +447,6 @@ const server = http.createServer(async (req, res) => {
     })); return;
   }
 
-  // ── API: /api/demo-chat ── unauthenticated, IP-rate-limited, max 3 msgs/IP/hour ──
-  if (pathname === '/api/demo-chat' && method === 'POST') {
-    const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'unknown';
-    const demoKey = 'demo:' + ip;
-    const now = Date.now();
-    const DEMO_WINDOW = 60 * 60 * 1000; // 1 hour window
-    const DEMO_MAX    = 3;
-
-    if (!rateLimitMap[demoKey]) {
-      rateLimitMap[demoKey] = { count: 1, windowStart: now };
-    } else {
-      const rl = rateLimitMap[demoKey];
-      if (now - rl.windowStart > DEMO_WINDOW) {
-        rl.count = 1; rl.windowStart = now;
-      } else {
-        rl.count++;
-      }
-      if (rl.count > DEMO_MAX) {
-        res.writeHead(429, {'Content-Type':'application/json'});
-        res.end(JSON.stringify({
-          error: 'demo_limit',
-          answer: "You've used all 3 demo messages. Sign up free to continue — no card required."
-        })); return;
-      }
-    }
-
-    try {
-      const body = await readBody(req);
-      const { question } = JSON.parse(body);
-      if (!question || !question.trim()) throw new Error('No question');
-
-      if (isInjectionAttempt(question)) {
-        res.writeHead(200, {'Content-Type':'application/json'});
-        res.end(JSON.stringify({ answer: "I'm here to help your business grow — what would you like to work on?" }));
-        return;
-      }
-
-      // Prefix so Flowise knows this is a demo user (no customer context)
-      const demoQuestion = `[DEMO USER — no customer data loaded] ${question.trim()}`;
-
-      const flowRes = await httpsPost(
-        `${FLOWISE_URL}/api/v1/prediction/${FLOWISE_CHATFLOW_ID}`,
-        JSON.stringify({ question: demoQuestion }),
-        { 'Content-Type': 'application/json' }
-      );
-
-      let answer =
-        (typeof flowRes === 'string' ? flowRes : null) ||
-        flowRes.text || flowRes.answer || flowRes.output ||
-        flowRes.message || flowRes.result || flowRes.response ||
-        (Array.isArray(flowRes.outputs) && flowRes.outputs[0]?.text) ||
-        "Billi is briefly unavailable — please try again in a moment.";
-
-      if (containsLeakage(answer)) answer = SAFE_FALLBACK;
-
-      // Append soft CTA on last allowed message
-      const used = rateLimitMap[demoKey].count;
-      if (used >= DEMO_MAX) {
-        answer += '\n\n---\n*That\'s your 3 demo messages used. [Sign up free →](https://billsource.ai) to meet all six advisors with no card required.*';
-      }
-
-      res.writeHead(200, {'Content-Type':'application/json'});
-      res.end(JSON.stringify({ answer, remaining: Math.max(0, DEMO_MAX - used) }));
-    } catch (err) {
-      console.error('demo-chat error:', err.message);
-      res.writeHead(500, {'Content-Type':'application/json'});
-      res.end(JSON.stringify({ error: 'Billi is temporarily unavailable. Please try again.' }));
-    }
-    return;
-  }
-
-  // ── API: /api/demo-analyse ── unauthenticated ratio engine for landing page ──
-  if (pathname === '/api/demo-analyse' && method === 'POST') {
-    try {
-      const body = await readBody(req);
-      const data = JSON.parse(body);
-      // Validate required fields
-      const required = ['revenue','costOfSales','operatingExpenses','currentAssets',
-        'currentLiabilities','totalDebt','equity','accountsReceivable',
-        'accountsPayable','inventory','netProfit','annualRevenue'];
-      for (const f of required) {
-        if (data[f] === undefined || data[f] === null || isNaN(Number(data[f]))) {
-          res.writeHead(400, {'Content-Type':'application/json'});
-          res.end(JSON.stringify({ error: `Missing or invalid field: ${f}` })); return;
-        }
-        data[f] = Number(data[f]);
-      }
-      if (data.currentLiabilities === 0 || data.equity === 0 || data.revenue === 0) {
-        res.writeHead(400, {'Content-Type':'application/json'});
-        res.end(JSON.stringify({ error: 'Revenue, equity, and current liabilities cannot be zero.' })); return;
-      }
-      const result = runAnalysisEngine(data);
-      res.writeHead(200, {'Content-Type':'application/json'});
-      res.end(JSON.stringify(result));
-    } catch (err) {
-      res.writeHead(400, {'Content-Type':'application/json'});
-      res.end(JSON.stringify({ error: 'Invalid data — please check all fields.' }));
-    }
-    return;
-  }
-
-  // ── API: /api/magic-link ── email-only login (sends tokenised link via mailer) ──
-  if (pathname === '/api/magic-link' && method === 'POST') {
-    const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'unknown';
-    const mlKey = 'ml:' + ip;
-    const now = Date.now();
-    const ML_WINDOW = 15 * 60 * 1000; // 15 min window
-    const ML_MAX    = 3;               // max 3 requests per IP per 15 min (anti-spam)
-    if (!rateLimitMap[mlKey]) {
-      rateLimitMap[mlKey] = { count: 1, windowStart: now };
-    } else {
-      const rl = rateLimitMap[mlKey];
-      if (now - rl.windowStart > ML_WINDOW) { rl.count = 1; rl.windowStart = now; }
-      else { rl.count++; }
-      if (rl.count > ML_MAX) {
-        res.writeHead(429, {'Content-Type':'application/json'});
-        res.end(JSON.stringify({ error: 'Too many requests — please wait 15 minutes before trying again.' })); return;
-      }
-    }
-    try {
-      const body = await readBody(req);
-      const { email } = JSON.parse(body);
-      if (!email || !email.includes('@') || !email.includes('.')) {
-        res.writeHead(400, {'Content-Type':'application/json'});
-        res.end(JSON.stringify({ error: 'Please enter a valid email address.' })); return;
-      }
-      const token     = crypto.randomBytes(32).toString('hex');
-      const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 min
-
-      // Store token in DB (or in-memory fallback)
-      if (db.storeMagicToken) {
-        await db.storeMagicToken(email.toLowerCase().trim(), token, expiresAt);
-      } else {
-        // In-memory fallback — map token to email for this process lifetime
-        if (!global._magicTokens) global._magicTokens = {};
-        global._magicTokens[token] = { email: email.toLowerCase().trim(), expiresAt };
-      }
-
-      const magicUrl = `${BASE_URL}/auth/magic?token=${token}`;
-      await mailer.sendMagicLink({ email, magicUrl });
-
-      res.writeHead(200, {'Content-Type':'application/json'});
-      res.end(JSON.stringify({ ok: true }));
-    } catch (err) {
-      console.error('magic-link error:', err.message);
-      res.writeHead(500, {'Content-Type':'application/json'});
-      res.end(JSON.stringify({ error: 'Could not send email — please try Google sign-in instead.' }));
-    }
-    return;
-  }
-
-  // ── AUTH: /auth/magic ── verify magic link token, create session ──
-  if (pathname === '/auth/magic' && method === 'GET') {
-    const token = searchParams.get('token');
-    if (!token) { res.writeHead(302, { Location: '/?error=invalid_link' }); res.end(); return; }
-    try {
-      let email = null;
-      // Try DB first, then in-memory fallback
-      if (db.verifyMagicToken) {
-        email = await db.verifyMagicToken(token);
-      } else if (global._magicTokens && global._magicTokens[token]) {
-        const t = global._magicTokens[token];
-        if (new Date() < t.expiresAt) { email = t.email; delete global._magicTokens[token]; }
-      }
-      if (!email) { res.writeHead(302, { Location: '/?error=expired_link' }); res.end(); return; }
-
-      // Upsert user — create if new, get existing plan if returning
-      let user = await db.getOrCreateUser({ email, name: email.split('@')[0], provider: 'magic' });
-      const sid = crypto.randomBytes(24).toString('hex');
-      await db.createSession(sid, user.email);
-      sessionCache[sid] = { user, createdAt: Date.now() };
-      res.writeHead(302, {
-        Location: '/app',
-        'Set-Cookie': `billi_sid=${sid}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=2592000`
-      });
-      res.end();
-    } catch (err) {
-      console.error('magic auth error:', err.message);
-      res.writeHead(302, { Location: '/?error=auth_failed' });
-      res.end();
-    }
-    return;
-  }
-
   // ── API: /api/chat ────────────────────────
   if (pathname === '/api/chat' && method === 'POST') {
     const session = await getSessionUser(req);
@@ -883,6 +699,53 @@ const server = http.createServer(async (req, res) => {
     serveFile(res, path.join(ROOT, 'app.html')); return;
   }
 
+  // ── My Reports & My Files routes ──────────
+  // All require authentication
+  const requireAuth = async () => {
+    const s = await getSessionUser(req);
+    if (!s) { res.writeHead(401,{'Content-Type':'application/json'}); res.end(JSON.stringify({error:'Authentication required'})); }
+    return s;
+  };
+
+  // POST /api/reports/save
+  if (pathname === '/api/reports/save' && method === 'POST') {
+    const session = await requireAuth(); if (!session) return;
+    await handleSaveReport(req, res, session); return;
+  }
+  // GET /api/reports
+  if (pathname === '/api/reports' && method === 'GET') {
+    const session = await requireAuth(); if (!session) return;
+    await handleListReports(req, res, session); return;
+  }
+  // GET /api/reports/:id  (download)
+  const reportMatch = pathname.match(/^\/api\/reports\/(\d+)$/);
+  if (reportMatch && method === 'GET') {
+    const session = await requireAuth(); if (!session) return;
+    await handleGetReport(req, res, session, parseInt(reportMatch[1])); return;
+  }
+  // DELETE /api/reports/:id
+  if (reportMatch && method === 'DELETE') {
+    const session = await requireAuth(); if (!session) return;
+    await handleDeleteReport(req, res, session, parseInt(reportMatch[1])); return;
+  }
+
+  // POST /api/files/save
+  if (pathname === '/api/files/save' && method === 'POST') {
+    const session = await requireAuth(); if (!session) return;
+    await handleSaveFile(req, res, session); return;
+  }
+  // GET /api/files
+  if (pathname === '/api/files' && method === 'GET') {
+    const session = await requireAuth(); if (!session) return;
+    await handleListFiles(req, res, session); return;
+  }
+  // DELETE /api/files/:id
+  const fileMatch = pathname.match(/^\/api\/files\/(\d+)$/);
+  if (fileMatch && method === 'DELETE') {
+    const session = await requireAuth(); if (!session) return;
+    await handleDeleteFile(req, res, session, parseInt(fileMatch[1])); return;
+  }
+
   // ── Analysis engine ───────────────────────
   if (pathname === '/api/engine/analyse' && method === 'POST') {
     const session = await getSessionUser(req);
@@ -1053,6 +916,123 @@ reset();
   if (!filePath.startsWith(ROOT)) { res.writeHead(403); res.end('Forbidden'); return; }
   serveFile(res, filePath);
 });
+
+// ═══════════════════════════════════════════
+// ═══════════════════════════════════════════
+// MY REPORTS & MY FILES — delegate to db.js
+// All table creation, in-memory fallbacks, and
+// SQL live in db.js. These are thin pass-throughs.
+// ═══════════════════════════════════════════
+
+const saveReport   = (email, payload) => db.saveReport(email, payload);
+const listReports  = (email)          => db.listReports(email);
+const getReport    = (email, id)      => db.getReport(email, id);
+const deleteReport = (email, id)      => db.deleteReport(email, id);
+const saveFile     = (email, payload) => db.saveFile(email, payload);
+const listFiles    = (email)          => db.listFiles(email);
+const deleteFile   = (email, id)      => db.deleteFile(email, id);
+
+// MY REPORTS — API Routes
+// ═══════════════════════════════════════════
+
+// POST /api/reports/save — save a completed analysis report
+// Body: { name, score, rating, colour, sourceFile, ratiosJson, htmlReport }
+async function handleSaveReport(req, res, session) {
+  try {
+    const body = await readBody(req);
+    const payload = JSON.parse(body);
+    if (!payload.name) payload.name = 'Financial Report';
+    const saved = await saveReport(session.user.email, payload);
+    res.writeHead(200, {'Content-Type':'application/json'});
+    res.end(JSON.stringify({ ok:true, report:saved }));
+  } catch(e) {
+    res.writeHead(500, {'Content-Type':'application/json'});
+    res.end(JSON.stringify({ error: e.message || 'Could not save report' }));
+  }
+}
+
+// GET /api/reports — list all reports for current user
+async function handleListReports(req, res, session) {
+  try {
+    const reports = await listReports(session.user.email);
+    res.writeHead(200, {'Content-Type':'application/json'});
+    res.end(JSON.stringify({ reports }));
+  } catch(e) {
+    res.writeHead(500, {'Content-Type':'application/json'});
+    res.end(JSON.stringify({ error: 'Could not load reports' }));
+  }
+}
+
+// GET /api/reports/:id — download full HTML of a single report
+async function handleGetReport(req, res, session, id) {
+  try {
+    const report = await getReport(session.user.email, id);
+    if (!report) { res.writeHead(404, {'Content-Type':'application/json'}); res.end(JSON.stringify({error:'Not found'})); return; }
+    if (report.html_report) {
+      res.writeHead(200, {'Content-Type':'text/html; charset=utf-8',
+        'Content-Disposition':`attachment; filename="${report.name.replace(/[^a-z0-9 .\-_]/gi,'_')}.html"`});
+      res.end(report.html_report);
+    } else {
+      res.writeHead(200, {'Content-Type':'application/json'});
+      res.end(JSON.stringify({ report }));
+    }
+  } catch(e) {
+    res.writeHead(500, {'Content-Type':'application/json'});
+    res.end(JSON.stringify({ error: 'Could not retrieve report' }));
+  }
+}
+
+// DELETE /api/reports/:id
+async function handleDeleteReport(req, res, session, id) {
+  try {
+    await deleteReport(session.user.email, id);
+    res.writeHead(200, {'Content-Type':'application/json'});
+    res.end(JSON.stringify({ ok:true }));
+  } catch(e) {
+    res.writeHead(500, {'Content-Type':'application/json'});
+    res.end(JSON.stringify({ error: 'Could not delete report' }));
+  }
+}
+
+// ── Files routes ──
+// POST /api/files/save  — save uploaded file metadata + content
+async function handleSaveFile(req, res, session) {
+  try {
+    const body = await readBody(req);
+    const payload = JSON.parse(body);
+    if (!payload.name) throw new Error('File name required');
+    const saved = await saveFile(session.user.email, payload);
+    res.writeHead(200, {'Content-Type':'application/json'});
+    res.end(JSON.stringify({ ok:true, file:saved }));
+  } catch(e) {
+    res.writeHead(500, {'Content-Type':'application/json'});
+    res.end(JSON.stringify({ error: e.message || 'Could not save file' }));
+  }
+}
+
+// GET /api/files
+async function handleListFiles(req, res, session) {
+  try {
+    const files = await listFiles(session.user.email);
+    res.writeHead(200, {'Content-Type':'application/json'});
+    res.end(JSON.stringify({ files }));
+  } catch(e) {
+    res.writeHead(500, {'Content-Type':'application/json'});
+    res.end(JSON.stringify({ error: 'Could not load files' }));
+  }
+}
+
+// DELETE /api/files/:id
+async function handleDeleteFile(req, res, session, id) {
+  try {
+    await deleteFile(session.user.email, id);
+    res.writeHead(200, {'Content-Type':'application/json'});
+    res.end(JSON.stringify({ ok:true }));
+  } catch(e) {
+    res.writeHead(500, {'Content-Type':'application/json'});
+    res.end(JSON.stringify({ error: 'Could not delete file' }));
+  }
+}
 
 // ═══════════════════════════════════════════
 // ANALYSIS ENGINE (unchanged)

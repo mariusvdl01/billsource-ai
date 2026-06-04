@@ -63,6 +63,41 @@ async function initDb() {
       );
       CREATE INDEX IF NOT EXISTS idx_pal_email ON prompt_access_log(user_email);
       CREATE INDEX IF NOT EXISTS idx_pal_time  ON prompt_access_log(accessed_at);
+
+      CREATE TABLE IF NOT EXISTS magic_tokens (
+        token       TEXT PRIMARY KEY,
+        email       TEXT NOT NULL,
+        expires_at  TIMESTAMPTZ NOT NULL,
+        created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+      CREATE INDEX IF NOT EXISTS idx_magic_email   ON magic_tokens(email);
+      CREATE INDEX IF NOT EXISTS idx_magic_expires ON magic_tokens(expires_at);
+
+      CREATE TABLE IF NOT EXISTS user_reports (
+        id          SERIAL PRIMARY KEY,
+        email       TEXT NOT NULL,
+        name        TEXT NOT NULL,
+        score       INTEGER,
+        rating      TEXT,
+        colour      TEXT,
+        source_file TEXT,
+        ratios_json TEXT,
+        html_report TEXT,
+        created_at  TIMESTAMPTZ DEFAULT NOW()
+      );
+      CREATE INDEX IF NOT EXISTS idx_user_reports_email ON user_reports(email);
+
+      CREATE TABLE IF NOT EXISTS user_files (
+        id            SERIAL PRIMARY KEY,
+        email         TEXT NOT NULL,
+        name          TEXT NOT NULL,
+        type          TEXT,
+        size_bytes    INTEGER,
+        content_b64   TEXT,
+        analysis_json TEXT,
+        created_at    TIMESTAMPTZ DEFAULT NOW()
+      );
+      CREATE INDEX IF NOT EXISTS idx_user_files_email ON user_files(email);
     `);
     console.log('DB: PostgreSQL connected and schema ready');
 
@@ -247,10 +282,159 @@ async function getPromptAccessLog(limit = 100) {
   return r.rows;
 }
 
+// ── getOrCreateUser (magic link path) ────
+// Like upsertUser but accepts {email, name, provider} instead of Google profile shape
+async function getOrCreateUser({ email, name, provider }) {
+  const profile = { email, name, picture: null, id: null };
+  return upsertUser(profile, 'free');
+}
+
+// ── storeMagicToken ───────────────────────
+const memMagicTokens = {};
+
+async function storeMagicToken(email, token, expiresAt) {
+  if (!useDb) {
+    memMagicTokens[token] = { email, expiresAt };
+    return;
+  }
+  // Clean expired tokens for this email first (housekeeping)
+  await pool.query(
+    `DELETE FROM magic_tokens WHERE email=$1 AND expires_at < NOW()`,
+    [email]
+  );
+  await pool.query(
+    `INSERT INTO magic_tokens (token, email, expires_at) VALUES ($1, $2, $3)
+     ON CONFLICT (token) DO UPDATE SET email=EXCLUDED.email, expires_at=EXCLUDED.expires_at`,
+    [token, email, expiresAt]
+  );
+}
+
+// ── verifyMagicToken ──────────────────────
+// Returns email if valid and not expired, null otherwise. Deletes token on use.
+async function verifyMagicToken(token) {
+  if (!useDb) {
+    const t = memMagicTokens[token];
+    if (!t) return null;
+    if (new Date() > t.expiresAt) { delete memMagicTokens[token]; return null; }
+    delete memMagicTokens[token];
+    return t.email;
+  }
+  const r = await pool.query(
+    `DELETE FROM magic_tokens WHERE token=$1 AND expires_at > NOW() RETURNING email`,
+    [token]
+  );
+  return r.rows[0]?.email || null;
+}
+
+// ── Reports ───────────────────────────────
+const memReports = {};
+
+async function saveReport(email, { name, score, rating, colour, sourceFile, ratiosJson, htmlReport }) {
+  if (!useDb) {
+    if (!memReports[email]) memReports[email] = [];
+    const item = { id: Date.now(), email, name, score, rating, colour,
+      source_file: sourceFile||null, ratios_json: ratiosJson||null,
+      created_at: new Date().toISOString() };
+    memReports[email].push(item);
+    return item;
+  }
+  const r = await pool.query(
+    `INSERT INTO user_reports(email,name,score,rating,colour,source_file,ratios_json,html_report)
+     VALUES($1,$2,$3,$4,$5,$6,$7,$8)
+     RETURNING id,name,score,rating,colour,source_file,created_at`,
+    [email, name, score||null, rating||null, colour||null,
+     sourceFile||null, ratiosJson||null, htmlReport||null]
+  );
+  return r.rows[0];
+}
+
+async function listReports(email) {
+  if (!useDb) {
+    return (memReports[email] || []).slice().reverse();
+  }
+  const r = await pool.query(
+    `SELECT id,name,score,rating,colour,source_file,created_at
+     FROM user_reports WHERE email=$1 ORDER BY created_at DESC LIMIT 100`,
+    [email]
+  );
+  return r.rows;
+}
+
+async function getReport(email, id) {
+  if (!useDb) {
+    return (memReports[email] || []).find(r => r.id === Number(id)) || null;
+  }
+  const r = await pool.query(
+    `SELECT * FROM user_reports WHERE id=$1 AND email=$2`,
+    [id, email]
+  );
+  return r.rows[0] || null;
+}
+
+async function deleteReport(email, id) {
+  if (!useDb) {
+    if (memReports[email]) memReports[email] = memReports[email].filter(r => r.id !== Number(id));
+    return;
+  }
+  await pool.query(`DELETE FROM user_reports WHERE id=$1 AND email=$2`, [id, email]);
+}
+
+// ── Files ─────────────────────────────────
+const memFiles = {};
+
+async function saveFile(email, { name, type, sizeBytes, contentB64, analysisJson }) {
+  if (contentB64 && contentB64.length > 5_500_000) throw new Error('File too large (max ~4MB)');
+  if (!useDb) {
+    if (!memFiles[email]) memFiles[email] = [];
+    const item = { id: Date.now(), name, type: type||null,
+      size_bytes: sizeBytes||0, created_at: new Date().toISOString() };
+    memFiles[email].push(item);
+    return item;
+  }
+  const r = await pool.query(
+    `INSERT INTO user_files(email,name,type,size_bytes,content_b64,analysis_json)
+     VALUES($1,$2,$3,$4,$5,$6)
+     RETURNING id,name,type,size_bytes,created_at`,
+    [email, name, type||null, sizeBytes||0, contentB64||null, analysisJson||null]
+  );
+  return r.rows[0];
+}
+
+async function listFiles(email) {
+  if (!useDb) {
+    return (memFiles[email] || []).slice().reverse();
+  }
+  const r = await pool.query(
+    `SELECT id,name,type,size_bytes,created_at
+     FROM user_files WHERE email=$1 ORDER BY created_at DESC LIMIT 100`,
+    [email]
+  );
+  return r.rows;
+}
+
+async function deleteFile(email, id) {
+  if (!useDb) {
+    if (memFiles[email]) memFiles[email] = memFiles[email].filter(f => f.id !== Number(id));
+    return;
+  }
+  await pool.query(`DELETE FROM user_files WHERE id=$1 AND email=$2`, [id, email]);
+}
+
 module.exports = {
-  initDb, getUser, upsertUser,
+  // Core
+  initDb, getUser, upsertUser, getOrCreateUser,
   upgradePlan, downgradePlan, incrementMessages,
-  resetMonthlyUsage, createSession, getSession,
-  deleteSession, cleanExpiredSessions,
-  logPromptAccess, getPromptAccessLog
+  resetMonthlyUsage,
+  // Sessions
+  createSession, getSession, deleteSession, cleanExpiredSessions,
+  // Magic link
+  storeMagicToken, verifyMagicToken,
+  // Prompts
+  logPromptAccess, getPromptAccessLog,
+  // Reports
+  saveReport, listReports, getReport, deleteReport,
+  // Files
+  saveFile, listFiles, deleteFile,
+  // Pool reference (used by server.js for direct queries if needed)
+  get pool() { return pool; }
 };
