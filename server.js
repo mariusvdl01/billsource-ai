@@ -8,6 +8,8 @@ const querystring = require('querystring');
 const db = require('./db');
 const mailer = require('./mailer');
 const { getUserPrompts, resolvePromptTemplate } = require('./promptbook');
+const { runRatingEngine } = require('./rating_engine');
+const plm = require('./learning_module');
 
 // ═══════════════════════════════════════════
 // IP SAFEGUARDS — Injection filter, output filter, rate limiter
@@ -712,6 +714,72 @@ const server = http.createServer(async (req, res) => {
     const session = await requireAuth(); if (!session) return;
     await handleSaveReport(req, res, session); return;
   }
+
+  // ── PLM Admin Routes (Enterprise + authenticated) ──────────────
+  if (pathname === '/api/plm/status' && method === 'GET') {
+    const session = await requireAuth(); if (!session) return;
+    if (!['business','enterprise'].includes(session.user.plan)) {
+      res.writeHead(403,{'Content-Type':'application/json'});
+      res.end(JSON.stringify({error:'PLM admin requires Business plan or above'})); return;
+    }
+    res.writeHead(200,{'Content-Type':'application/json'});
+    res.end(JSON.stringify(await plm.getPLMStatus())); return;
+  }
+  if (pathname === '/api/plm/proposals' && method === 'GET') {
+    const session = await requireAuth(); if (!session) return;
+    if (!['business','enterprise'].includes(session.user.plan)) { res.writeHead(403,{'Content-Type':'application/json'}); res.end(JSON.stringify({error:'Requires Business plan'})); return; }
+    res.writeHead(200,{'Content-Type':'application/json'});
+    res.end(JSON.stringify({ proposals: await plm.getPendingProposals() })); return;
+  }
+  if (pathname === '/api/plm/diagnostics' && method === 'POST') {
+    const session = await requireAuth(); if (!session) return;
+    if (session.user.plan !== 'enterprise') { res.writeHead(403,{'Content-Type':'application/json'}); res.end(JSON.stringify({error:'Diagnostics require Enterprise plan'})); return; }
+    const result = await plm.runDiagnostics();
+    res.writeHead(200,{'Content-Type':'application/json'});
+    res.end(JSON.stringify(result)); return;
+  }
+  if (pathname === '/api/plm/sandbox' && method === 'POST') {
+    const session = await requireAuth(); if (!session) return;
+    if (session.user.plan !== 'enterprise') { res.writeHead(403,{'Content-Type':'application/json'}); res.end(JSON.stringify({error:'Sandbox testing requires Enterprise plan'})); return; }
+    try {
+      const body = await readBody(req);
+      const { proposalId } = JSON.parse(body);
+      const result = await plm.runSandboxTest(proposalId);
+      res.writeHead(200,{'Content-Type':'application/json'});
+      res.end(JSON.stringify(result));
+    } catch(e) { res.writeHead(500,{'Content-Type':'application/json'}); res.end(JSON.stringify({error:e.message})); }
+    return;
+  }
+  if (pathname === '/api/plm/authorise' && method === 'POST') {
+    const session = await requireAuth(); if (!session) return;
+    if (session.user.plan !== 'enterprise') { res.writeHead(403,{'Content-Type':'application/json'}); res.end(JSON.stringify({error:'Authorisation requires Enterprise plan'})); return; }
+    try {
+      const body = await readBody(req);
+      const { proposalId, approved, note } = JSON.parse(body);
+      const result = await plm.authoriseProposal(proposalId, session.user.email, note, approved);
+      res.writeHead(200,{'Content-Type':'application/json'});
+      res.end(JSON.stringify(result));
+    } catch(e) { res.writeHead(500,{'Content-Type':'application/json'}); res.end(JSON.stringify({error:e.message})); }
+    return;
+  }
+  if (pathname === '/api/plm/outcome' && method === 'POST') {
+    const session = await requireAuth(); if (!session) return;
+    try {
+      const body = await readBody(req);
+      const { observationId, horizon, diActual, outcomeLabel, revenueDelta, survivalStatus } = JSON.parse(body);
+      await plm.recordOutcome(observationId, horizon, { diActual, outcomeLabel, revenueDelta, survivalStatus });
+      res.writeHead(200,{'Content-Type':'application/json'});
+      res.end(JSON.stringify({ ok: true }));
+    } catch(e) { res.writeHead(500,{'Content-Type':'application/json'}); res.end(JSON.stringify({error:e.message})); }
+    return;
+  }
+  if (pathname === '/api/plm/log' && method === 'GET') {
+    const session = await requireAuth(); if (!session) return;
+    if (session.user.plan !== 'enterprise') { res.writeHead(403,{'Content-Type':'application/json'}); res.end(JSON.stringify({error:'Governance log requires Enterprise plan'})); return; }
+    res.writeHead(200,{'Content-Type':'application/json'});
+    res.end(JSON.stringify({ log: await plm.getGovernanceLog(100) })); return;
+  }
+
   // GET /api/reports
   if (pathname === '/api/reports' && method === 'GET') {
     const session = await requireAuth(); if (!session) return;
@@ -747,6 +815,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   // ── Analysis engine ───────────────────────
+  // ── /api/engine/analyse — standard ratio analysis (Professional+) ──
   if (pathname === '/api/engine/analyse' && method === 'POST') {
     const session = await getSessionUser(req);
     if (!session) { res.writeHead(401,{'Content-Type':'application/json'}); res.end(JSON.stringify({error:'Authentication required'})); return; }
@@ -755,19 +824,59 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(403,{'Content-Type':'application/json'});
       res.end(JSON.stringify({error:'plan_required',message:'Financial analysis engine requires Professional plan or above.',upgrade:true})); return;
     }
-    const apiToken = req.headers['x-engine-token'];
-    const validToken = process.env.ENGINE_API_TOKEN;
-    if (validToken && apiToken !== validToken) { res.writeHead(403,{'Content-Type':'application/json'}); res.end(JSON.stringify({error:'Invalid engine token'})); return; }
     try {
       const body = await readBody(req);
+      const input = JSON.parse(body);
+      input.userId = u.email;
+      // Run full rating engine — returns Flowise contract + detail
+      const result = runRatingEngine(input);
       res.writeHead(200,{'Content-Type':'application/json'});
-      res.end(JSON.stringify(runAnalysisEngine(JSON.parse(body))));
+      res.end(JSON.stringify(result));
     } catch(err) {
       res.writeHead(500,{'Content-Type':'application/json'});
-      res.end(JSON.stringify({error:'Analysis engine error'}));
+      res.end(JSON.stringify({error: err.message || 'Analysis engine error'}));
     }
     return;
   }
+
+  // ── /api/engine/rate — full BAI rating (Enterprise only, Flowise-ready) ──
+  // Returns complete Digital Index, node health, collision detection,
+  // Adizes stage, sector benchmarks, and remedy plan.
+  // This is the output injected into the Flowise sub-agent context.
+  if (pathname === '/api/engine/rate' && method === 'POST') {
+    const session = await getSessionUser(req);
+    if (!session) { res.writeHead(401,{'Content-Type':'application/json'}); res.end(JSON.stringify({error:'Authentication required'})); return; }
+    const u = session.user;
+    if (!['business','enterprise'].includes(u.plan)) {
+      res.writeHead(403,{'Content-Type':'application/json'});
+      res.end(JSON.stringify({error:'plan_required',message:'Full BAI rating requires Business plan or above.',upgrade:true})); return;
+    }
+    try {
+      const body = await readBody(req);
+      const input = JSON.parse(body);
+      input.userId = u.email;
+      const result = runRatingEngine(input);
+      // Log the rating event for audit trail
+      try { await db.saveReport(u.email, {
+        name:       `BAI Rating — ${new Date().toLocaleDateString('en-ZA')}`,
+        score:      result.node_health.digital_index,
+        rating:     result.detail.riskLabel,
+        colour:     result.risk_level,
+        sourceFile: 'engine/rate',
+        ratiosJson: JSON.stringify(result.detail.financialHealth.ratios)
+      }); } catch(_) {}
+      // PLM: record this assessment as an observation for learning
+      plm.recordObservation(u.email, input.sector, input.country || null, result)
+        .catch(e => console.error('PLM observe error:', e.message));
+      res.writeHead(200,{'Content-Type':'application/json'});
+      res.end(JSON.stringify(result));
+    } catch(err) {
+      res.writeHead(500,{'Content-Type':'application/json'});
+      res.end(JSON.stringify({error: err.message || 'Rating engine error'}));
+    }
+    return;
+  }
+
 
   // ── Prompt book (protected IP — server-side only) ──
   if (pathname === '/api/prompts' && method === 'GET') {
@@ -932,6 +1041,7 @@ const saveFile     = (email, payload) => db.saveFile(email, payload);
 const listFiles    = (email)          => db.listFiles(email);
 const deleteFile   = (email, id)      => db.deleteFile(email, id);
 
+// ═══════════════════════════════════════════
 // MY REPORTS — API Routes
 // ═══════════════════════════════════════════
 
@@ -1034,37 +1144,6 @@ async function handleDeleteFile(req, res, session, id) {
   }
 }
 
-// ═══════════════════════════════════════════
-// ANALYSIS ENGINE (unchanged)
-// ═══════════════════════════════════════════
-function runAnalysisEngine(data) {
-  const {revenue,costOfSales,operatingExpenses,currentAssets,currentLiabilities,
-         totalDebt,equity,accountsReceivable,accountsPayable,inventory,netProfit,annualRevenue} = data;
-  const r = {};
-  r.currentRatio  = currentAssets/currentLiabilities;
-  r.quickRatio    = (currentAssets-inventory)/currentLiabilities;
-  r.cashRatio     = (currentAssets-inventory-accountsReceivable)/currentLiabilities;
-  const gp = revenue-costOfSales;
-  r.grossMargin     = (gp/revenue)*100;
-  r.netMargin       = (netProfit/revenue)*100;
-  r.operatingMargin = ((gp-operatingExpenses)/revenue)*100;
-  r.returnOnEquity  = (netProfit/equity)*100;
-  r.dso = (accountsReceivable/annualRevenue)*365;
-  r.dpo = (accountsPayable/costOfSales)*365;
-  r.cashConversionCycle = r.dso-r.dpo;
-  r.debtToEquity = totalDebt/equity;
-  r.debtToAssets = totalDebt/(totalDebt+equity);
-  const w = {liquidity:0.30,profitability:0.25,efficiency:0.25,leverage:0.20};
-  const liq  = Math.min(100,Math.max(0,r.currentRatio>=2?100:r.currentRatio>=1.5?80:r.currentRatio>=1?60:r.currentRatio>=0.75?40:20));
-  const prof = Math.min(100,Math.max(0,r.netMargin>=20?100:r.netMargin>=10?80:r.netMargin>=5?60:r.netMargin>=0?40:20));
-  const eff  = Math.min(100,Math.max(0,r.dso<=30?100:r.dso<=45?80:r.dso<=60?60:r.dso<=90?40:20));
-  const lev  = Math.min(100,Math.max(0,r.debtToEquity<=0.5?100:r.debtToEquity<=1?80:r.debtToEquity<=1.5?60:r.debtToEquity<=2?40:20));
-  r.nationalHealthScore = Math.round(liq*w.liquidity+prof*w.profitability+eff*w.efficiency+lev*w.leverage);
-  r.riskRating = r.nationalHealthScore>=80?'GREEN — Low Risk':r.nationalHealthScore>=60?'AMBER — Moderate Risk':r.nationalHealthScore>=40?'ORANGE — Elevated Risk':'RED — Critical Risk';
-  r.riskColour = r.nationalHealthScore>=80?'green':r.nationalHealthScore>=60?'amber':r.nationalHealthScore>=40?'orange':'red';
-  Object.keys(r).forEach(k=>{if(typeof r[k]==='number')r[k]=Math.round(r[k]*100)/100;});
-  return {score:r.nationalHealthScore,rating:r.riskRating,colour:r.riskColour,ratios:r,generatedAt:new Date().toISOString(),version:'1.0.0'};
-}
 
 // ═══════════════════════════════════════════
 // STARTUP
@@ -1072,8 +1151,11 @@ function runAnalysisEngine(data) {
 async function start() {
   if (process.env.DATABASE_URL) {
     await db.initDb();
-    setInterval(db.resetMonthlyUsage, 60*60*1000);       // hourly usage reset check
-    setInterval(db.cleanExpiredSessions, 6*60*60*1000);  // 6hr session cleanup
+    await plm.initPLMTables();
+    await plm.registerNFULibrary();
+    setInterval(db.resetMonthlyUsage, 60*60*1000);         // hourly usage reset
+    setInterval(db.cleanExpiredSessions, 6*60*60*1000);    // 6hr session cleanup
+    setInterval(plm.runDiagnostics, 24*60*60*1000);        // nightly PLM diagnostics
   } else {
     console.warn('WARNING: DATABASE_URL not set — users will not persist across deploys');
   }
