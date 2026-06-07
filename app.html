@@ -75,6 +75,29 @@
     .analysis-cell-val{font-size:14px;font-weight:800;color:var(--text)}
     .analysis-cell-note{font-size:9px;margin-top:1px}
     .analysis-rec{background:rgba(196,82,0,0.08);border:0.5px solid rgba(196,82,0,0.25);border-radius:7px;padding:8px 10px;font-size:12px;line-height:1.6;color:var(--text)}
+
+    /* ── Engine Intelligence / REAI card ── */
+    .reai-card{background:var(--card);border:0.5px solid var(--border);border-radius:10px;padding:10px 12px;margin:8px 8px 4px;border-left:3px solid var(--orange)}
+    .reai-card-title{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--orange);margin-bottom:6px}
+    .reai-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+    .reai-score{font-size:22px;font-weight:800;color:var(--text)}
+    .reai-label{font-size:9px;color:var(--muted);margin-top:1px}
+    .reai-badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px;letter-spacing:0.04em}
+    .reai-good{background:rgba(22,163,74,0.12);color:#16a34a}
+    .reai-watch{background:rgba(217,119,6,0.12);color:#d97706}
+    .reai-drift{background:rgba(234,88,12,0.12);color:#ea580c}
+    .reai-alert{background:rgba(220,38,38,0.12);color:#dc2626}
+    .reai-meta{font-size:9.5px;color:var(--muted);margin-top:4px;line-height:1.5}
+    .reai-proposals{margin-top:7px;border-top:0.5px solid var(--border);padding-top:7px}
+    .reai-proposal-item{background:var(--bg2);border-radius:6px;padding:7px 9px;margin-bottom:4px;border:0.5px solid var(--border)}
+    .reai-proposal-type{font-size:9px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+    .reai-proposal-title{font-size:11px;font-weight:600;color:var(--text);line-height:1.4}
+    .reai-proposal-impact{font-size:9.5px;color:#16a34a;margin-top:2px}
+    .reai-proposal-actions{display:flex;gap:4px;margin-top:5px}
+    .reai-auth-btn{font-size:10px;padding:3px 9px;border-radius:5px;border:0.5px solid var(--orange);background:rgba(196,82,0,0.1);color:var(--orange);cursor:pointer;font-family:var(--font);font-weight:700;transition:all .15s}
+    .reai-auth-btn:hover{background:var(--orange);color:#fff}
+    .reai-dismiss-btn{font-size:10px;padding:3px 9px;border-radius:5px;border:0.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:var(--font);transition:all .15s}
+    .reai-dismiss-btn:hover{border-color:#dc2626;color:#dc2626}
     .sso-reminder{display:none;background:rgba(232,98,26,0.08);border:0.5px solid rgba(232,98,26,0.35);border-radius:8px;padding:8px 10px 8px 10px;margin-bottom:8px;font-size:10.5px;line-height:1.55;color:var(--text);position:relative}
     .sso-reminder a{color:var(--orange);font-weight:600;text-decoration:none}
     .sso-reminder a:hover{text-decoration:underline}
@@ -351,8 +374,14 @@
     </div>
 
     <div id="history-list"  class="sb-panel active-panel" style="flex:1;overflow-y:auto"></div>
-    <div id="reports-list"  class="sb-panel" style="flex:1;overflow-y:auto;display:none"></div>
-    <div id="files-list"    class="sb-panel" style="flex:1;overflow-y:auto;display:none"></div>
+
+    <!-- Reports panel: REAI card pinned at top, list below -->
+    <div id="reports-panel" class="sb-panel" style="flex:1;overflow-y:auto;display:none;flex-direction:column">
+      <div id="reai-card-wrap"></div>
+      <div id="reports-list" style="flex:1"></div>
+    </div>
+
+    <div id="files-list" class="sb-panel" style="flex:1;overflow-y:auto;display:none"></div>
 
     <div class="sidebar-bottom">
       <!-- SSO activation reminder — shown for business/enterprise until Billsource profile is set up -->
@@ -622,6 +651,7 @@
       const data = await res.json();
       if (!data.authenticated) { window.location.href = '/auth/google'; return; }
       currentUser = data.user;
+      window._userPlan = (data.user.plan || 'free').toLowerCase();  // used by runEngineFromChat
       // Isolate chat history per user
       chatKey = 'billi_chats_' + currentUser.email.replace(/[^a-z0-9]/gi,'_');
       chats = JSON.parse(localStorage.getItem(chatKey) || '[]');
@@ -1677,13 +1707,160 @@
     activeSidebarTab = tab;
     ['history','reports','files'].forEach(t => {
       document.getElementById('tab-'+t).classList.toggle('active', t===tab);
-      const panel = document.getElementById(t+'-list');
-      panel.style.display = t===tab ? '' : 'none';
-      if (t===tab) panel.classList.add('active-panel');
-      else panel.classList.remove('active-panel');
     });
-    if (tab === 'reports') loadReportsList();
-    if (tab === 'files')   loadFilesList();
+    // history uses its own panel; reports uses reports-panel wrapper; files unchanged
+    const histEl   = document.getElementById('history-list');
+    const repPanel = document.getElementById('reports-panel');
+    const filesEl  = document.getElementById('files-list');
+    histEl.style.display   = tab==='history' ? '' : 'none';
+    repPanel.style.display = tab==='reports' ? 'flex' : 'none';
+    filesEl.style.display  = tab==='files'   ? '' : 'none';
+    if (tab==='reports') { loadReaiCard(); loadReportsList(); }
+    if (tab==='files')   loadFilesList();
+  }
+
+  // ══════════════════════════════════════════════════════
+  // ENGINE INTELLIGENCE — REAI card + proposals
+  // ══════════════════════════════════════════════════════
+
+  const reaiThresholds = [
+    { min:90, label:'Engine performing well',      cls:'reai-good'  },
+    { min:80, label:'Watch — heightened scanning', cls:'reai-watch' },
+    { min:70, label:'Moderate drift detected',     cls:'reai-drift' },
+    { min:60, label:'Review required',             cls:'reai-alert' },
+    { min:0,  label:'Governance lockdown',         cls:'reai-alert' },
+  ];
+
+  function reaiClass(score) {
+    return (reaiThresholds.find(t => score >= t.min) || reaiThresholds[4]).cls;
+  }
+  function reaiLabel(score) {
+    return (reaiThresholds.find(t => score >= t.min) || reaiThresholds[4]).label;
+  }
+
+  async function loadReaiCard() {
+    const wrap = document.getElementById('reai-card-wrap');
+    if (!wrap) return;
+    try {
+      const res  = await fetch('/api/plm/status');
+      if (!res.ok) { wrap.innerHTML = ''; return; }  // plan not eligible — hide silently
+      const s    = await res.json();
+      const reai = s.reai_score ?? 100;  // default 100 until observations exist
+      const cls  = reaiClass(reai);
+      const lbl  = reaiLabel(reai);
+      const openP = s.open_proposals || 0;
+
+      wrap.innerHTML = `
+        <div class="reai-card">
+          <div class="reai-card-title">⚡ Engine Intelligence</div>
+          <div class="reai-row">
+            <div>
+              <div class="reai-score">${reai}<span style="font-size:11px;font-weight:400;color:var(--muted)">/100</span></div>
+              <div class="reai-label">Rating Engine Accuracy Index (REAI)</div>
+            </div>
+            <span class="reai-badge ${cls}">${lbl}</span>
+          </div>
+          <div class="reai-meta">
+            ${s.observations_total || 0} observations · ${s.observations_with_outcomes || 0} with outcomes ·
+            last scan: ${s.last_diagnostic || 'pending'}
+          </div>
+          <div class="reai-proposals" id="proposals-wrap">
+            ${openP > 0
+              ? `<div style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em">${openP} pending improvement${openP>1?'s':''}</div>`
+              : '<div style="font-size:10px;color:var(--muted)">No pending proposals — engine is current.</div>'
+            }
+            <div id="proposal-list"></div>
+          </div>
+        </div>`;
+
+      if (openP > 0) loadProposals();
+    } catch(e) {
+      // Not eligible or PLM not live — hide card
+      wrap.innerHTML = '';
+    }
+  }
+
+  async function loadProposals() {
+    const list = document.getElementById('proposal-list');
+    if (!list) return;
+    try {
+      const res  = await fetch('/api/plm/proposals');
+      const data = await res.json();
+      const props = (data.proposals || []).slice(0, 5);  // max 5 shown
+      if (!props.length) return;
+
+      const typeLabels = {
+        parameter_adjustment: 'Parameter Recalibration',
+        novel_component:      'New Formula Unit',
+        benchmark_update:     'Benchmark Update',
+        threshold_recalibration: 'Threshold Change',
+      };
+
+      const statusLabels = {
+        pending_authorisation: 'Ready to authorise',
+        sandbox_testing:       'In sandbox test',
+        proposed:              'Proposed',
+      };
+
+      list.innerHTML = props.map(p => {
+        const tLabel = typeLabels[p.proposal_type] || p.proposal_type;
+        const sLabel = statusLabels[p.status] || p.status;
+        const sandboxOk = p.sandbox_passed === true;
+        return `<div class="reai-proposal-item">
+          <div class="reai-proposal-type">${tLabel} · <span style="color:${sandboxOk?'#16a34a':'#d97706'}">${sLabel}</span></div>
+          <div class="reai-proposal-title">${p.title}</div>
+          <div class="reai-proposal-actions">
+            ${sandboxOk
+              ? `<button class="reai-auth-btn" onclick="authoriseProposal('${p.proposal_id}',true)">✓ Authorise</button>
+                 <button class="reai-dismiss-btn" onclick="authoriseProposal('${p.proposal_id}',false)">✕ Reject</button>`
+              : `<button class="reai-dismiss-btn" onclick="runSandbox('${p.proposal_id}')">▷ Run sandbox test</button>`
+            }
+          </div>
+        </div>`;
+      }).join('');
+    } catch(e) { /* silent */ }
+  }
+
+  async function runSandbox(proposalId) {
+    showToast('Running sandbox test…');
+    try {
+      const res  = await fetch('/api/plm/sandbox', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ proposalId })
+      });
+      const data = await res.json();
+      showToast(data.acceptance_criteria_met
+        ? '✅ Sandbox passed — ready to authorise'
+        : '⚠ Sandbox: ' + data.tests_failed + ' test(s) failed');
+      loadReaiCard();
+    } catch(e) { showToast('Sandbox error — try again'); }
+  }
+
+  async function authoriseProposal(proposalId, approved) {
+    const note = approved
+      ? (prompt('Authorisation note (optional):') || 'Authorised via Billi app')
+      : (prompt('Rejection reason:') || 'Rejected via Billi app');
+    showToast(approved ? 'Authorising…' : 'Rejecting…');
+    try {
+      const res  = await fetch('/api/plm/authorise', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ proposalId, approved, note })
+      });
+      const data = await res.json();
+      if (approved && data.new_config_b64) {
+        // Show the deploy instruction — user must set in Railway
+        alert(
+          '✅ Authorised!\n\n' +
+          'NEXT STEP — set the new RATING_ENGINE_CONFIG in Railway Variables:\n\n' +
+          data.new_config_b64.substring(0,60) + '…\n\n' +
+          '(Full value copied to console log)\n\n' +
+          'Then restart the Railway service.'
+        );
+        console.log('NEW RATING_ENGINE_CONFIG:', data.new_config_b64);
+      }
+      showToast(approved ? '✅ Authorised — deploy Railway var to activate' : '✕ Proposal rejected');
+      loadReaiCard();
+    } catch(e) { showToast('Error — try again'); }
   }
 
   // ══════════════════════════════════════════
@@ -2022,8 +2199,14 @@
     const name = window._chatFileName || 'Financial Statement';
     if (!data) return;
 
-    // Build payload for /api/engine/analyse
+    // Use /api/engine/rate (Business+ — full DI + PLM observe) or /api/engine/analyse
+    const plan      = window._userPlan || '';
+    const planOrder = ['free','student','professional','business','enterprise'];
+    const useRate   = planOrder.indexOf(plan) >= 3;
+    const endpoint  = useRate ? '/api/engine/rate' : '/api/engine/analyse';
+
     const payload = {
+      sector:             data.sector             || 'default',
       revenue:            data.revenue            || 0,
       costOfSales:        data.costOfSales         || 0,
       operatingExpenses:  data.operatingExpenses   || 0,
@@ -2039,60 +2222,93 @@
     };
 
     try {
-      const res = await fetch('/api/engine/analyse', {
-        method:'POST',
-        headers:{'Content-Type':'application/json','x-engine-token': window._engineToken||''},
+      const res    = await fetch(endpoint, {
+        method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify(payload)
       });
       const result = await res.json();
       if (result.error) { addBubble('Analysis engine: ' + result.error, 'ai'); return; }
 
-      const r   = result.ratios;
-      const dot = colDot[result.colour]||'#d97706';
-      const now = new Date();
-      const pad = n => String(n).padStart(2,'0');
+      const isFullEngine = useRate && result.node_health;
+      const di     = isFullEngine ? result.node_health.digital_index : Math.round(result.score || 0);
+      const risk   = isFullEngine ? result.risk_level : (result.colour || 'moderate');
+      const agent  = isFullEngine ? result.recommended_agent : 'CFO';
+      const fhs    = isFullEngine ? (result.detail?.financialHealth?.score ?? null) : null;
+      const nhs    = isFullEngine ? (result.detail?.nodeResilience?.score  ?? null) : null;
+      const cr     = isFullEngine ? (result.detail?.collision?.risk        ?? null) : null;
+      const drift  = isFullEngine ? (result.drift_detected || false) : false;
+      const remedies = isFullEngine ? (result.remedies || []) : [];
+      const r      = isFullEngine ? (result.detail?.financialHealth?.ratios || {}) : (result.ratios || {});
 
-      const recText = buildChatRec(r);
+      const riskCol = {low:'#16a34a',moderate:'#d97706',elevated:'#ea580c',critical:'#dc2626'};
+      const dot     = riskCol[risk] || '#d97706';
+      const rLabel  = {low:'Low Risk',moderate:'Moderate Risk',elevated:'Elevated Risk',critical:'Critical Risk'}[risk] || 'Moderate Risk';
 
-      const rCard = (label,val,st,note) => {
+      const rCard = (lbl,val,st,note) => {
         const c = st==='ok'?'#16a34a':st==='warn'?'#d97706':'#dc2626';
         const b = st==='ok'?'rgba(22,163,74,0.1)':st==='warn'?'rgba(217,119,6,0.1)':'rgba(220,38,38,0.1)';
-        return `<div class="analysis-cell" style="background:${b};border:0.5px solid ${c}20">
-          <div class="analysis-cell-label">${label}</div>
-          <div class="analysis-cell-val" style="color:${c}">${val}</div>
-          <div class="analysis-cell-note" style="color:${c}">● ${note}</div>
-        </div>`;
+        return `<div class="analysis-cell" style="background:${b};border:0.5px solid ${c}20"><div class="analysis-cell-label">${lbl}</div><div class="analysis-cell-val" style="color:${c}">${val}</div><div class="analysis-cell-note" style="color:${c}">● ${note}</div></div>`;
       };
 
-      const gm  = Math.round(r.grossMargin);
-      const nm  = Math.round(r.netMargin);
-      const dso = Math.round(r.dso);
-      const ccc = Math.round(r.cashConversionCycle);
+      const gm  = Math.round(r.grossMargin  || 0);
+      const nm  = Math.round(r.netMargin    || 0);
+      const dso = Math.round(r.dso          || 0);
+      const ccc = Math.round(r.cashConversionCycle || 0);
+      const dte = parseFloat((r.debtToEquity  || 0).toFixed(1));
+      const cr2 = parseFloat((r.currentRatio  || 0).toFixed(1));
 
+      const diBar = isFullEngine ? `
+        <div style="margin:8px 0 4px;display:flex;align-items:center;gap:8px">
+          <div style="flex:1;height:7px;border-radius:4px;background:var(--border);overflow:hidden">
+            <div style="width:${di}%;height:100%;background:${dot};border-radius:4px;transition:width .6s"></div>
+          </div>
+          <span style="font-size:20px;font-weight:900;color:${dot}">${di}</span>
+          <span style="font-size:10px;color:var(--muted)">/100</span>
+        </div>
+        <div style="font-size:10px;color:${dot};font-weight:700;margin-bottom:5px">${rLabel}${drift ? ' · ⚠ Sector drift' : ''}</div>
+        <div style="display:flex;gap:4px;margin-bottom:8px">
+          ${fhs !== null ? `<div style="flex:1;background:var(--bg2);border-radius:5px;padding:4px 6px;text-align:center"><div style="font-size:9px;color:var(--muted)">Fin Health</div><div style="font-size:13px;font-weight:700">${fhs}</div></div>` : ''}
+          ${nhs !== null ? `<div style="flex:1;background:var(--bg2);border-radius:5px;padding:4px 6px;text-align:center"><div style="font-size:9px;color:var(--muted)">Node</div><div style="font-size:13px;font-weight:700">${nhs}</div></div>` : ''}
+          ${cr  !== null ? `<div style="flex:1;background:var(--bg2);border-radius:5px;padding:4px 6px;text-align:center"><div style="font-size:9px;color:var(--muted)">Collision</div><div style="font-size:13px;font-weight:700;color:${cr>50?'#dc2626':cr>25?'#d97706':'#16a34a'}">${cr}</div></div>` : ''}
+          <div style="flex:1;background:rgba(196,82,0,0.08);border-radius:5px;padding:4px 6px;text-align:center"><div style="font-size:9px;color:var(--muted)">Agent</div><div style="font-size:11px;font-weight:700;color:var(--orange)">${agent}</div></div>
+        </div>` :
+        `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span style="font-size:22px;font-weight:900;color:${dot}">${di}</span>
+          <span style="font-size:10px;color:${dot};font-weight:700">${rLabel}</span>
+        </div>`;
+
+      const topR = remedies.slice(0,3);
+      const remedyHtml = topR.length ? `
+        <div style="margin-top:8px;background:rgba(196,82,0,0.07);border:0.5px solid rgba(196,82,0,0.2);border-radius:7px;padding:8px 10px">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--orange);margin-bottom:5px">Top Priorities</div>
+          ${topR.map((rem,i) => `<div style="font-size:11px;color:var(--text);margin-bottom:${i<topR.length-1?4:0}px;line-height:1.4"><strong style="color:var(--orange)">${i+1}.</strong> ${rem.action || rem}</div>`).join('')}
+        </div>` : `<div class="analysis-rec">${buildChatRec(r)}</div>`;
+
+      const nameSafe = name.replace(/'/g, "\\'");
       const html = `<div class="analysis-card">
         <div class="analysis-card-title">
-          <span style="width:12px;height:12px;border-radius:50%;background:${dot};display:inline-block"></span>
-          📈 ${result.rating} — ${Math.round(result.score)}/100
+          <span style="width:10px;height:10px;border-radius:50%;background:${dot};display:inline-block"></span>
+          📊 BAI Rating — ${name}
+          ${isFullEngine ? '<span style="font-size:9px;padding:1px 6px;background:rgba(196,82,0,0.1);color:var(--orange);border-radius:4px;margin-left:4px;font-weight:600">Full Engine</span>' : ''}
         </div>
+        ${diBar}
         <div class="analysis-grid">
-          ${rCard('Gross Margin', gm+'%',  gm>=40?'ok':'warn',  gm>=40?'Healthy':'Below 40% target')}
+          ${rCard('Gross Margin', gm+'%',  gm>=40?'ok':'warn', gm>=40?'Healthy':'Below 40%')}
           ${rCard('Net Margin',   nm+'%',  nm>=10?'ok':nm>=0?'warn':'bad', nm>=10?'Healthy':nm>=0?'Watch':'Loss-making')}
-          ${rCard('Current Ratio', r.currentRatio.toFixed(1), r.currentRatio>=1.5?'ok':r.currentRatio>=1?'warn':'bad', r.currentRatio>=1.5?'Healthy':'Watch')}
-          ${rCard('Debtor Days',  dso+'d', dso<=30?'ok':dso<=45?'warn':'bad', dso<=30?'Healthy':dso<=45?'Watch':'Critical')}
-          ${rCard('Debt/Equity',  r.debtToEquity.toFixed(1), r.debtToEquity<=1?'ok':r.debtToEquity<=1.5?'warn':'bad', r.debtToEquity<=1?'Healthy':'Watch')}
-          ${rCard('Cash Cycle',   ccc+'d', ccc<=20?'ok':ccc<=40?'warn':'bad', ccc<=20?'Healthy':ccc<=40?'Cash gap':'Critical')}
+          ${rCard('Current Ratio', cr2,    cr2>=1.5?'ok':cr2>=1?'warn':'bad', cr2>=1.5?'Healthy':'Watch')}
+          ${rCard('Debtor Days',   dso+'d',dso<=30?'ok':dso<=45?'warn':'bad', dso<=30?'Healthy':dso<=45?'Watch':'Critical')}
+          ${rCard('Debt/Equity',   dte,    dte<=1?'ok':dte<=1.5?'warn':'bad', dte<=1?'Healthy':'Elevated')}
+          ${rCard('Cash Cycle',    ccc+'d',ccc<=20?'ok':ccc<=40?'warn':'bad', ccc<=20?'Healthy':ccc<=40?'Gap':'Critical')}
         </div>
-        <div class="analysis-rec">${recText}</div>
+        ${remedyHtml}
         <div style="display:flex;gap:6px;margin-top:10px">
-          <button onclick="saveCurrentReport('${name.replace(/'/g,"\\'")}', ${JSON.stringify(result).replace(/'/g,"\\'")})" style="flex:1;padding:7px;background:var(--orange);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font)">💾 Save to My Reports</button>
-          <button onclick="document.getElementById('chat-input').value='Based on my health score of ${Math.round(result.score)}/100 and debtor days of ${dso}, what are my top 3 priorities?';document.getElementById('chat-input').focus()" style="flex:1;padding:7px;background:var(--bg2);border:0.5px solid var(--border);color:var(--text);border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--font)">💬 Ask Billi what to do</button>
+          <button onclick="saveCurrentReport('${nameSafe}',window._lastEngineResult)" style="flex:1;padding:7px;background:var(--orange);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font)">💾 Save to My Reports</button>
+          <button onclick="document.getElementById('chat-input').value='Based on my score of ${di}/100${dso ? ` and debtor days of ${dso}` : ''}, what are my top 3 priorities?';document.getElementById('chat-input').focus()" style="flex:1;padding:7px;background:var(--bg2);border:0.5px solid var(--border);color:var(--text);border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--font)">💬 Ask Billi</button>
         </div>
       </div>`;
 
       addBubble(html, 'ai', true);
-
-      // Auto-save report data for save button
-      window._lastEngineResult = result;
+      window._lastEngineResult = { score:di, rating:rLabel, colour:risk, ratios:r };
       window._lastEngineFile   = name;
 
     } catch(e) { addBubble('Could not run analysis — please try again.', 'ai'); }
