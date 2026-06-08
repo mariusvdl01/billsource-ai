@@ -1891,7 +1891,7 @@
           <div class="sb-report-name" title="${r.name}">${r.name}</div>
           <div class="sb-report-meta">
             <span class="sb-score-dot" style="background:${dot}"></span>
-            <span style="color:${dot};font-weight:700">${r.score}/100</span>
+            <span style="color:${dot};font-weight:700">${r.score != null ? r.score + '/100' : 'Score pending'}</span>
             <span>${lbl}</span>
             <span style="margin-left:auto">${dStr}</span>
           </div>
@@ -1914,13 +1914,36 @@
 
   async function loadReportIntoChat(id) {
     try {
-      const res  = await fetch('/api/reports/' + id);
-      // If server returns HTML, we just use the metadata from the list
-      // Instead fetch JSON metadata via the list and inject into chat
-      const list = await (await fetch('/api/reports')).json();
-      const r = list.reports.find(x => x.id === id);
+      const listRes  = await fetch('/api/reports');
+      const listData = await listRes.json();
+      const r = (listData.reports || []).find(x => x.id === id);
       if (!r) return;
-      const summary = `📊 **Financial Health Report — ${r.name}**\n\nScore: **${r.score}/100** (${colLbl[r.colour]||'Moderate'} Risk — ${r.colour?.toUpperCase()||''})\nSource: ${r.source_file||'Manual entry'}\nDate: ${new Date(r.created_at).toLocaleDateString('en-ZA')}\n\nBased on this report, what would you like to work on?`;
+
+      // Guard every field — score/colour can be null if engine was never run
+      const scoreStr  = (r.score !== null && r.score !== undefined) ? r.score + '/100' : 'not yet scored';
+      const riskName  = colLbl[r.colour] || null;
+      const riskStr   = riskName ? riskName + ' Risk' : 'risk level not available';
+      const sourceStr = r.source_file || 'Manual entry';
+      const dateStr   = new Date(r.created_at).toLocaleDateString('en-ZA');
+
+      // Try to parse ratios for richer context
+      let ratioContext = '';
+      if (r.ratios_json) {
+        try {
+          const rat = JSON.parse(r.ratios_json);
+          const parts = [];
+          if (rat.grossMargin   != null) parts.push(`Gross margin: ${Math.round(rat.grossMargin)}%`);
+          if (rat.netMargin     != null) parts.push(`Net margin: ${Math.round(rat.netMargin)}%`);
+          if (rat.currentRatio  != null) parts.push(`Current ratio: ${Number(rat.currentRatio).toFixed(1)}`);
+          if (rat.dso           != null) parts.push(`Debtor days: ${Math.round(rat.dso)}d`);
+          if (rat.debtToEquity  != null) parts.push(`D/E: ${Number(rat.debtToEquity).toFixed(1)}`);
+          if (rat.cashConversionCycle != null) parts.push(`Cash cycle: ${Math.round(rat.cashConversionCycle)}d`);
+          if (parts.length) ratioContext = '\nKey ratios: ' + parts.join(' | ');
+        } catch(_) {}
+      }
+
+      const summary = `I'd like to discuss my financial health report.\n\nReport: ${r.name}\nScore: ${scoreStr} (${riskStr})\nSource: ${sourceStr}\nDate: ${dateStr}${ratioContext}\n\nBased on this report, what should I focus on?`;
+
       newChat();
       await new Promise(resolve => setTimeout(resolve, 100));
       document.getElementById('chat-input').value = summary;
@@ -2184,8 +2207,9 @@
       ${missingHtml}
       <div style="display:flex;gap:6px;margin-top:10px">
         <button onclick="runEngineFromChat()" style="flex:1;padding:7px;background:var(--orange);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font)">📈 Run full ratio analysis</button>
-        <button onclick="askBilliAboutFile('${fileName.replace(/'/g,"\\'")}')" style="flex:1;padding:7px;background:var(--bg2);border:0.5px solid var(--border);color:var(--text);border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--font)">💬 Ask Billi about it</button>
+        <button onclick="askBilliAboutFileRaw()" style="flex:1;padding:7px;background:var(--bg2);border:0.5px solid var(--border);color:var(--text);border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--font)">💬 Ask Billi about it</button>
       </div>
+      <div style="font-size:10px;color:var(--muted);margin-top:6px;text-align:center">💾 Save to My Reports is available after running the full analysis</div>
     </div>`;
 
     // Store data globally for engine call
@@ -2326,28 +2350,70 @@
   }
 
   async function saveCurrentReport(name, result) {
-    if (!result && window._lastEngineResult) result = window._lastEngineResult;
-    if (!name   && window._lastEngineFile)   name   = window._lastEngineFile;
+    if (!result) result = window._lastEngineResult;
+    if (!name)   name   = window._lastEngineFile;
+    if (!result || result.score == null) {
+      showToast('Run the full analysis first, then save.');
+      return;
+    }
     const now = new Date();
     const pad = n => String(n).padStart(2,'0');
     const rName = 'Fin Report ' + now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate())+' '+pad(now.getHours())+'-'+pad(now.getMinutes());
     await saveReportToDB({
       name:       rName,
       score:      Math.round(result.score),
-      rating:     result.rating,
-      colour:     result.colour,
-      sourceFile: name,
-      ratiosJson: JSON.stringify(result.ratios),
-      htmlReport: null   // full HTML download not generated in app — available from demo page
+      rating:     result.rating || '',
+      colour:     result.colour || 'moderate',
+      sourceFile: name || 'Analysis',
+      ratiosJson: result.ratios ? JSON.stringify(result.ratios) : null,
+      htmlReport: null
     });
   }
 
-  function askBilliAboutFile(name) {
+  // Called from extraction card BEFORE engine runs — sends raw extracted figures only
+  function askBilliAboutFileRaw() {
     const data = window._chatFileData;
-    const summary = data
-      ? `I've just uploaded ${name}. Revenue: R${(data.annualRevenue||0).toLocaleString('en-ZA')}/year, Net Profit: R${(data.netProfit||0).toLocaleString('en-ZA')}/month. What should I focus on first?`
-      : `I've uploaded ${name}. Can you help me understand my financial position and what to prioritise?`;
+    const name = window._chatFileName || 'my financial statement';
+    if (!data) {
+      document.getElementById('chat-input').value = `I've uploaded ${name}. Can you help me understand my financial position?`;
+      document.getElementById('chat-input').focus();
+      return;
+    }
+    const parts = [];
+    if (data.annualRevenue) parts.push(`Annual Revenue: R${data.annualRevenue.toLocaleString('en-ZA')}`);
+    if (data.netProfit !== null) parts.push(`Net Profit (monthly): R${(data.netProfit||0).toLocaleString('en-ZA')}`);
+    if (data.currentAssets)  parts.push(`Current Assets: R${data.currentAssets.toLocaleString('en-ZA')}`);
+    if (data.totalDebt)      parts.push(`Total Debt: R${data.totalDebt.toLocaleString('en-ZA')}`);
+    if (data.equity)         parts.push(`Equity: R${data.equity.toLocaleString('en-ZA')}`);
+    const ctx = parts.length ? '\n\nExtracted figures:\n' + parts.join('\n') : '';
+    const summary = `I've just uploaded ${name} and I'd like your help understanding my financial position.${ctx}\n\nI haven't run the full ratio analysis yet. Based on these raw figures, what stands out and what should I focus on?`;
     document.getElementById('chat-input').value = summary;
+    document.getElementById('chat-input').focus();
+  }
+
+  // Called after engine runs — sends score + ratios as structured context
+  function askBilliAboutFile(name) {
+    const data   = window._chatFileData;
+    const result = window._lastEngineResult;
+    const fname  = name || window._chatFileName || 'my financial statement';
+    if (result && result.score != null) {
+      const parts = [];
+      const rat = result.ratios || {};
+      if (rat.grossMargin  != null) parts.push(`Gross margin: ${Math.round(rat.grossMargin)}%`);
+      if (rat.netMargin    != null) parts.push(`Net margin: ${Math.round(rat.netMargin)}%`);
+      if (rat.dso          != null) parts.push(`Debtor days: ${Math.round(rat.dso)}d`);
+      if (rat.currentRatio != null) parts.push(`Current ratio: ${Number(rat.currentRatio).toFixed(1)}`);
+      if (rat.debtToEquity != null) parts.push(`D/E ratio: ${Number(rat.debtToEquity).toFixed(1)}`);
+      if (rat.cashConversionCycle != null) parts.push(`Cash cycle: ${Math.round(rat.cashConversionCycle)}d`);
+      const riskName = {low:'Low',moderate:'Moderate',elevated:'Elevated',critical:'Critical'}[result.colour] || 'Moderate';
+      const summary = `My financial health score for ${fname} is ${result.score}/100 (${riskName} Risk).\n\nKey ratios: ${parts.join(' | ')}\n\nWhat are my top 3 priorities based on these numbers?`;
+      document.getElementById('chat-input').value = summary;
+    } else if (data) {
+      askBilliAboutFileRaw();
+      return;
+    } else {
+      document.getElementById('chat-input').value = `I've uploaded ${fname}. What should I focus on first?`;
+    }
     document.getElementById('chat-input').focus();
   }
 
