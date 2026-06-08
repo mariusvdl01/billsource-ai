@@ -2253,7 +2253,7 @@
       const result = await res.json();
       if (result.error) { addBubble('Analysis engine: ' + result.error, 'ai'); return; }
 
-      const isFullEngine = useRate && result.node_health;
+      const isFullEngine = !!result.node_health;  // both /analyse and /rate return full engine output
       const di     = isFullEngine ? result.node_health.digital_index : Math.round(result.score || 0);
       const risk   = isFullEngine ? result.risk_level : (result.colour || 'moderate');
       const agent  = isFullEngine ? result.recommended_agent : 'CFO';
@@ -2321,7 +2321,7 @@
           ${rCard('Net Margin',   nm+'%',  nm>=10?'ok':nm>=0?'warn':'bad', nm>=10?'Healthy':nm>=0?'Watch':'Loss-making')}
           ${rCard('Current Ratio', cr2,    cr2>=1.5?'ok':cr2>=1?'warn':'bad', cr2>=1.5?'Healthy':'Watch')}
           ${rCard('Debtor Days',   dso+'d',dso<=30?'ok':dso<=45?'warn':'bad', dso<=30?'Healthy':dso<=45?'Watch':'Critical')}
-          ${rCard('Debt/Equity',   dte,    dte<=1?'ok':dte<=1.5?'warn':'bad', dte<=1?'Healthy':'Elevated')}
+          ${rCard('Debt/Equity', dte<0?'NEG':dte, dte<0?'bad':dte<=1?'ok':dte<=1.5?'warn':'bad', dte<0?'Negative equity — insolvent':dte<=1?'Healthy':'Elevated')}
           ${rCard('Cash Cycle',    ccc+'d',ccc<=20?'ok':ccc<=40?'warn':'bad', ccc<=20?'Healthy':ccc<=40?'Gap':'Critical')}
         </div>
         ${remedyHtml}
@@ -2340,13 +2340,18 @@
 
   function buildChatRec(r) {
     const issues = [];
-    if (r.dso > 30)           issues.push(`collecting in ${Math.round(r.dso)}d — above 30-day target`);
+    if (r.debtToEquity < 0)    issues.push('negative equity — business is technically insolvent; seek urgent financial advice');
+    if (r.currentRatio < 1.0)  issues.push(`current ratio ${Number(r.currentRatio).toFixed(1)} — current liabilities exceed assets`);
+    else if (r.currentRatio < 1.5) issues.push(`current ratio ${Number(r.currentRatio).toFixed(1)} — liquidity is tight`);
+    if (r.dso > 30)            issues.push(`collecting in ${Math.round(r.dso)}d — target is 30 days`);
+    if (r.grossMargin < 20)    issues.push(`gross margin ${Math.round(r.grossMargin)}% — cost of sales very high`);
+    else if (r.grossMargin < 40) issues.push(`gross margin ${Math.round(r.grossMargin)}% — below 40% benchmark`);
+    if (r.netMargin < 0)       issues.push('business is currently loss-making');
+    if (r.debtToEquity > 1.5)  issues.push(`debt-to-equity of ${Number(r.debtToEquity).toFixed(1)} — high leverage`);
     if (r.cashConversionCycle > 30) issues.push(`${Math.round(r.cashConversionCycle)}-day cash conversion gap`);
-    if (r.grossMargin < 40)   issues.push(`gross margin ${Math.round(r.grossMargin)}% — below 40% benchmark`);
-    if (r.netMargin < 0)      issues.push('business is currently loss-making');
-    if (r.currentRatio < 1)   issues.push(`current ratio ${r.currentRatio.toFixed(1)} — short-term liabilities exceed assets`);
-    if (r.debtToEquity > 1.5) issues.push(`debt-to-equity of ${r.debtToEquity.toFixed(1)} — high leverage`);
-    return issues.length ? '⚠ <strong>Top risks:</strong> ' + issues.slice(0,3).join(' · ') + '. Ask Billi for an action plan.' : '✅ Ratios are in good shape. Ask Billi for growth strategy.';
+    return issues.length
+      ? '⚠ <strong>Top risks:</strong> ' + issues.slice(0,3).join(' · ') + '. Ask Billi for an action plan.'
+      : '✅ Ratios are in good shape. Ask Billi for growth strategy.';
   }
 
   async function saveCurrentReport(name, result) {
