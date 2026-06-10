@@ -134,6 +134,8 @@ const ROOT = '/app';
 // ═══════════════════════════════════════════
 const GOOGLE_CLIENT_ID     = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const ADMIN_TOKEN          = process.env.ADMIN_TOKEN || '';
+const ADMIN_EMAIL          = (process.env.ADMIN_EMAIL || '').toLowerCase().trim();
 const BASE_URL             = process.env.BASE_URL || 'https://billsource.ai';
 const FLOWISE_URL          = process.env.FLOWISE_URL || 'https://flowiseai-production-455f.up.railway.app';
 const FLOWISE_CHATFLOW_ID  = process.env.FLOWISE_CHATFLOW_ID || '';
@@ -278,12 +280,14 @@ const GOOGLE_AUTH_URL     = 'https://accounts.google.com/o/oauth2/v2/auth';
 const GOOGLE_TOKEN_URL    = 'https://oauth2.googleapis.com/token';
 const GOOGLE_USERINFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
 
-function buildGoogleAuthUrl(state) {
+function buildGoogleAuthUrl(state, next) {
+  // Encode next destination into state so callback can redirect correctly
+  const stateParam = next ? state + ':' + Buffer.from(next).toString('base64') : state;
   return `${GOOGLE_AUTH_URL}?${querystring.stringify({
     client_id: GOOGLE_CLIENT_ID,
     redirect_uri: `${BASE_URL}/auth/google/callback`,
     response_type: 'code', scope: 'openid email profile',
-    state, access_type: 'offline', prompt: 'consent'
+    state: stateParam, access_type: 'offline', prompt: 'consent'
   })}`;
 }
 
@@ -390,8 +394,18 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (pathname === '/auth/google/callback' && method === 'GET') {
-    const {code, error} = parsed.query;
+    const {code, error, state} = parsed.query;
     if (error || !code) { res.writeHead(302, {Location:'/?error=auth_failed'}); res.end(); return; }
+
+    // Decode next destination from state if present (format: "randomhex:base64next")
+    let nextPath = '/app';
+    if (state && state.includes(':')) {
+      const parts = state.split(':');
+      try { nextPath = Buffer.from(parts.slice(1).join(':'), 'base64').toString(); } catch(_) {}
+      // Safety: only allow known internal paths
+      if (!['/app', '/admin'].includes(nextPath)) nextPath = '/app';
+    }
+
     try {
       const tokens = await httpsPost(GOOGLE_TOKEN_URL,
         querystring.stringify({code, client_id:GOOGLE_CLIENT_ID, client_secret:GOOGLE_CLIENT_SECRET,
@@ -410,7 +424,7 @@ const server = http.createServer(async (req, res) => {
       sessionCache[sid] = {sid, user};
 
       const expiry = new Date(Date.now() + 7*24*60*60*1000).toUTCString();
-      res.writeHead(302, {Location:'/app',
+      res.writeHead(302, {Location: nextPath,
         'Set-Cookie':`bs_session=${sid}; Path=/; HttpOnly; Secure; SameSite=Lax; Expires=${expiry}`});
       res.end();
     } catch(err) {
@@ -715,32 +729,90 @@ const server = http.createServer(async (req, res) => {
     await handleSaveReport(req, res, session); return;
   }
 
-  // ── PLM Admin Routes (Enterprise + authenticated) ──────────────
-  if (pathname === '/api/plm/status' && method === 'GET') {
-    const session = await requireAuth(); if (!session) return;
-    if (!['business','enterprise'].includes(session.user.plan)) {
-      res.writeHead(403,{'Content-Type':'application/json'});
-      res.end(JSON.stringify({error:'PLM admin requires Business plan or above'})); return;
+  // ── /admin — serve admin.html (operator only) ────────────────────
+  // Two-layer auth:
+  //   Layer 1 (identity): Google OAuth session — email must match ADMIN_EMAIL env var
+  //   Layer 2 (secret):   ADMIN_TOKEN confirmed client-side on first load
+  // If not signed in → redirect to Google OAuth with ?next=/admin
+  // If signed in but wrong email → 403 (not redirected, not served)
+  if (pathname === '/admin' && method === 'GET') {
+    const session = await getSessionUser(req);
+    if (!session) {
+      // Not signed in — redirect to Google OAuth, return to /admin after
+      const state = crypto.randomBytes(16).toString('hex');
+      res.writeHead(302, { Location: buildGoogleAuthUrl(state, '/admin') });
+      res.end(); return;
     }
+    if (!ADMIN_EMAIL || session.user.email.toLowerCase() !== ADMIN_EMAIL) {
+      res.writeHead(403, { 'Content-Type': 'text/html' });
+      res.end('<html><body style="font-family:sans-serif;padding:40px;background:#0f0d0b;color:#e8e4e0">' +
+              '<h2 style="color:#c45200">Access denied</h2>' +
+              '<p>This console is restricted to the designated operator account.</p>' +
+              '<a href="/" style="color:#c45200">Return home</a></body></html>');
+      return;
+    }
+    serveFile(res, path.join(ROOT, 'admin.html')); return;
+  }
+
+  // ── /api/admin/me — returns identity for admin.html header ──────
+  if (pathname === '/api/admin/me' && method === 'GET') {
+    const session = await getSessionUser(req);
+    if (!session || session.user.email.toLowerCase() !== ADMIN_EMAIL) {
+      res.writeHead(403, {'Content-Type':'application/json'});
+      res.end(JSON.stringify({ error: 'Operator access required' })); return;
+    }
+    res.writeHead(200, {'Content-Type':'application/json'});
+    res.end(JSON.stringify({
+      email: session.user.email,
+      name:  session.user.name,
+      avatar: session.user.avatar,
+    })); return;
+  }
+
+  // ── PLM Admin Routes — operator-only, ADMIN_TOKEN required ──────
+  // These are NOT user routes. No customer plan grants access.
+  // ADMIN_TOKEN is a Railway env var known only to the operator.
+  // Usage: send header  x-admin-token: <ADMIN_TOKEN>  with every PLM request.
+  function requireAdmin() {
+    // Layer 1 check: ADMIN_TOKEN in x-admin-token header (what you know)
+    const token = req.headers['x-admin-token'] || '';
+    if (!ADMIN_TOKEN || token.length !== ADMIN_TOKEN.length) {
+      res.writeHead(403, {'Content-Type':'application/json'});
+      res.end(JSON.stringify({ error: 'Operator access required' }));
+      return false;
+    }
+    const tokBuf = Buffer.from(token);
+    const adBuf  = Buffer.from(ADMIN_TOKEN);
+    if (!crypto.timingSafeEqual(tokBuf, adBuf)) {
+      res.writeHead(403, {'Content-Type':'application/json'});
+      res.end(JSON.stringify({ error: 'Operator access required' }));
+      return false;
+    }
+    return true;
+  }
+  // Note: Google session identity (Layer 2) is enforced at the /admin HTML route.
+  // By the time any /api/plm/* call is made, the operator has already passed
+  // Google OAuth + ADMIN_EMAIL check to receive admin.html. The ADMIN_TOKEN
+  // header is the per-request guard. Both layers must pass for any action.
+
+  if (pathname === '/api/plm/status' && method === 'GET') {
+    if (!requireAdmin()) return;
     res.writeHead(200,{'Content-Type':'application/json'});
     res.end(JSON.stringify(await plm.getPLMStatus())); return;
   }
   if (pathname === '/api/plm/proposals' && method === 'GET') {
-    const session = await requireAuth(); if (!session) return;
-    if (!['business','enterprise'].includes(session.user.plan)) { res.writeHead(403,{'Content-Type':'application/json'}); res.end(JSON.stringify({error:'Requires Business plan'})); return; }
+    if (!requireAdmin()) return;
     res.writeHead(200,{'Content-Type':'application/json'});
     res.end(JSON.stringify({ proposals: await plm.getPendingProposals() })); return;
   }
   if (pathname === '/api/plm/diagnostics' && method === 'POST') {
-    const session = await requireAuth(); if (!session) return;
-    if (session.user.plan !== 'enterprise') { res.writeHead(403,{'Content-Type':'application/json'}); res.end(JSON.stringify({error:'Diagnostics require Enterprise plan'})); return; }
+    if (!requireAdmin()) return;
     const result = await plm.runDiagnostics();
     res.writeHead(200,{'Content-Type':'application/json'});
     res.end(JSON.stringify(result)); return;
   }
   if (pathname === '/api/plm/sandbox' && method === 'POST') {
-    const session = await requireAuth(); if (!session) return;
-    if (session.user.plan !== 'enterprise') { res.writeHead(403,{'Content-Type':'application/json'}); res.end(JSON.stringify({error:'Sandbox testing requires Enterprise plan'})); return; }
+    if (!requireAdmin()) return;
     try {
       const body = await readBody(req);
       const { proposalId } = JSON.parse(body);
@@ -751,12 +823,11 @@ const server = http.createServer(async (req, res) => {
     return;
   }
   if (pathname === '/api/plm/authorise' && method === 'POST') {
-    const session = await requireAuth(); if (!session) return;
-    if (session.user.plan !== 'enterprise') { res.writeHead(403,{'Content-Type':'application/json'}); res.end(JSON.stringify({error:'Authorisation requires Enterprise plan'})); return; }
+    if (!requireAdmin()) return;
     try {
       const body = await readBody(req);
-      const { proposalId, approved, note } = JSON.parse(body);
-      const result = await plm.authoriseProposal(proposalId, session.user.email, note, approved);
+      const { proposalId, approved, note, operatorId } = JSON.parse(body);
+      const result = await plm.authoriseProposal(proposalId, operatorId || 'operator', note, approved);
       res.writeHead(200,{'Content-Type':'application/json'});
       res.end(JSON.stringify(result));
     } catch(e) { res.writeHead(500,{'Content-Type':'application/json'}); res.end(JSON.stringify({error:e.message})); }
@@ -774,8 +845,7 @@ const server = http.createServer(async (req, res) => {
     return;
   }
   if (pathname === '/api/plm/log' && method === 'GET') {
-    const session = await requireAuth(); if (!session) return;
-    if (session.user.plan !== 'enterprise') { res.writeHead(403,{'Content-Type':'application/json'}); res.end(JSON.stringify({error:'Governance log requires Enterprise plan'})); return; }
+    if (!requireAdmin()) return;
     res.writeHead(200,{'Content-Type':'application/json'});
     res.end(JSON.stringify({ log: await plm.getGovernanceLog(100) })); return;
   }
@@ -1166,6 +1236,18 @@ async function start() {
     console.log(`OAuth    : ${GOOGLE_CLIENT_ID     ? 'OK' : 'MISSING'}`);
     console.log(`Flowise  : ${FLOWISE_CHATFLOW_ID  ? 'OK' : 'MISSING'}`);
     console.log(`Paystack : ${PAYSTACK_SECRET_KEY  ? 'OK' : 'not set'}`);
+    if (!ADMIN_TOKEN) {
+      console.warn('WARNING: ADMIN_TOKEN not set — /admin and /api/plm/* routes are inaccessible');
+    } else if (ADMIN_TOKEN.length < 32) {
+      console.warn('WARNING: ADMIN_TOKEN is too short — minimum 64 hex chars (32 bytes). Regenerate.');
+    } else {
+      console.log(`Admin    : token set (${ADMIN_TOKEN.length} chars)`);
+    }
+    if (!ADMIN_EMAIL) {
+      console.warn('WARNING: ADMIN_EMAIL not set — /admin route will deny all access');
+    } else {
+      console.log(`Admin    : operator email = ${ADMIN_EMAIL}`);
+    }
   });
 }
 

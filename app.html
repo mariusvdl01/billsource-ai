@@ -76,28 +76,6 @@
     .analysis-cell-note{font-size:9px;margin-top:1px}
     .analysis-rec{background:rgba(196,82,0,0.08);border:0.5px solid rgba(196,82,0,0.25);border-radius:7px;padding:8px 10px;font-size:12px;line-height:1.6;color:var(--text)}
 
-    /* ── Engine Intelligence / REAI card ── */
-    .reai-card{background:var(--card);border:0.5px solid var(--border);border-radius:10px;padding:10px 12px;margin:8px 8px 4px;border-left:3px solid var(--orange)}
-    .reai-card-title{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--orange);margin-bottom:6px}
-    .reai-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
-    .reai-score{font-size:22px;font-weight:800;color:var(--text)}
-    .reai-label{font-size:9px;color:var(--muted);margin-top:1px}
-    .reai-badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px;letter-spacing:0.04em}
-    .reai-good{background:rgba(22,163,74,0.12);color:#16a34a}
-    .reai-watch{background:rgba(217,119,6,0.12);color:#d97706}
-    .reai-drift{background:rgba(234,88,12,0.12);color:#ea580c}
-    .reai-alert{background:rgba(220,38,38,0.12);color:#dc2626}
-    .reai-meta{font-size:9.5px;color:var(--muted);margin-top:4px;line-height:1.5}
-    .reai-proposals{margin-top:7px;border-top:0.5px solid var(--border);padding-top:7px}
-    .reai-proposal-item{background:var(--bg2);border-radius:6px;padding:7px 9px;margin-bottom:4px;border:0.5px solid var(--border)}
-    .reai-proposal-type{font-size:9px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
-    .reai-proposal-title{font-size:11px;font-weight:600;color:var(--text);line-height:1.4}
-    .reai-proposal-impact{font-size:9.5px;color:#16a34a;margin-top:2px}
-    .reai-proposal-actions{display:flex;gap:4px;margin-top:5px}
-    .reai-auth-btn{font-size:10px;padding:3px 9px;border-radius:5px;border:0.5px solid var(--orange);background:rgba(196,82,0,0.1);color:var(--orange);cursor:pointer;font-family:var(--font);font-weight:700;transition:all .15s}
-    .reai-auth-btn:hover{background:var(--orange);color:#fff}
-    .reai-dismiss-btn{font-size:10px;padding:3px 9px;border-radius:5px;border:0.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:var(--font);transition:all .15s}
-    .reai-dismiss-btn:hover{border-color:#dc2626;color:#dc2626}
     .sso-reminder{display:none;background:rgba(232,98,26,0.08);border:0.5px solid rgba(232,98,26,0.35);border-radius:8px;padding:8px 10px 8px 10px;margin-bottom:8px;font-size:10.5px;line-height:1.55;color:var(--text);position:relative}
     .sso-reminder a{color:var(--orange);font-weight:600;text-decoration:none}
     .sso-reminder a:hover{text-decoration:underline}
@@ -375,9 +353,9 @@
 
     <div id="history-list"  class="sb-panel active-panel" style="flex:1;overflow-y:auto"></div>
 
-    <!-- Reports panel: REAI card pinned at top, list below -->
+    <!-- Reports panel: list -->
     <div id="reports-panel" class="sb-panel" style="flex:1;overflow-y:auto;display:none;flex-direction:column">
-      <div id="reai-card-wrap"></div>
+
       <div id="reports-list" style="flex:1"></div>
     </div>
 
@@ -1715,153 +1693,11 @@
     histEl.style.display   = tab==='history' ? '' : 'none';
     repPanel.style.display = tab==='reports' ? 'flex' : 'none';
     filesEl.style.display  = tab==='files'   ? '' : 'none';
-    if (tab==='reports') { loadReaiCard(); loadReportsList(); }
+    if (tab==='reports') { loadReportsList(); }
     if (tab==='files')   loadFilesList();
   }
 
-  // ══════════════════════════════════════════════════════
-  // ENGINE INTELLIGENCE — REAI card + proposals
-  // ══════════════════════════════════════════════════════
 
-  const reaiThresholds = [
-    { min:90, label:'Engine performing well',      cls:'reai-good'  },
-    { min:80, label:'Watch — heightened scanning', cls:'reai-watch' },
-    { min:70, label:'Moderate drift detected',     cls:'reai-drift' },
-    { min:60, label:'Review required',             cls:'reai-alert' },
-    { min:0,  label:'Governance lockdown',         cls:'reai-alert' },
-  ];
-
-  function reaiClass(score) {
-    return (reaiThresholds.find(t => score >= t.min) || reaiThresholds[4]).cls;
-  }
-  function reaiLabel(score) {
-    return (reaiThresholds.find(t => score >= t.min) || reaiThresholds[4]).label;
-  }
-
-  async function loadReaiCard() {
-    const wrap = document.getElementById('reai-card-wrap');
-    if (!wrap) return;
-    try {
-      const res  = await fetch('/api/plm/status');
-      if (!res.ok) { wrap.innerHTML = ''; return; }  // plan not eligible — hide silently
-      const s    = await res.json();
-      const reai = s.reai_score ?? 100;  // default 100 until observations exist
-      const cls  = reaiClass(reai);
-      const lbl  = reaiLabel(reai);
-      const openP = s.open_proposals || 0;
-
-      wrap.innerHTML = `
-        <div class="reai-card">
-          <div class="reai-card-title">⚡ Engine Intelligence</div>
-          <div class="reai-row">
-            <div>
-              <div class="reai-score">${reai}<span style="font-size:11px;font-weight:400;color:var(--muted)">/100</span></div>
-              <div class="reai-label">Rating Engine Accuracy Index (REAI)</div>
-            </div>
-            <span class="reai-badge ${cls}">${lbl}</span>
-          </div>
-          <div class="reai-meta">
-            ${s.observations_total || 0} observations · ${s.observations_with_outcomes || 0} with outcomes ·
-            last scan: ${s.last_diagnostic || 'pending'}
-          </div>
-          <div class="reai-proposals" id="proposals-wrap">
-            ${openP > 0
-              ? `<div style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.06em">${openP} pending improvement${openP>1?'s':''}</div>`
-              : '<div style="font-size:10px;color:var(--muted)">No pending proposals — engine is current.</div>'
-            }
-            <div id="proposal-list"></div>
-          </div>
-        </div>`;
-
-      if (openP > 0) loadProposals();
-    } catch(e) {
-      // Not eligible or PLM not live — hide card
-      wrap.innerHTML = '';
-    }
-  }
-
-  async function loadProposals() {
-    const list = document.getElementById('proposal-list');
-    if (!list) return;
-    try {
-      const res  = await fetch('/api/plm/proposals');
-      const data = await res.json();
-      const props = (data.proposals || []).slice(0, 5);  // max 5 shown
-      if (!props.length) return;
-
-      const typeLabels = {
-        parameter_adjustment: 'Parameter Recalibration',
-        novel_component:      'New Formula Unit',
-        benchmark_update:     'Benchmark Update',
-        threshold_recalibration: 'Threshold Change',
-      };
-
-      const statusLabels = {
-        pending_authorisation: 'Ready to authorise',
-        sandbox_testing:       'In sandbox test',
-        proposed:              'Proposed',
-      };
-
-      list.innerHTML = props.map(p => {
-        const tLabel = typeLabels[p.proposal_type] || p.proposal_type;
-        const sLabel = statusLabels[p.status] || p.status;
-        const sandboxOk = p.sandbox_passed === true;
-        return `<div class="reai-proposal-item">
-          <div class="reai-proposal-type">${tLabel} · <span style="color:${sandboxOk?'#16a34a':'#d97706'}">${sLabel}</span></div>
-          <div class="reai-proposal-title">${p.title}</div>
-          <div class="reai-proposal-actions">
-            ${sandboxOk
-              ? `<button class="reai-auth-btn" onclick="authoriseProposal('${p.proposal_id}',true)">✓ Authorise</button>
-                 <button class="reai-dismiss-btn" onclick="authoriseProposal('${p.proposal_id}',false)">✕ Reject</button>`
-              : `<button class="reai-dismiss-btn" onclick="runSandbox('${p.proposal_id}')">▷ Run sandbox test</button>`
-            }
-          </div>
-        </div>`;
-      }).join('');
-    } catch(e) { /* silent */ }
-  }
-
-  async function runSandbox(proposalId) {
-    showToast('Running sandbox test…');
-    try {
-      const res  = await fetch('/api/plm/sandbox', {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ proposalId })
-      });
-      const data = await res.json();
-      showToast(data.acceptance_criteria_met
-        ? '✅ Sandbox passed — ready to authorise'
-        : '⚠ Sandbox: ' + data.tests_failed + ' test(s) failed');
-      loadReaiCard();
-    } catch(e) { showToast('Sandbox error — try again'); }
-  }
-
-  async function authoriseProposal(proposalId, approved) {
-    const note = approved
-      ? (prompt('Authorisation note (optional):') || 'Authorised via Billi app')
-      : (prompt('Rejection reason:') || 'Rejected via Billi app');
-    showToast(approved ? 'Authorising…' : 'Rejecting…');
-    try {
-      const res  = await fetch('/api/plm/authorise', {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ proposalId, approved, note })
-      });
-      const data = await res.json();
-      if (approved && data.new_config_b64) {
-        // Show the deploy instruction — user must set in Railway
-        alert(
-          '✅ Authorised!\n\n' +
-          'NEXT STEP — set the new RATING_ENGINE_CONFIG in Railway Variables:\n\n' +
-          data.new_config_b64.substring(0,60) + '…\n\n' +
-          '(Full value copied to console log)\n\n' +
-          'Then restart the Railway service.'
-        );
-        console.log('NEW RATING_ENGINE_CONFIG:', data.new_config_b64);
-      }
-      showToast(approved ? '✅ Authorised — deploy Railway var to activate' : '✕ Proposal rejected');
-      loadReaiCard();
-    } catch(e) { showToast('Error — try again'); }
-  }
 
   // ══════════════════════════════════════════
   // MY REPORTS
