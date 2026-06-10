@@ -98,7 +98,52 @@ async function initDb() {
         created_at    TIMESTAMPTZ DEFAULT NOW()
       );
       CREATE INDEX IF NOT EXISTS idx_user_files_email ON user_files(email);
-    `);
+
+      -- ── Operational dashboard tables ──
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login     TIMESTAMPTZ;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS disabled       BOOLEAN NOT NULL DEFAULT false;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS disabled_reason TEXT;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS chat_count     INTEGER NOT NULL DEFAULT 0;
+
+      CREATE TABLE IF NOT EXISTS billing_events (
+        id          BIGSERIAL   PRIMARY KEY,
+        email       TEXT        NOT NULL,
+        event_type  TEXT        NOT NULL,  -- 'charge.success'|'subscription.create'|'subscription.disable'|'invoice.payment_failed'|'upgrade'|'downgrade'|'manual'
+        plan_from   TEXT,
+        plan_to     TEXT,
+        amount_zar  NUMERIC(10,2),
+        paystack_ref TEXT,
+        paystack_event TEXT,
+        notes       TEXT,
+        created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+      CREATE INDEX IF NOT EXISTS idx_billing_email ON billing_events(email);
+      CREATE INDEX IF NOT EXISTS idx_billing_type  ON billing_events(event_type);
+      CREATE INDEX IF NOT EXISTS idx_billing_at    ON billing_events(created_at);
+
+      CREATE TABLE IF NOT EXISTS feature_usage_log (
+        id          BIGSERIAL   PRIMARY KEY,
+        email       TEXT        NOT NULL,
+        feature     TEXT        NOT NULL,  -- 'engine/rate'|'engine/analyse'|'chat'|'file_upload'|'report_save'|'pdf_download'|'xlsx_parse'|'magic_link'
+        plan        TEXT,
+        metadata    JSONB,
+        used_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+      CREATE INDEX IF NOT EXISTS idx_fuse_email   ON feature_usage_log(email);
+      CREATE INDEX IF NOT EXISTS idx_fuse_feature ON feature_usage_log(feature);
+      CREATE INDEX IF NOT EXISTS idx_fuse_at      ON feature_usage_log(used_at);
+
+      CREATE TABLE IF NOT EXISTS prompt_reviews (
+        id          SERIAL      PRIMARY KEY,
+        prompt_key  TEXT        NOT NULL UNIQUE,
+        category    TEXT,
+        last_used   TIMESTAMPTZ,
+        use_count   INTEGER     NOT NULL DEFAULT 0,
+        status      TEXT        NOT NULL DEFAULT 'active',  -- 'active'|'review'|'sunset'
+        notes       TEXT,
+        updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+    \`);
     console.log('DB: PostgreSQL connected and schema ready');
 
     pool.on('error', err => console.error('DB pool error:', err.message));
@@ -421,6 +466,118 @@ async function deleteFile(email, id) {
   await pool.query(`DELETE FROM user_files WHERE id=$1 AND email=$2`, [id, email]);
 }
 
+// ── Operational dashboard functions ──────────────────────────────
+
+async function updateLastLogin(email) {
+  if (!pool) return;
+  await pool.query('UPDATE users SET last_login=NOW(), updated_at=NOW() WHERE email=$1', [email]);
+}
+
+async function setUserDisabled(email, disabled, reason='') {
+  if (pool) {
+    await pool.query(
+      'UPDATE users SET disabled=$2, disabled_reason=$3, updated_at=NOW() WHERE email=$1',
+      [email, disabled, reason || null]
+    );
+  } else if (memUsers[email]) {
+    memUsers[email].disabled = disabled;
+    memUsers[email].disabled_reason = reason;
+  }
+}
+
+async function logBillingEvent(email, eventType, planFrom, planTo, amountZar, paystackRef, paystackEvent, notes) {
+  if (!pool) return;
+  await pool.query(
+    `INSERT INTO billing_events(email,event_type,plan_from,plan_to,amount_zar,paystack_ref,paystack_event,notes)
+     VALUES($1,$2,$3,$4,$5,$6,$7,$8)`,
+    [email, eventType, planFrom||null, planTo||null, amountZar||null, paystackRef||null, paystackEvent||null, notes||null]
+  );
+}
+
+async function logFeatureUse(email, feature, plan, metadata) {
+  if (!pool) return;
+  pool.query(
+    `INSERT INTO feature_usage_log(email,feature,plan,metadata) VALUES($1,$2,$3,$4)`,
+    [email, feature, plan||null, metadata ? JSON.stringify(metadata) : null]
+  ).catch(() => {}); // fire-and-forget, non-blocking
+}
+
+async function incrementChatCount(email) {
+  if (pool) {
+    pool.query('UPDATE users SET chat_count=chat_count+1, updated_at=NOW() WHERE email=$1', [email])
+      .catch(() => {});
+  } else if (memUsers[email]) { memUsers[email].chat_count = (memUsers[email].chat_count||0)+1; }
+}
+
+async function getOperationalUsers(limit=200) {
+  if (!pool) return Object.values(memUsers).slice(0, limit);
+  const r = await pool.query(`
+    SELECT u.email, u.name, u.avatar, u.plan, u.messages_used, u.messages_limit,
+           u.chat_count, u.disabled, u.disabled_reason,
+           u.billing_cycle, u.last_login, u.created_at, u.updated_at,
+           COUNT(DISTINCT ur.id)::int AS report_count,
+           COUNT(DISTINCT uf.id)::int AS file_count
+    FROM users u
+    LEFT JOIN user_reports ur ON ur.email = u.email
+    LEFT JOIN user_files   uf ON uf.email = u.email
+    GROUP BY u.email
+    ORDER BY u.updated_at DESC NULLS LAST
+    LIMIT $1
+  `, [limit]);
+  return r.rows;
+}
+
+async function getOperationalUserDetail(email) {
+  if (!pool) return null;
+  const [user, billing, features, reports, prompts] = await Promise.all([
+    pool.query('SELECT * FROM users WHERE email=$1', [email]),
+    pool.query('SELECT * FROM billing_events WHERE email=$1 ORDER BY created_at DESC LIMIT 50', [email]),
+    pool.query(`SELECT feature, COUNT(*)::int as uses, MAX(used_at) as last_used
+                FROM feature_usage_log WHERE email=$1
+                GROUP BY feature ORDER BY uses DESC`, [email]),
+    pool.query('SELECT id,name,score,colour,source_file,created_at FROM user_reports WHERE email=$1 ORDER BY created_at DESC LIMIT 20', [email]),
+    pool.query(`SELECT prompt_key,plan,COUNT(*)::int as uses, MAX(accessed_at) as last_used
+                FROM prompt_access_log WHERE user_email=$1
+                GROUP BY prompt_key,plan ORDER BY uses DESC LIMIT 30`, [email]),
+  ]);
+  return {
+    user:     user.rows[0] || null,
+    billing:  billing.rows,
+    features: features.rows,
+    reports:  reports.rows,
+    prompts:  prompts.rows,
+  };
+}
+
+async function getPromptReviewList() {
+  if (!pool) return [];
+  // Join prompt_access_log counts with prompt_reviews table
+  const r = await pool.query(`
+    SELECT
+      pal.prompt_key,
+      COUNT(*)::int          AS total_uses,
+      COUNT(DISTINCT pal.user_email)::int AS unique_users,
+      MAX(pal.accessed_at)   AS last_used,
+      pr.status,
+      pr.notes,
+      pr.updated_at          AS review_updated_at
+    FROM prompt_access_log pal
+    LEFT JOIN prompt_reviews pr ON pr.prompt_key = pal.prompt_key
+    GROUP BY pal.prompt_key, pr.status, pr.notes, pr.updated_at
+    ORDER BY total_uses DESC
+  `);
+  return r.rows;
+}
+
+async function setPromptStatus(promptKey, status, notes) {
+  if (!pool) return;
+  await pool.query(`
+    INSERT INTO prompt_reviews(prompt_key, status, notes, updated_at)
+    VALUES($1,$2,$3,NOW())
+    ON CONFLICT(prompt_key) DO UPDATE SET status=$2, notes=$3, updated_at=NOW()
+  `, [promptKey, status, notes||null]);
+}
+
 module.exports = {
   // Core
   initDb, getUser, upsertUser, getOrCreateUser,
@@ -434,6 +591,10 @@ module.exports = {
   logPromptAccess, getPromptAccessLog,
   // Reports
   saveReport, listReports, getReport, deleteReport,
+  // Operational dashboard
+  updateLastLogin, setUserDisabled, logBillingEvent, logFeatureUse,
+  incrementChatCount, getOperationalUsers, getOperationalUserDetail,
+  getPromptReviewList, setPromptStatus,
   // Files
   saveFile, listFiles, deleteFile,
   // Pool reference (used by server.js for direct queries if needed)
