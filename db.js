@@ -143,7 +143,7 @@ async function initDb() {
         notes       TEXT,
         updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
-    \`);
+    `);
     console.log('DB: PostgreSQL connected and schema ready');
 
     pool.on('error', err => console.error('DB pool error:', err.message));
