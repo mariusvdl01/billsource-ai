@@ -387,7 +387,8 @@ async function saveFile(email, { name, type, sizeBytes, contentB64, analysisJson
   if (!useDb) {
     if (!memFiles[email]) memFiles[email] = [];
     const item = { id: Date.now(), name, type: type||null,
-      size_bytes: sizeBytes||0, created_at: new Date().toISOString() };
+      size_bytes: sizeBytes||0, analysis_json: analysisJson||null,
+      created_at: new Date().toISOString() };
     memFiles[email].push(item);
     return item;
   }
@@ -405,7 +406,7 @@ async function listFiles(email) {
     return (memFiles[email] || []).slice().reverse();
   }
   const r = await pool.query(
-    `SELECT id,name,type,size_bytes,created_at
+    `SELECT id,name,type,size_bytes,analysis_json,created_at
      FROM user_files WHERE email=$1 ORDER BY created_at DESC LIMIT 100`,
     [email]
   );
