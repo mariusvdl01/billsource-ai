@@ -433,7 +433,7 @@
 
       <div class="input-area">
         <div class="input-row">
-          <button class="attach-btn" onclick="triggerFileAttach()" title="Attach a financial statement — XLSX or CSV auto-analysed">📎</button>
+          <button class="attach-btn" onclick="triggerFileAttach()" title="Attach a financial statement — XLSX or CSV auto-analysed" style="font-size:22px;font-weight:300;color:var(--orange);border-color:var(--orange)">+</button>
           <input type="file" id="chat-file-input" accept=".xlsx,.xls,.csv,.pdf" style="display:none" onchange="handleChatFileAttach(this)"/>
           <textarea class="chat-input" id="chat-input"
             placeholder="Ask Billi about finance, marketing, sales, governance or operations..."
@@ -1876,7 +1876,7 @@
       const res  = await fetch('/api/reports');
       const data = await res.json();
       if (!data.reports || data.reports.length === 0) {
-        list.innerHTML = '<div class="sb-empty">No saved reports yet.<br><br>Run a financial analysis in chat (use 📎 to upload a statement) and save the result.</div>';
+        list.innerHTML = '<div class="sb-empty">No saved reports yet.<br><br>Run a financial analysis in chat (tap + next to the message bar to upload a statement) and save the result.</div>';
         return;
       }
       list.innerHTML = '';
@@ -2007,7 +2007,7 @@
             <span style="margin-left:auto">${dStr}</span>
           </div>
           <div class="sb-item-actions">
-            <button class="sb-item-btn" onclick="useFileInChat(${f.id},'${f.name.replace(/'/g,"\\'")}')">📎 Use in chat</button>
+            <button class="sb-item-btn" onclick="useFileInChat(${f.id},'${f.name.replace(/'/g,"\\'")}')">📈 Analyse</button>
             <button class="sb-item-btn danger" onclick="deleteFile(${f.id})">🗑</button>
           </div>`;
         list.appendChild(item);
@@ -2018,12 +2018,47 @@
   }
 
   async function useFileInChat(id, name) {
-    // Inject a reference into the chat input so the user can ask Billi about it
-    document.getElementById('chat-input').value =
-      `Analyse my financial statement: ${name} (saved file #${id})`;
-    document.getElementById('chat-input').focus();
     switchSidebarTab('history');
     handleMobileClose();
+
+    // Fetch the file list to get analysis_json for this file
+    try {
+      const res  = await fetch('/api/files');
+      const data = await res.json();
+      const file = (data.files || []).find(f => f.id === id);
+
+      if (file && file.analysis_json) {
+        // Restore extracted financials and re-render the extraction card + engine path
+        let analysis;
+        try { analysis = JSON.parse(file.analysis_json); } catch(_) { analysis = null; }
+
+        if (analysis && analysis.revenue !== undefined) {
+          window._chatFileData = analysis;
+          window._chatFileName = name;
+          window._lastEngineResult = null;  // clear any stale result
+          newChat();
+          await new Promise(resolve => setTimeout(resolve, 100));
+          document.getElementById('chat-title').textContent = name;
+          renderAnalysisInChat(analysis, name);
+          showToast('📊 ' + name + ' loaded — tap Run full ratio analysis');
+          return;
+        }
+      }
+
+      // Fallback: no analysis_json saved (e.g. PDF or old file)
+      // — put a descriptive message in the input for Flowise
+      newChat();
+      await new Promise(resolve => setTimeout(resolve, 100));
+      document.getElementById('chat-title').textContent = name;
+      document.getElementById('chat-input').value =
+        `I'd like to discuss my financial statement: ${name}. Can you help me understand my financial position?`;
+      document.getElementById('chat-input').focus();
+      showToast('File loaded — enter key figures or re-upload for full analysis');
+
+    } catch(e) {
+      console.error('useFileInChat', e);
+      showToast('Could not load file — please try again');
+    }
   }
 
   async function deleteFile(id) {
