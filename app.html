@@ -1745,7 +1745,141 @@
   }
 
   async function downloadReport(id, name) {
-    window.open('/api/reports/' + id, '_blank');
+    showToast('Building report…');
+    try {
+      // Fetch full report data from list (ratios_json, score, rating, colour, source_file)
+      const res  = await fetch('/api/reports');
+      const data = await res.json();
+      const r    = (data.reports || []).find(x => x.id === id);
+      if (!r) { showToast('Report not found'); return; }
+
+      // Parse ratios
+      let rat = {};
+      try { rat = r.ratios_json ? JSON.parse(r.ratios_json) : {}; } catch(_) {}
+
+      const riskColours = {low:'#16a34a',moderate:'#d97706',elevated:'#ea580c',critical:'#dc2626'};
+      const dot   = riskColours[r.colour] || '#d97706';
+      const score = r.score != null ? r.score : '—';
+      const date  = new Date(r.created_at).toLocaleDateString('en-ZA',{day:'2-digit',month:'long',year:'numeric'});
+      const fmt   = (v,dp=1) => v != null && !isNaN(v) ? Number(v).toFixed(dp) : '—';
+      const pct   = (v)      => v != null && !isNaN(v) ? Math.round(v) + '%' : '—';
+
+      const ratioRow = (label, value, bench, note, warn=false) => `
+        <tr style="border-bottom:1px solid #e5e7eb">
+          <td style="padding:10px 14px;font-weight:600;color:#1a1614">${label}</td>
+          <td style="padding:10px 14px;font-weight:800;color:${warn?'#dc2626':'#1a1614'};text-align:center">${value}</td>
+          <td style="padding:10px 14px;color:#888480;text-align:center;font-style:italic">${bench}</td>
+          <td style="padding:10px 14px;color:#5a5450;font-size:12px">${note}</td>
+        </tr>`;
+
+      const html = `<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${r.name}</title>
+<style>
+  body{font-family:'Segoe UI',Arial,sans-serif;max-width:860px;margin:0 auto;padding:32px 24px;color:#1a1614;background:#fff}
+  .header{border-bottom:4px solid #c45200;padding-bottom:16px;margin-bottom:24px}
+  .brand{font-size:13px;font-weight:700;color:#c45200;letter-spacing:.08em;text-transform:uppercase}
+  h1{font-size:22px;font-weight:800;margin:4px 0}
+  .meta{font-size:12px;color:#888480;margin-top:4px}
+  .score-block{display:inline-block;background:${r.colour==='critical'?'#fee2e2':r.colour==='elevated'?'#ffedd5':r.colour==='low'?'#d1fae5':'#fef3c7'};
+    border:2px solid ${dot};border-radius:12px;padding:16px 28px;text-align:center;margin:20px 0}
+  .score-num{font-size:52px;font-weight:900;color:${dot};line-height:1}
+  .score-label{font-size:13px;font-weight:700;color:${dot};margin-top:4px}
+  .score-sub{font-size:11px;color:#888480;margin-top:2px}
+  h2{font-size:15px;font-weight:700;color:#c45200;margin:28px 0 8px;
+     border-bottom:1px solid #e5e7eb;padding-bottom:6px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{background:#2d2320;color:#fff;padding:10px 14px;text-align:left;font-size:11px;
+     text-transform:uppercase;letter-spacing:.05em}
+  .disclaimer{margin-top:32px;padding:12px 16px;background:#fff7ed;border-left:4px solid #c45200;
+    font-size:11px;color:#5a5450;line-height:1.6}
+  .footer{margin-top:24px;font-size:10px;color:#bbbbbb;text-align:center;border-top:1px solid #e5e7eb;padding-top:12px}
+</style>
+</head><body>
+<div class="header">
+  <div class="brand">Billi BAI · Financial Health Report</div>
+  <h1>${r.name}</h1>
+  <div class="meta">Source: ${r.source_file || 'Manual entry'} · Date: ${date}</div>
+</div>
+
+<div class="score-block">
+  <div class="score-num">${score}</div>
+  <div class="score-label">${r.rating || (r.colour ? r.colour.charAt(0).toUpperCase()+r.colour.slice(1)+' Risk' : 'Moderate Risk')}</div>
+  <div class="score-sub">Digital Index / 100</div>
+</div>
+
+<h2>Financial Ratios</h2>
+<table>
+  <thead><tr>
+    <th>Ratio</th><th style="text-align:center">Value</th>
+    <th style="text-align:center">Benchmark</th><th>Interpretation</th>
+  </tr></thead>
+  <tbody>
+    ${ratioRow('Gross Margin', pct(rat.grossMargin), '38%',
+      rat.grossMargin < 20 ? 'Cost of sales very high — review pricing or supplier costs'
+      : rat.grossMargin < 40 ? 'Below benchmark — margin compression risk'
+      : 'Healthy margin', rat.grossMargin != null && rat.grossMargin < 20)}
+    ${ratioRow('Net Margin', pct(rat.netMargin), '8%',
+      rat.netMargin < 0 ? 'Loss-making — operating expenses exceed gross profit'
+      : rat.netMargin < 5 ? 'Thin margin — vulnerable to cost increases' : 'Acceptable margin',
+      rat.netMargin != null && rat.netMargin < 0)}
+    ${ratioRow('Current Ratio', fmt(rat.currentRatio), '1.6×',
+      rat.currentRatio < 1 ? 'CRITICAL: current liabilities exceed assets'
+      : rat.currentRatio < 1.5 ? 'Liquidity is tight' : 'Adequate short-term liquidity',
+      rat.currentRatio != null && rat.currentRatio < 1)}
+    ${ratioRow('Quick Ratio', fmt(rat.quickRatio), '1.0×',
+      rat.quickRatio < 0.8 ? 'Illiquid without selling inventory' : 'Adequate liquid assets',
+      rat.quickRatio != null && rat.quickRatio < 0.8)}
+    ${ratioRow('Debtor Days (DSO)', rat.dso != null ? Math.round(rat.dso)+'d' : '—', '35d',
+      rat.dso > 60 ? 'Collections are slow — cash is trapped in receivables'
+      : rat.dso > 30 ? 'Above target — tighten payment terms' : 'Within target range',
+      rat.dso != null && rat.dso > 60)}
+    ${ratioRow('Creditor Days (DPO)', rat.dpo != null ? Math.round(rat.dpo)+'d' : '—', '28d',
+      rat.dpo > rat.dso ? 'Paying slower than collecting — favourable' : 'Paying faster than collecting — cash gap risk',
+      rat.dpo != null && rat.dpo < rat.dso)}
+    ${ratioRow('Debt / Equity', rat.debtToEquity < 0 ? 'NEG' : fmt(rat.debtToEquity),
+      '0.9×',
+      rat.debtToEquity < 0 ? 'CRITICAL: negative equity — technically insolvent'
+      : rat.debtToEquity > 1.5 ? 'High leverage — debt-funded growth' : 'Within acceptable range',
+      rat.debtToEquity != null && (rat.debtToEquity < 0 || rat.debtToEquity > 1.5))}
+    ${ratioRow('Cash Conv. Cycle', rat.cashConversionCycle != null ? Math.round(rat.cashConversionCycle)+'d' : '—',
+      '<20d',
+      rat.cashConversionCycle > 40 ? 'Large cash gap — working capital is strained'
+      : rat.cashConversionCycle > 20 ? 'Manageable but watch trend' : 'Efficient working capital cycle',
+      rat.cashConversionCycle != null && rat.cashConversionCycle > 40)}
+    ${ratioRow('Return on Equity', pct(rat.returnOnEquity), '15%',
+      rat.returnOnEquity < 0 ? 'Negative — shareholders losing value'
+      : rat.returnOnEquity < 10 ? 'Below benchmark' : 'Acceptable return',
+      rat.returnOnEquity != null && rat.returnOnEquity < 0)}
+  </tbody>
+</table>
+
+<div class="disclaimer">
+  <strong>Advisory disclaimer:</strong> The Digital Index is a model-based indicator produced by the Billi BAI Rating Engine v1.0.
+  It is not financial advice and does not constitute a professional financial opinion. Results are advisory only.
+  Consult a qualified financial advisor before making material business decisions based on this report.
+  © ${new Date().getFullYear()} AnyABEX (Pty) Ltd · billsource.ai · POPIA compliant
+</div>
+<div class="footer">
+  Generated by Billi BAI · ${new Date().toLocaleDateString('en-ZA')} · Report ID ${id}
+</div>
+</body></html>`;
+
+      // Trigger download as HTML file
+      const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = (r.name || 'Fin Report') + '.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Report downloaded');
+    } catch(e) {
+      showToast('Download failed — try again');
+    }
   }
 
   async function loadReportIntoChat(id) {
