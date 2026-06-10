@@ -1153,8 +1153,9 @@ async function handleGetReport(req, res, session, id) {
         'Content-Disposition':`attachment; filename="${report.name.replace(/[^a-z0-9 .\-_]/gi,'_')}.html"`});
       res.end(report.html_report);
     } else {
-      res.writeHead(200, {'Content-Type':'application/json'});
-      res.end(JSON.stringify({ report }));
+      // html_report not stored — client builds HTML from ratios_json via the list endpoint
+      res.writeHead(404, {'Content-Type':'application/json'});
+      res.end(JSON.stringify({ error: 'No HTML stored — use the Download button in My Reports' }));
     }
   } catch(e) {
     res.writeHead(500, {'Content-Type':'application/json'});
