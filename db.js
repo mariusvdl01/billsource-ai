@@ -353,7 +353,7 @@ async function listReports(email) {
     return (memReports[email] || []).slice().reverse();
   }
   const r = await pool.query(
-    `SELECT id,name,score,rating,colour,source_file,created_at
+    `SELECT id,name,score,rating,colour,source_file,ratios_json,created_at
      FROM user_reports WHERE email=$1 ORDER BY created_at DESC LIMIT 100`,
     [email]
   );
