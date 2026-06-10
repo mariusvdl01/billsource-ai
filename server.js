@@ -211,7 +211,18 @@ const MIME = {
 function serveFile(res, filePath) {
   fs.readFile(filePath, (err, data) => {
     if (err) { serveFile(res, path.join(ROOT,'index.html')); return; }
-    res.writeHead(200, {'Content-Type': MIME[path.extname(filePath)] || 'text/plain'});
+    const ext  = path.extname(filePath);
+    const mime = MIME[ext] || 'text/plain';
+    // HTML files: never cache — ensures fresh deploy is always served immediately
+    // Assets (JS, CSS, images): cache 1 hour — they change less often
+    const cc = (ext === '.html')
+      ? 'no-cache, no-store, must-revalidate'
+      : 'public, max-age=3600';
+    res.writeHead(200, {
+      'Content-Type': mime,
+      'Cache-Control': cc,
+      'Pragma': ext === '.html' ? 'no-cache' : '',
+    });
     res.end(data);
   });
 }
