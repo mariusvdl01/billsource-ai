@@ -626,15 +626,29 @@
   async function loadUser() {
     try {
       const res = await fetch('/api/me');
+      if (!res.ok) {
+        document.getElementById('sb-name').textContent  = 'Server error ' + res.status;
+        document.getElementById('sb-email').textContent = 'Reload the page';
+        return;
+      }
       const data = await res.json();
       if (!data.authenticated) { window.location.href = '/auth/google'; return; }
       currentUser = data.user;
-      window._userPlan = (data.user.plan || 'free').toLowerCase();  // used by runEngineFromChat
-      // Isolate chat history per user
+      window._userPlan = (data.user.plan || 'free').toLowerCase();
       chatKey = 'billi_chats_' + currentUser.email.replace(/[^a-z0-9]/gi,'_');
       chats = JSON.parse(localStorage.getItem(chatKey) || '[]');
       updateUI();
-    } catch(e) { console.error(e); }
+    } catch(e) {
+      // Network error — server is down or not reachable
+      document.getElementById('sb-name').textContent  = 'Cannot reach server';
+      document.getElementById('sb-email').textContent = 'Retrying in 5s…';
+      // Log to server if possible (best-effort)
+      fetch('/api/client-log', {method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({event:'loadUser_error', msg: e.message, ua: navigator.userAgent})
+      }).catch(()=>{});
+      setTimeout(() => window.location.reload(), 5000);
+    }
   }
 
   function dismissSSOReminder() {

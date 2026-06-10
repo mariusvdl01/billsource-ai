@@ -808,7 +808,42 @@ const server = http.createServer(async (req, res) => {
     })); return;
   }
 
-  // ── Operational dashboard API routes — ADMIN_TOKEN required ──────
+  // ── /api/healthz — detailed server diagnostic (public, no auth) ──
+  if (pathname === '/api/healthz' && method === 'GET') {
+    let dbOk = false, dbError = '';
+    try {
+      if (db.pool) { await db.pool.query('SELECT 1'); dbOk = true; }
+      else dbError = 'pool is null — db in memory mode';
+    } catch(e) { dbError = e.message; }
+    res.writeHead(200, {'Content-Type':'application/json'});
+    res.end(JSON.stringify({
+      status:       dbOk ? 'ok' : 'degraded',
+      db:           dbOk ? 'connected' : 'error: ' + dbError,
+      node:         process.version,
+      uptime_s:     Math.round(process.uptime()),
+      env_vars: {
+        DATABASE_URL:       !!process.env.DATABASE_URL,
+        GOOGLE_CLIENT_ID:   !!process.env.GOOGLE_CLIENT_ID,
+        RATING_ENGINE_CONFIG: !!process.env.RATING_ENGINE_CONFIG,
+        FLOWISE_CHATFLOW_ID: !!process.env.FLOWISE_CHATFLOW_ID,
+        ADMIN_TOKEN:         !!process.env.ADMIN_TOKEN,
+        ADMIN_EMAIL:         !!process.env.ADMIN_EMAIL,
+      },
+      ts: new Date().toISOString()
+    })); return;
+  }
+
+  // ── /api/client-log — receive client-side error reports ──────────
+  if (pathname === '/api/client-log' && method === 'POST') {
+    try {
+      const body = await readBody(req);
+      const entry = JSON.parse(body);
+      console.error('[CLIENT-LOG]', JSON.stringify({ ...entry, ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress }));
+    } catch(_) {}
+    res.writeHead(200); res.end('ok'); return;
+  }
+
+
   if (pathname === '/api/ops/users' && method === 'GET') {
     if (!requireAdmin()) return;
     const users = await db.getOperationalUsers(500);
