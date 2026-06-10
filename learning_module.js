@@ -446,7 +446,12 @@ async function proposeNovelFormulaUnit(nfu) {
   //   validation:     { test_cases, acceptance_criteria },
   //   trade_secret:   true/false   — flags if NFU values must go to env var
   // }
-  const proposalId = `NFU-${Date.now()}`;
+  // Stable ID based on NFU name — prevents duplicate proposals on server restart.
+  // ON CONFLICT DO NOTHING in _saveProposal means re-registering the same NFU
+  // on startup is idempotent: if the proposal already exists it is not duplicated.
+  const stableId = 'NFU-' + (nfu.name || 'UNKNOWN')
+    .toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_|_$/g, '').substring(0, 40);
+  const proposalId = stableId;
 
   const proposal = {
     proposal_id:    proposalId,
@@ -886,7 +891,7 @@ async function getPLMStatus() {
   if (db.pool) {
     const [o, p, d] = await Promise.all([
       db.pool.query('SELECT COUNT(*) as n, COUNT(outcome_t90) as with_outcomes FROM plm_observations'),
-      db.pool.query("SELECT COUNT(*) as n FROM plm_proposals WHERE status NOT IN ('rejected','deployed')"),
+      db.pool.query("SELECT COUNT(*) as n FROM plm_proposals WHERE status NOT IN ('rejected','deployed','authorised')"),
       db.pool.query("SELECT COUNT(*) as n FROM plm_diagnostics WHERE status='open'"),
     ]);
     obsCount      = parseInt(o.rows[0].n);
