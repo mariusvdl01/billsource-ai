@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Billi — Operator Console</title>
+<style>
+  :root {
+    --bg:     #0F0D0B;
+    --bg2:    #1A1614;
+    --card:   #211E1B;
+    --border: #2D2A27;
+    --text:   #E8E4E0;
+    --muted:  #6B6460;
+    --orange: #C45200;
+    --green:  #16A34A;
+    --amber:  #D97706;
+    --red:    #DC2626;
+    --blue:   #3B82F6;
+    --font:   'Inter', 'Segoe UI', Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font);
+         font-size: 13px; min-height: 100vh; }
+
+  /* ── Auth gate ── */
+  #auth-gate { display:flex; align-items:center; justify-content:center;
+               min-height:100vh; flex-direction:column; gap:16px; }
+  #auth-gate h1 { font-size:20px; color:var(--orange); }
+  #auth-gate p  { color:var(--muted); font-size:12px; }
+  #token-input { background:var(--bg2); border:1px solid var(--border); color:var(--text);
+                 padding:10px 14px; border-radius:8px; font-size:13px; font-family:var(--font);
+                 width:340px; outline:none; }
+  #token-input:focus { border-color:var(--orange); }
+  #auth-btn { background:var(--orange); color:#fff; border:none; padding:10px 28px;
+              border-radius:8px; font-size:13px; font-weight:700; cursor:pointer;
+              font-family:var(--font); }
+  #auth-err { color:var(--red); font-size:12px; display:none; }
+
+  /* ── Main shell ── */
+  #shell { display:none; flex-direction:column; min-height:100vh; }
+
+  /* ── Top bar ── */
+  .topbar { background:var(--bg2); border-bottom:1px solid var(--border);
+            padding:0 20px; height:52px; display:flex; align-items:center;
+            justify-content:space-between; flex-shrink:0; }
+  .topbar-brand { font-size:15px; font-weight:800; color:var(--orange);
+                  display:flex; align-items:center; gap:8px; }
+  .topbar-badge { font-size:9px; font-weight:700; background:rgba(196,82,0,0.2);
+                  color:var(--orange); padding:2px 8px; border-radius:10px;
+                  letter-spacing:0.06em; text-transform:uppercase; }
+  .topbar-right { display:flex; align-items:center; gap:12px; }
+  .topbar-env   { font-size:10px; color:var(--muted); }
+  #refresh-btn  { background:transparent; border:1px solid var(--border); color:var(--muted);
+                  padding:5px 12px; border-radius:6px; font-size:11px; cursor:pointer;
+                  font-family:var(--font); transition:all .15s; }
+  #refresh-btn:hover { border-color:var(--orange); color:var(--orange); }
+
+  /* ── Body layout ── */
+  .body { display:flex; flex:1; overflow:hidden; }
+
+  /* ── Nav sidebar ── */
+  .nav { width:180px; background:var(--bg2); border-right:1px solid var(--border);
+         padding:16px 0; flex-shrink:0; }
+  .nav-item { display:block; padding:9px 18px; font-size:12px; font-weight:500;
+              color:var(--muted); cursor:pointer; transition:all .15s;
+              border-left:3px solid transparent; }
+  .nav-item:hover { color:var(--text); background:rgba(255,255,255,0.03); }
+  .nav-item.active { color:var(--orange); border-left-color:var(--orange);
+                     background:rgba(196,82,0,0.06); font-weight:700; }
+
+  /* ── Content area ── */
+  .content { flex:1; overflow-y:auto; padding:20px 24px; }
+  .section { display:none; }
+  .section.active { display:block; }
+
+  /* ── Cards ── */
+  .card { background:var(--card); border:1px solid var(--border); border-radius:10px;
+          padding:16px 18px; margin-bottom:14px; }
+  .card-title { font-size:10px; font-weight:700; text-transform:uppercase;
+                letter-spacing:0.08em; color:var(--muted); margin-bottom:10px; }
+  .card-value { font-size:28px; font-weight:800; color:var(--text); }
+  .card-sub   { font-size:11px; color:var(--muted); margin-top:3px; }
+
+  /* ── Metric grid ── */
+  .metric-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px;
+                 margin-bottom:18px; }
+
+  /* ── REAI gauge ── */
+  .reai-wrap { background:var(--card); border:1px solid var(--border); border-radius:10px;
+               padding:18px; margin-bottom:18px; }
+  .reai-top  { display:flex; align-items:center; justify-content:space-between;
+               margin-bottom:12px; }
+  .reai-score-big { font-size:48px; font-weight:900; line-height:1; }
+  .reai-bar-wrap  { height:10px; background:var(--border); border-radius:5px;
+                    overflow:hidden; margin:8px 0 4px; }
+  .reai-bar       { height:100%; border-radius:5px; transition:width .6s ease; }
+  .reai-thresholds { display:flex; justify-content:space-between;
+                     font-size:9px; color:var(--muted); }
+  .reai-badge { font-size:11px; font-weight:700; padding:4px 12px; border-radius:8px; }
+  .badge-green  { background:rgba(22,163,74,0.15);  color:var(--green); }
+  .badge-amber  { background:rgba(217,119,6,0.15);  color:var(--amber); }
+  .badge-orange { background:rgba(234,88,12,0.15);  color:#ea580c; }
+  .badge-red    { background:rgba(220,38,38,0.15);  color:var(--red); }
+
+  /* ── Proposal cards ── */
+  .proposal { background:var(--bg2); border:1px solid var(--border); border-radius:8px;
+              padding:14px 16px; margin-bottom:10px; }
+  .proposal-hdr { display:flex; align-items:center; justify-content:space-between;
+                  margin-bottom:8px; }
+  .proposal-type { font-size:9px; font-weight:700; text-transform:uppercase;
+                   letter-spacing:0.06em; color:var(--muted); }
+  .proposal-status { font-size:10px; font-weight:700; }
+  .proposal-title { font-size:13px; font-weight:600; margin-bottom:6px; }
+  .proposal-meta  { font-size:11px; color:var(--muted); line-height:1.5; }
+  .proposal-actions { display:flex; gap:8px; margin-top:10px; }
+  .btn { padding:6px 14px; border-radius:6px; font-size:11px; font-weight:700;
+         cursor:pointer; font-family:var(--font); transition:all .15s; border:none; }
+  .btn-primary { background:var(--orange); color:#fff; }
+  .btn-primary:hover { background:#a33f00; }
+  .btn-ghost   { background:transparent; color:var(--muted);
+                 border:1px solid var(--border); }
+  .btn-ghost:hover { border-color:var(--red); color:var(--red); }
+  .btn-outline { background:transparent; color:var(--blue);
+                 border:1px solid var(--blue); }
+  .btn-outline:hover { background:rgba(59,130,246,0.1); }
+  .btn-sm { padding:4px 10px; font-size:10px; }
+
+  /* ── Config deploy block ── */
+  .deploy-block { background:#0a1a0a; border:1px solid var(--green); border-radius:8px;
+                  padding:14px 16px; margin-top:12px; }
+  .deploy-block-title { font-size:11px; font-weight:700; color:var(--green);
+                        margin-bottom:8px; }
+  .config-val { font-family:'Courier New',monospace; font-size:11px; color:#86efac;
+                word-break:break-all; line-height:1.6; }
+  .copy-btn { margin-top:8px; }
+
+  /* ── Log table ── */
+  .log-table { width:100%; border-collapse:collapse; font-size:11px; }
+  .log-table th { text-align:left; padding:8px 10px; border-bottom:1px solid var(--border);
+                  color:var(--muted); font-weight:600; font-size:10px;
+                  text-transform:uppercase; letter-spacing:0.05em; }
+  .log-table td { padding:8px 10px; border-bottom:1px solid var(--border);
+                  color:var(--text); vertical-align:top; }
+  .log-table tr:last-child td { border-bottom:none; }
+
+  /* ── Observation stats ── */
+  .stat-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+  .stat-pill { background:var(--bg2); border:1px solid var(--border); border-radius:6px;
+               padding:6px 12px; font-size:11px; }
+  .stat-pill b { color:var(--orange); }
+
+  /* ── Toasts ── */
+  #toast { position:fixed; bottom:20px; right:20px; background:var(--card);
+           border:1px solid var(--border); color:var(--text); padding:10px 16px;
+           border-radius:8px; font-size:12px; opacity:0; transition:opacity .3s;
+           pointer-events:none; z-index:999; }
+  #toast.show { opacity:1; }
+
+  /* ── Empty state ── */
+  .empty { color:var(--muted); font-size:12px; padding:24px 0; text-align:center; }
+</style>
+</head>
+<body>
+
+<!-- ── AUTH GATE ── -->
+<div id="auth-gate">
+  <div style="text-align:center">
+    <div style="font-size:28px;margin-bottom:4px">⚡</div>
+    <h1>Billi Operator Console</h1>
+    <p style="margin-bottom:20px">PLM governance · Engine intelligence · Tempered Convergence</p>
+    <!-- Step 1: Google identity (shown if not yet signed in to Google) -->
+    <div id="step-google" style="display:none">
+      <p style="margin-bottom:16px;color:var(--muted)">Sign in with your operator Google account to continue.</p>
+      <a href="/auth/google" style="display:inline-flex;align-items:center;gap:10px;background:#fff;
+         color:#3c4043;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13px;
+         font-weight:600;font-family:var(--font)">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Sign in with Google
+      </a>
+    </div>
+    <!-- Step 2: Token confirmation (shown after Google identity confirmed) -->
+    <div id="step-token" style="display:none">
+      <div id="operator-identity" style="display:flex;align-items:center;gap:10px;
+           justify-content:center;margin-bottom:20px">
+        <img id="op-avatar" src="" width="32" height="32" style="border-radius:50%;display:none">
+        <div>
+          <div id="op-name" style="font-weight:700;font-size:13px"></div>
+          <div id="op-email" style="font-size:11px;color:var(--muted)"></div>
+        </div>
+        <span style="font-size:10px;background:rgba(22,163,74,0.15);color:#16a34a;
+              padding:2px 8px;border-radius:6px;font-weight:700">✓ Verified</span>
+      </div>
+      <p style="margin-bottom:12px;color:var(--muted);font-size:12px">Enter operator token to proceed.</p>
+      <input id="token-input" type="password" placeholder="Operator token (ADMIN_TOKEN)" autocomplete="off">
+      <br><br>
+      <button id="auth-btn" onclick="authenticate()">Unlock console</button>
+      <p id="auth-err">Incorrect token — check ADMIN_TOKEN in Railway Variables</p>
+    </div>
+    <!-- Loading -->
+    <div id="step-loading" style="color:var(--muted);font-size:12px">Checking identity…</div>
+  </div>
+</div>
+
+<!-- ── MAIN SHELL ── -->
+<div id="shell">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      ⚡ Billi
+      <span class="topbar-badge">Operator Console</span>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-env" id="topbar-operator" style="color:var(--green)"></span>
+      <span class="topbar-env" id="env-label" style="margin-left:8px">billsource.ai</span>
+      <button id="refresh-btn" onclick="loadAll()">↻ Refresh</button>
+      <a href="/auth/logout" style="font-size:11px;color:var(--muted);text-decoration:none;
+         padding:5px 10px;border:1px solid var(--border);border-radius:6px;">Sign out</a>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <!-- Nav -->
+    <nav class="nav">
+      <div class="nav-item active" onclick="showSection('dashboard')">Dashboard</div>
+      <div class="nav-item" onclick="showSection('proposals')">Proposals</div>
+      <div class="nav-item" onclick="showSection('diagnostics')">Diagnostics</div>
+      <div class="nav-item" onclick="showSection('log')">Governance log</div>
+      <div class="nav-item" onclick="showSection('observations')">Observations</div>
+    </nav>
+
+    <!-- Content -->
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div id="section-dashboard" class="section active">
+        <div class="metric-grid" id="metric-grid">
+          <div class="card"><div class="card-title">REAI Score</div>
+            <div class="card-value" id="m-reai">—</div>
+            <div class="card-sub">Rating Engine Accuracy Index</div></div>
+          <div class="card"><div class="card-title">Observations</div>
+            <div class="card-value" id="m-obs">—</div>
+            <div class="card-sub">Total recorded</div></div>
+          <div class="card"><div class="card-title">With outcomes</div>
+            <div class="card-value" id="m-outcomes">—</div>
+            <div class="card-sub">T+30/90/180 recorded</div></div>
+          <div class="card"><div class="card-title">Open proposals</div>
+            <div class="card-value" id="m-open">—</div>
+            <div class="card-sub">Awaiting review</div></div>
+        </div>
+
+        <div class="reai-wrap">
+          <div class="reai-top">
+            <div>
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px">Rating Engine Accuracy Index</div>
+              <div style="display:flex;align-items:baseline;gap:8px">
+                <span class="reai-score-big" id="reai-big">—</span>
+                <span style="font-size:16px;color:var(--muted)">/100</span>
+              </div>
+            </div>
+            <span class="reai-badge" id="reai-badge">Loading…</span>
+          </div>
+          <div class="reai-bar-wrap">
+            <div class="reai-bar" id="reai-bar" style="width:0%;background:var(--muted)"></div>
+          </div>
+          <div class="reai-thresholds">
+            <span>0 — Lockdown</span><span>60 — Review</span>
+            <span>70 — Watch</span><span>80 — Monitor</span><span>90 — Good ✓</span>
+          </div>
+          <div style="margin-top:10px;font-size:11px;color:var(--muted)">
+            Last diagnostic: <span id="last-diag">—</span> ·
+            Config hash: <span id="cfg-hash" style="font-family:monospace">—</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Governance gate status</div>
+          <div style="font-size:12px;line-height:1.8;color:var(--text)">
+            <span style="color:var(--green)">✅</span> PLM never writes to Railway env var autonomously<br>
+            <span style="color:var(--green)">✅</span> All config changes require operator authorisation<br>
+            <span style="color:var(--green)">✅</span> Sandbox test must pass before authorise is enabled<br>
+            <span style="color:var(--green)">✅</span> Every authorisation recorded in immutable governance log<br>
+            <span id="zdr-status" style="color:var(--amber)">⚠</span>
+            Anthropic ZDR: <span id="zdr-label" style="color:var(--amber)">confirm WS-11.9</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROPOSALS -->
+      <div id="section-proposals" class="section">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div style="font-size:15px;font-weight:700">Pending proposals</div>
+          <button class="btn btn-outline btn-sm" onclick="runDiagnosticsNow()">▷ Run diagnostics now</button>
+        </div>
+        <div id="proposals-list"><div class="empty">Loading…</div></div>
+
+        <!-- Deploy instruction (shown after authorise) -->
+        <div id="deploy-block" class="deploy-block" style="display:none">
+          <div class="deploy-block-title">⚡ NEXT STEP — Deploy new engine config to Railway</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:8px">
+            1. Copy the value below<br>
+            2. Go to Railway → billi-engine service (or billi-gateway) → Variables<br>
+            3. Update RATING_ENGINE_CONFIG with this value<br>
+            4. Railway will auto-restart the service
+          </div>
+          <div class="config-val" id="config-val">—</div>
+          <button class="btn btn-primary btn-sm copy-btn" onclick="copyConfig()">📋 Copy config value</button>
+        </div>
+      </div>
+
+      <!-- DIAGNOSTICS -->
+      <div id="section-diagnostics" class="section">
+        <div style="font-size:15px;font-weight:700;margin-bottom:16px">Diagnostics</div>
+        <div style="margin-bottom:12px">
+          <button class="btn btn-primary" onclick="runDiagnosticsNow()">▷ Run diagnostic battery now</button>
+          <span style="font-size:11px;color:var(--muted);margin-left:10px">Nightly auto-run at 02:00 SA time</span>
+        </div>
+        <div id="diag-result"><div class="empty">Run a diagnostic cycle to see results here.</div></div>
+      </div>
+
+      <!-- GOVERNANCE LOG -->
+      <div id="section-log" class="section">
+        <div style="font-size:15px;font-weight:700;margin-bottom:16px">Governance log</div>
+        <div id="log-content"><div class="empty">Loading…</div></div>
+      </div>
+
+      <!-- OBSERVATIONS -->
+      <div id="section-observations" class="section">
+        <div style="font-size:15px;font-weight:700;margin-bottom:14px">PLM Observations</div>
+        <div id="obs-stats" class="stat-row"></div>
+        <div class="card">
+          <div class="card-title">Outcome recording</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">
+            T+30, T+90, and T+180 outcomes are recorded by users from their own My Reports view.<br>
+            The observation table below shows the most recent engine assessments and their outcome status.<br>
+            REAI requires n ≥ 10 T+90 outcomes before the first diagnostic cycle is statistically meaningful.
+          </div>
+        </div>
+        <div id="obs-content"><div class="empty">Loading…</div></div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /body -->
+</div><!-- /shell -->
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+let ADMIN_TOKEN = '';
+let operatorEmail = '';
+
+// ── Auth — two layers ─────────────────────────────────────────────
+// Layer 1: Google session verified server-side before admin.html is served.
+//          We fetch /api/admin/me to confirm identity and get name/avatar.
+// Layer 2: ADMIN_TOKEN entered by operator in the token input.
+
+async function initAuth() {
+  // Page has already passed the server-side Google check.
+  // Fetch operator identity to display and confirm.
+  try {
+    const res  = await fetch('/api/admin/me');
+    if (!res.ok) {
+      // Session expired or wrong account — redirect to Google sign-in
+      window.location.href = '/auth/google';
+      return;
+    }
+    const me = await res.json();
+    operatorEmail = me.email;
+    document.getElementById('step-loading').style.display = 'none';
+    document.getElementById('step-token').style.display = '';
+    document.getElementById('op-name').textContent  = me.name  || me.email;
+    document.getElementById('op-email').textContent = me.email;
+    if (me.avatar) {
+      const av = document.getElementById('op-avatar');
+      av.src = me.avatar; av.style.display = '';
+    }
+  } catch(e) {
+    document.getElementById('step-loading').textContent = 'Could not verify identity. Reload to retry.';
+  }
+}
+
+async function authenticate() {
+  const t = document.getElementById('token-input').value.trim();
+  if (!t) return;
+  try {
+    const res = await plmFetch('GET', '/api/plm/status', null, t);
+    if (res.ok) {
+      ADMIN_TOKEN = t;
+      document.getElementById('auth-gate').style.display = 'none';
+      document.getElementById('shell').style.display    = 'flex';
+      document.getElementById('env-label').textContent  = window.location.hostname;
+      // Show operator identity in topbar
+      document.getElementById('topbar-operator').textContent = operatorEmail;
+      loadAll();
+    } else {
+      document.getElementById('auth-err').style.display = '';
+    }
+  } catch(e) {
+    document.getElementById('auth-err').style.display = '';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initAuth();
+  const inp = document.getElementById('token-input');
+  if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') authenticate(); });
+});
+
+// ── API helpers ───────────────────────────────────────────────────
+async function plmFetch(method, path, body, token) {
+  return fetch(path, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      'x-admin-token': token || ADMIN_TOKEN,
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+}
+
+async function apiFetch(method, path, body) {
+  const res  = await plmFetch(method, path, body);
+  if (res.status === 403) { toast('Session expired — refresh page'); return null; }
+  return res.json();
+}
+
+// ── Navigation ────────────────────────────────────────────────────
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('section-' + name).classList.add('active');
+  // Set nav active
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.textContent.trim().toLowerCase().startsWith(name.toLowerCase().split('-')[0])) {
+      n.classList.add('active');
+    }
+  });
+  // Lazy-load
+  if (name === 'proposals')    loadProposals();
+  if (name === 'log')          loadLog();
+  if (name === 'observations') loadObservations();
+}
+
+// ── Load all ─────────────────────────────────────────────────────
+async function loadAll() {
+  await loadStatus();
+  if (document.getElementById('section-proposals').classList.contains('active')) loadProposals();
+  if (document.getElementById('section-log').classList.contains('active')) loadLog();
+}
+
+// ── PLM Status ────────────────────────────────────────────────────
+async function loadStatus() {
+  const data = await apiFetch('GET', '/api/plm/status');
+  if (!data) return;
+
+  const reai = data.reai_score ?? 100;
+  document.getElementById('m-reai').textContent     = reai;
+  document.getElementById('m-obs').textContent      = (data.observations_total || 0).toLocaleString();
+  document.getElementById('m-outcomes').textContent = (data.observations_with_outcomes || 0).toLocaleString();
+  document.getElementById('m-open').textContent     = data.open_proposals || 0;
+  document.getElementById('reai-big').textContent   = reai;
+  document.getElementById('last-diag').textContent  = data.last_diagnostic || 'pending first cycle';
+  document.getElementById('cfg-hash').textContent   = data.config_hash ? data.config_hash.slice(0,12)+'…' : 'unverified';
+
+  // REAI bar + badge
+  const bar = document.getElementById('reai-bar');
+  bar.style.width = reai + '%';
+  const badgeEl = document.getElementById('reai-badge');
+  const bigEl   = document.getElementById('reai-big');
+  if (reai >= 90) {
+    bar.style.background = 'var(--green)';
+    bigEl.style.color    = 'var(--green)';
+    badgeEl.className    = 'reai-badge badge-green';
+    badgeEl.textContent  = '✓ Engine performing well';
+  } else if (reai >= 80) {
+    bar.style.background = '#22c55e';
+    bigEl.style.color    = '#22c55e';
+    badgeEl.className    = 'reai-badge badge-amber';
+    badgeEl.textContent  = 'Watch — heightened scanning';
+  } else if (reai >= 70) {
+    bar.style.background = 'var(--amber)';
+    bigEl.style.color    = 'var(--amber)';
+    badgeEl.className    = 'reai-badge badge-amber';
+    badgeEl.textContent  = 'Moderate drift detected';
+  } else if (reai >= 60) {
+    bar.style.background = '#ea580c';
+    bigEl.style.color    = '#ea580c';
+    badgeEl.className    = 'reai-badge badge-orange';
+    badgeEl.textContent  = '⚠ Review required';
+  } else {
+    bar.style.background = 'var(--red)';
+    bigEl.style.color    = 'var(--red)';
+    badgeEl.className    = 'reai-badge badge-red';
+    badgeEl.textContent  = '🔴 Governance lockdown';
+  }
+}
+
+// ── Proposals ────────────────────────────────────────────────────
+const typeLabels = {
+  parameter_adjustment:    'Parameter recalibration',
+  novel_component:         'New Formula Unit',
+  benchmark_update:        'Benchmark update',
+  threshold_recalibration: 'Threshold change',
+};
+const statusColours = {
+  proposed:              'var(--muted)',
+  sandbox_testing:       'var(--amber)',
+  pending_authorisation: 'var(--green)',
+  authorised:            'var(--green)',
+  rejected:              'var(--red)',
+};
+
+async function loadProposals() {
+  const data = await apiFetch('GET', '/api/plm/proposals');
+  const el   = document.getElementById('proposals-list');
+  if (!data || !data.proposals?.length) {
+    el.innerHTML = '<div class="empty">No pending proposals — engine is current.</div>';
+    return;
+  }
+  el.innerHTML = data.proposals.map(p => {
+    const tLabel = typeLabels[p.proposal_type] || p.proposal_type;
+    const sCol   = statusColours[p.status] || 'var(--muted)';
+    const sandOk = p.sandbox_passed === true;
+    const actions = sandOk
+      ? `<button class="btn btn-primary btn-sm" onclick="authorise('${p.proposal_id}',true)">✓ Authorise & generate config</button>
+         <button class="btn btn-ghost btn-sm" onclick="authorise('${p.proposal_id}',false)">✕ Reject</button>`
+      : `<button class="btn btn-outline btn-sm" onclick="sandbox('${p.proposal_id}')">▷ Run sandbox test first</button>`;
+    return `<div class="proposal">
+      <div class="proposal-hdr">
+        <span class="proposal-type">${tLabel}</span>
+        <span class="proposal-status" style="color:${sCol}">${p.status?.replace(/_/g,' ') || 'proposed'}</span>
+      </div>
+      <div class="proposal-title">${p.title || p.proposal_id}</div>
+      <div class="proposal-meta">
+        ${p.description ? p.description + '<br>' : ''}
+        Proposed: ${p.created_at ? new Date(p.created_at).toLocaleDateString('en-ZA') : '—'}
+        ${p.expected_reai_improvement ? ' · Expected REAI +' + p.expected_reai_improvement : ''}
+      </div>
+      <div class="proposal-actions">${actions}</div>
+    </div>`;
+  }).join('');
+}
+
+async function sandbox(proposalId) {
+  toast('Running sandbox test — 7-archetype battery…');
+  const data = await apiFetch('POST', '/api/plm/sandbox', { proposalId });
+  if (!data) return;
+  const passed = data.acceptance_criteria_met;
+  toast(passed ? '✅ Sandbox passed — ready to authorise' : `⚠ Sandbox: ${data.tests_failed} test(s) failed`);
+  loadProposals();
+}
+
+async function authorise(proposalId, approved) {
+  const note = prompt(approved ? 'Authorisation note (optional):' : 'Rejection reason:', '');
+  if (note === null) return;  // cancelled
+  const operatorId = operatorEmail || 'operator@' + window.location.hostname;
+  toast(approved ? 'Authorising…' : 'Rejecting…');
+  const data = await apiFetch('POST', '/api/plm/authorise', { proposalId, approved, note, operatorId });
+  if (!data) return;
+  if (approved && data.new_config_b64) {
+    // Show deploy block
+    const db = document.getElementById('deploy-block');
+    document.getElementById('config-val').textContent = data.new_config_b64;
+    db.style.display = '';
+    db.scrollIntoView({ behavior: 'smooth' });
+    toast('✅ Authorised — copy config and set in Railway Variables');
+  } else {
+    toast(approved ? '✅ Authorised' : '✕ Rejected');
+  }
+  loadProposals();
+  loadStatus();
+}
+
+function copyConfig() {
+  const val = document.getElementById('config-val').textContent;
+  navigator.clipboard.writeText(val).then(() => toast('Copied to clipboard'));
+}
+
+// ── Diagnostics ───────────────────────────────────────────────────
+async function runDiagnosticsNow() {
+  toast('Running diagnostics…');
+  const data = await apiFetch('POST', '/api/plm/diagnostics');
+  const el   = document.getElementById('diag-result');
+  if (!data) { el.innerHTML = '<div class="empty">Diagnostics failed — check server logs.</div>'; return; }
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-title">Diagnostic result — ${new Date().toLocaleString('en-ZA')}</div>
+      <div style="font-size:12px;line-height:1.8">
+        ${data.signals_detected ? `<b style="color:var(--orange)">${data.signals_detected}</b> signal(s) detected<br>` : 'No signals detected — engine within normal parameters<br>'}
+        ${data.proposals_created ? `<b style="color:var(--green)">${data.proposals_created}</b> new proposal(s) generated<br>` : ''}
+        ${data.observations_analysed ? `Observations analysed: <b>${data.observations_analysed}</b><br>` : ''}
+        ${data.next_cycle ? `Next scheduled cycle: <b>${data.next_cycle}</b><br>` : ''}
+      </div>
+      ${data.details ? `<pre style="font-size:10px;color:var(--muted);margin-top:8px;white-space:pre-wrap">${JSON.stringify(data.details, null, 2)}</pre>` : ''}
+    </div>`;
+  toast('Diagnostics complete');
+  loadStatus();
+  loadProposals();
+}
+
+// ── Governance log ────────────────────────────────────────────────
+async function loadLog() {
+  const data = await apiFetch('GET', '/api/plm/log');
+  const el   = document.getElementById('log-content');
+  if (!data || !data.log?.length) {
+    el.innerHTML = '<div class="empty">No governance events recorded yet.</div>';
+    return;
+  }
+  el.innerHTML = `
+    <table class="log-table">
+      <thead><tr>
+        <th>Date/time</th><th>Event</th><th>Proposal</th>
+        <th>Operator</th><th>Outcome</th>
+      </tr></thead>
+      <tbody>
+        ${data.log.map(e => `<tr>
+          <td style="white-space:nowrap">${new Date(e.created_at||e.ts).toLocaleString('en-ZA')}</td>
+          <td><span style="color:var(--orange);font-weight:600">${e.event_type||e.action||'—'}</span></td>
+          <td style="font-family:monospace;font-size:10px">${(e.proposal_id||'—').slice(0,12)}</td>
+          <td>${e.operator_id||e.user||'—'}</td>
+          <td style="color:${e.outcome==='authorised'?'var(--green)':e.outcome==='rejected'?'var(--red)':'var(--muted)'}">
+            ${e.outcome||e.result||'—'}
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+// ── Observations ──────────────────────────────────────────────────
+async function loadObservations() {
+  const status = await apiFetch('GET', '/api/plm/status');
+  if (!status) return;
+  const el = document.getElementById('obs-stats');
+  el.innerHTML = `
+    <div class="stat-pill">Total: <b>${(status.observations_total||0).toLocaleString()}</b></div>
+    <div class="stat-pill">With T+30/90/180: <b>${(status.observations_with_outcomes||0).toLocaleString()}</b></div>
+    <div class="stat-pill">Needed for first REAI cycle: <b>${status.observations_with_outcomes >= 10 ? '✅ met' : `${status.observations_with_outcomes||0}/10`}</b></div>
+    <div class="stat-pill">Config hash: <b style="font-family:monospace">${(status.config_hash||'—').slice(0,8)}</b></div>
+  `;
+  document.getElementById('obs-content').innerHTML = `
+    <div class="card">
+      <div class="card-title">Status</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.8">
+        PLM is live and recording an observation on every /api/engine/rate call.<br>
+        The observation record includes: userId (hashed), sector, DI score, risk level, collision risk, Adizes stage, timestamp.<br>
+        Users record T+90 outcomes from their My Reports view when the outcome prompt appears.<br><br>
+        REAI calculation starts when n ≥ 10 T+90 outcomes exist. Current: <b style="color:var(--orange)">${status.observations_with_outcomes||0}</b>.
+      </div>
+    </div>`;
+}
+
+// ── Toast ─────────────────────────────────────────────────────────
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
