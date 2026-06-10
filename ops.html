@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Billi — Operational Dashboard</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23C45200'/><text x='16' y='22' text-anchor='middle' fill='white' font-size='18' font-family='Arial'>⚡</text></svg>">
+<style>
+:root{--font:'Inter','Segoe UI',Arial,sans-serif;--orange:#C45200;--green:#16A34A;--amber:#D97706;--red:#DC2626;--blue:#3B82F6;--purple:#7C3AED}
+body.dark{--bg:#0F0D0B;--bg2:#1A1614;--card:#211E1B;--border:#2D2A27;--text:#E8E4E0;--muted:#6B6460;--shadow:rgba(0,0,0,.4)}
+body.light{--bg:#F5F0EB;--bg2:#FFF;--card:#FFF;--border:#DDD8D0;--text:#1C1C1E;--muted:#6C6C70;--shadow:rgba(0,0,0,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:13px;min-height:100vh;transition:background .3s,color .3s}
+/* Auth */
+#auth-gate{display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:14px;padding:20px}
+#auth-gate h1{font-size:22px;font-weight:800;color:var(--orange)}
+#token-input{background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:8px;font-size:13px;font-family:var(--font);width:340px;outline:none}
+#token-input:focus{border-color:var(--orange)}
+#auth-btn{background:var(--orange);color:#fff;border:none;padding:10px 28px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)}
+/* Shell */
+#shell{display:none;flex-direction:column;min-height:100vh}
+/* Topbar */
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.brand{font-size:14px;font-weight:800;color:var(--orange);display:flex;align-items:center;gap:8px}
+.brand-sub{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.tb-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:5px 11px;border-radius:6px;font-size:11px;cursor:pointer;font-family:var(--font);transition:all .15s;text-decoration:none}
+.tb-btn:hover{border-color:var(--orange);color:var(--orange)}
+/* Layout */
+.body{display:flex;flex:1;overflow:hidden}
+/* Sidebar nav */
+.nav{width:180px;background:var(--bg2);border-right:1px solid var(--border);padding:12px 0;flex-shrink:0}
+.nav-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:12px 16px 3px}
+.nav-item{display:block;padding:8px 16px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;border-left:3px solid transparent;transition:all .12s}
+.nav-item:hover{color:var(--text);background:rgba(196,82,0,.05)}
+.nav-item.active{color:var(--orange);border-left-color:var(--orange);background:rgba(196,82,0,.07);font-weight:700}
+/* Content */
+.content{flex:1;overflow-y:auto;padding:18px 22px}
+.section{display:none}.section.active{display:block}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-title{font-size:16px;font-weight:800}
+/* Stat pills */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:13px 15px}
+.kpi-val{font-size:26px;font-weight:900;line-height:1}
+.kpi-lbl{font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+/* Table */
+.tbl-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--bg2);padding:8px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(196,82,0,.03)}
+.plan-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:.05em}
+.plan-free{background:rgba(108,108,112,.1);color:var(--muted)}
+.plan-student{background:rgba(59,130,246,.12);color:var(--blue)}
+.plan-professional{background:rgba(124,58,237,.12);color:var(--purple)}
+.plan-business{background:rgba(217,119,6,.12);color:var(--amber)}
+.plan-enterprise{background:rgba(196,82,0,.12);color:var(--orange)}
+.status-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:4px}
+.dot-active{background:var(--green)}.dot-disabled{background:var(--red)}
+/* Detail panel */
+#detail-panel{position:fixed;top:0;right:-520px;width:500px;height:100vh;background:var(--bg2);border-left:1px solid var(--border);overflow-y:auto;transition:right .25s ease;z-index:100;box-shadow:-4px 0 24px var(--shadow)}
+#detail-panel.open{right:0}
+.dp-head{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--bg2);z-index:10}
+.dp-close{background:transparent;border:1px solid var(--border);color:var(--muted);width:28px;height:28px;border-radius:5px;cursor:pointer;font-size:14px;font-family:var(--font)}
+.dp-section{padding:14px 18px;border-bottom:1px solid var(--border)}
+.dp-section-title{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
+.dp-row{display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px}
+.dp-key{color:var(--muted)}.dp-val{font-weight:600;text-align:right}
+.mini-tbl{width:100%;border-collapse:collapse;font-size:11px}
+.mini-tbl th{color:var(--muted);font-size:9px;font-weight:700;text-transform:uppercase;padding:4px 6px;border-bottom:1px solid var(--border)}
+.mini-tbl td{padding:6px;border-bottom:1px solid var(--border)}
+.mini-tbl tr:last-child td{border-bottom:none}
+/* Buttons */
+.btn{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .15s;border:none}
+.btn-primary{background:var(--orange);color:#fff}.btn-primary:hover{background:#a33f00}
+.btn-danger{background:rgba(220,38,38,.1);color:var(--red);border:1px solid var(--red)}.btn-danger:hover{background:var(--red);color:#fff}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}.btn-ghost:hover{border-color:var(--orange);color:var(--orange)}
+.btn-sm{padding:3px 8px;font-size:10px}
+/* Prompt status badges */
+.ps-active{color:var(--green)}.ps-review{color:var(--amber)}.ps-sunset{color:var(--red)}
+/* Search */
+.search-bar{background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:7px 12px;border-radius:7px;font-size:12px;font-family:var(--font);width:240px;outline:none}
+.search-bar:focus{border-color:var(--orange)}
+/* Bars */
+.usage-bar{height:5px;border-radius:3px;background:var(--border);overflow:hidden;width:80px;display:inline-block;vertical-align:middle;margin-left:6px}
+.usage-fill{height:100%;border-radius:3px;transition:width .3s}
+/* Toast */
+#toast{position:fixed;bottom:20px;right:20px;background:var(--card);border:1px solid var(--border);color:var(--text);padding:9px 14px;border-radius:8px;font-size:12px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
+#toast.show{opacity:1}
+.empty{color:var(--muted);font-size:12px;padding:20px;text-align:center}
+</style>
+</head>
+<body class="dark">
+
+<div id="auth-gate">
+  <div style="text-align:center;max-width:360px">
+    <div style="font-size:32px;margin-bottom:8px">⚡</div>
+    <h1>Operational Dashboard</h1>
+    <p style="color:var(--muted);font-size:12px;margin-bottom:20px">Billsource / Billi — AnyABEX (Pty) Ltd · Operator access only</p>
+    <div id="step-loading" style="color:var(--muted);font-size:12px">Checking identity…</div>
+    <div id="step-token" style="display:none">
+      <div id="op-id" style="font-size:12px;color:var(--green);margin-bottom:12px"></div>
+      <input id="token-input" type="password" placeholder="Operator token (ADMIN_TOKEN)" autocomplete="off"><br><br>
+      <button id="auth-btn" onclick="authenticate()">Enter Dashboard</button>
+      <div id="auth-err" style="color:var(--red);font-size:11px;margin-top:8px;display:none">Incorrect token</div>
+    </div>
+  </div>
+</div>
+
+<div id="shell">
+  <div class="topbar">
+    <div class="brand">
+      ⚡ <div><div>Billi Ops</div><div class="brand-sub">Operational Dashboard</div></div>
+    </div>
+    <div class="topbar-right">
+      <span style="font-size:11px;color:var(--green)" id="op-topbar"></span>
+      <button class="tb-btn" onclick="toggleTheme()">☀</button>
+      <button class="tb-btn" onclick="loadAll()">↻ Refresh</button>
+      <a href="/admin" class="tb-btn">Talos Expert →</a>
+      <a href="/auth/logout" class="tb-btn">Sign out</a>
+    </div>
+  </div>
+
+  <div class="body">
+    <nav class="nav">
+      <div class="nav-lbl">Overview</div>
+      <div class="nav-item active" onclick="showSection('users')">👥 Users</div>
+      <div class="nav-lbl">Usage</div>
+      <div class="nav-item" onclick="showSection('features')">🔧 Feature usage</div>
+      <div class="nav-item" onclick="showSection('prompts')">📝 Prompt monitor</div>
+      <div class="nav-lbl">Finance</div>
+      <div class="nav-item" onclick="showSection('billing')">💳 Billing events</div>
+    </nav>
+
+    <div class="content">
+
+      <!-- USERS -->
+      <div id="section-users" class="section active">
+        <div class="section-hdr">
+          <div class="section-title">Users</div>
+          <input class="search-bar" id="user-search" placeholder="Search email or name…" oninput="filterUsers()">
+        </div>
+        <div class="kpi-row" id="user-kpis"></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th>User</th><th>Plan</th><th>Status</th><th>Messages</th>
+              <th>Chats</th><th>Reports</th><th>Files</th>
+              <th>Last login</th><th>Joined</th><th></th>
+            </tr></thead>
+            <tbody id="user-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- FEATURE USAGE -->
+      <div id="section-features" class="section">
+        <div class="section-hdr"><div class="section-title">Feature usage (all time)</div></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Feature</th><th>Total uses</th><th>Unique users</th><th>Last used</th></tr></thead>
+            <tbody id="feature-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PROMPT MONITOR -->
+      <div id="section-prompts" class="section">
+        <div class="section-hdr">
+          <div class="section-title">Prompt monitor</div>
+          <div style="font-size:11px;color:var(--muted)">Review usage · flag for sunset · retire outdated prompts</div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Prompt key</th><th>Uses</th><th>Unique users</th><th>Last used</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody id="prompt-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- BILLING -->
+      <div id="section-billing" class="section">
+        <div class="section-hdr"><div class="section-title">Billing events</div></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>User</th><th>Event</th><th>From</th><th>To</th><th>Amount</th><th>Reference</th><th>Notes</th></tr></thead>
+            <tbody id="billing-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- User detail panel -->
+<div id="detail-panel">
+  <div class="dp-head">
+    <div style="font-size:13px;font-weight:700" id="dp-title">User detail</div>
+    <button class="dp-close" onclick="closeDetail()">✕</button>
+  </div>
+  <div id="dp-body"></div>
+</div>
+<div id="overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:99" onclick="closeDetail()"></div>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+let ADMIN_TOKEN = '';
+
+// ── Theme ────────────────────────────────────────────────────────
+function toggleTheme(){
+  const b=document.body;
+  b.classList.toggle('dark');b.classList.toggle('light');
+  const t=b.classList.contains('light');
+  localStorage.setItem('ops-theme',t?'light':'dark');
+}
+(()=>{if(localStorage.getItem('ops-theme')==='light'){document.body.classList.replace('dark','light');}})();
+
+// ── Auth ─────────────────────────────────────────────────────────
+async function initAuth(){
+  try{
+    const res=await fetch('/api/admin/me');
+    if(!res.ok){window.location.href='/auth/google';return;}
+    const me=await res.json();
+    document.getElementById('step-loading').style.display='none';
+    document.getElementById('step-token').style.display='';
+    document.getElementById('op-id').textContent='✓ Signed in as '+me.email;
+  }catch(e){document.getElementById('step-loading').textContent='Could not verify identity — reload to retry.';}
+}
+async function authenticate(){
+  const t=document.getElementById('token-input').value.trim();
+  if(!t)return;
+  const res=await opsGet('/api/ops/users',t);
+  if(res!==null){
+    ADMIN_TOKEN=t;
+    document.getElementById('auth-gate').style.display='none';
+    document.getElementById('shell').style.display='flex';
+    document.getElementById('op-topbar').textContent=document.getElementById('op-id').textContent.replace('✓ Signed in as ','');
+    loadAll();
+  }else{document.getElementById('auth-err').style.display='';}
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  initAuth();
+  const inp=document.getElementById('token-input');
+  if(inp)inp.addEventListener('keydown',e=>{if(e.key==='Enter')authenticate();});
+});
+
+// ── API ──────────────────────────────────────────────────────────
+async function opsGet(path,tok){
+  try{
+    const res=await fetch(path,{headers:{'x-admin-token':tok||ADMIN_TOKEN}});
+    if(!res.ok)return null;
+    return res.json();
+  }catch(e){return null;}
+}
+async function opsPost(path,body){
+  try{
+    const res=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','x-admin-token':ADMIN_TOKEN},body:JSON.stringify(body)});
+    return res.json();
+  }catch(e){return null;}
+}
+
+// ── Nav ───────────────────────────────────────────────────────────
+function showSection(name){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('section-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    if(n.getAttribute('onclick')===`showSection('${name}')`){n.classList.add('active');}
+  });
+  if(name==='features')loadFeatures();
+  if(name==='prompts') loadPrompts();
+  if(name==='billing') loadBilling();
+}
+
+// ── Load all ─────────────────────────────────────────────────────
+let allUsers=[];
+async function loadAll(){await loadUsers();}
+
+// ── USERS ─────────────────────────────────────────────────────────
+const planCls={free:'plan-free',student:'plan-student',professional:'plan-professional',business:'plan-business',enterprise:'plan-enterprise'};
+
+async function loadUsers(){
+  const data=await opsGet('/api/ops/users');
+  if(!data){toast('Could not load users');return;}
+  allUsers=data.users||[];
+  renderKPIs(allUsers);
+  renderUsers(allUsers);
+}
+
+function renderKPIs(users){
+  const total=users.length;
+  const active=users.filter(u=>!u.disabled).length;
+  const paid=users.filter(u=>u.plan!=='free').length;
+  const msgs=users.reduce((a,u)=>a+(u.messages_used||0),0);
+  const reports=users.reduce((a,u)=>a+(u.report_count||0),0);
+  document.getElementById('user-kpis').innerHTML=[
+    ['Total users',total,'var(--text)'],
+    ['Active',active,'var(--green)'],
+    ['Paying',paid,'var(--orange)'],
+    ['Messages used',msgs.toLocaleString(),'var(--blue)'],
+    ['Reports generated',reports.toLocaleString(),'var(--purple)'],
+  ].map(([l,v,c])=>`<div class="kpi"><div class="kpi-val" style="color:${c}">${v}</div><div class="kpi-lbl">${l}</div></div>`).join('');
+}
+
+function filterUsers(){
+  const q=document.getElementById('user-search').value.toLowerCase();
+  renderUsers(allUsers.filter(u=>(u.email||'').includes(q)||(u.name||'').toLowerCase().includes(q)));
+}
+
+function renderUsers(users){
+  const tbody=document.getElementById('user-tbody');
+  if(!users.length){tbody.innerHTML='<tr><td colspan="10" class="empty">No users found</td></tr>';return;}
+  tbody.innerHTML=users.map(u=>{
+    const pct=u.messages_limit>0?Math.round((u.messages_used||0)/u.messages_limit*100):0;
+    const barCol=pct>90?'var(--red)':pct>70?'var(--amber)':'var(--green)';
+    const lastLogin=u.last_login?new Date(u.last_login).toLocaleDateString('en-ZA'):'Never';
+    const joined=new Date(u.created_at).toLocaleDateString('en-ZA');
+    return `<tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          ${u.avatar?`<img src="${u.avatar}" width="24" height="24" style="border-radius:50%;flex-shrink:0" onerror="this.style.display='none'">`:'<div style="width:24px;height:24px;border-radius:50%;background:var(--border);flex-shrink:0"></div>'}
+          <div>
+            <div style="font-weight:600;font-size:12px">${u.name||'—'}</div>
+            <div style="font-size:10px;color:var(--muted)">${u.email}</div>
+          </div>
+        </div>
+      </td>
+      <td><span class="plan-badge ${planCls[u.plan]||'plan-free'}">${u.plan}</span></td>
+      <td><span class="status-dot ${u.disabled?'dot-disabled':'dot-active'}"></span>${u.disabled?'<span style="color:var(--red)">Suspended</span>':'Active'}</td>
+      <td>
+        <span style="font-size:11px">${u.messages_used||0}/${u.messages_limit||0}</span>
+        <span class="usage-bar"><span class="usage-fill" style="width:${Math.min(100,pct)}%;background:${barCol}"></span></span>
+      </td>
+      <td style="text-align:center">${u.chat_count||0}</td>
+      <td style="text-align:center">${u.report_count||0}</td>
+      <td style="text-align:center">${u.file_count||0}</td>
+      <td style="color:var(--muted);font-size:11px">${lastLogin}</td>
+      <td style="color:var(--muted);font-size:11px">${joined}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="openDetail('${u.email.replace(/'/g,"\\'")}')">View →</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── USER DETAIL PANEL ─────────────────────────────────────────────
+async function openDetail(email){
+  document.getElementById('dp-title').textContent=email;
+  document.getElementById('dp-body').innerHTML='<div class="empty">Loading…</div>';
+  document.getElementById('detail-panel').classList.add('open');
+  document.getElementById('overlay').style.display='';
+  const data=await opsGet('/api/ops/user/'+encodeURIComponent(email));
+  if(!data?.user){document.getElementById('dp-body').innerHTML='<div class="empty">Could not load user data</div>';return;}
+  const u=data.user;
+  const planLabel=u.plan.charAt(0).toUpperCase()+u.plan.slice(1);
+  const msgPct=u.messages_limit>0?Math.round((u.messages_used||0)/u.messages_limit*100):0;
+
+  document.getElementById('dp-body').innerHTML=`
+    <!-- Profile -->
+    <div class="dp-section">
+      <div class="dp-section-title">Profile</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        ${u.avatar?`<img src="${u.avatar}" width="40" height="40" style="border-radius:50%" onerror="this.style.display='none'">`:''}
+        <div><div style="font-weight:700">${u.name||'—'}</div><div style="font-size:11px;color:var(--muted)">${u.email}</div></div>
+      </div>
+      <div class="dp-row"><span class="dp-key">Plan</span><span class="dp-val"><span class="plan-badge ${planCls[u.plan]||'plan-free'}">${planLabel}</span></span></div>
+      <div class="dp-row"><span class="dp-key">Status</span><span class="dp-val" style="color:${u.disabled?'var(--red)':'var(--green)'}"> ${u.disabled?'⛔ Suspended':'✅ Active'}</span></div>
+      ${u.disabled&&u.disabled_reason?`<div class="dp-row"><span class="dp-key">Reason</span><span class="dp-val" style="color:var(--red);max-width:220px;text-align:right">${u.disabled_reason}</span></div>`:''}
+      <div class="dp-row"><span class="dp-key">Google ID</span><span class="dp-val" style="font-size:10px;color:var(--muted)">${u.google_id||'—'}</span></div>
+      <div class="dp-row"><span class="dp-key">Joined</span><span class="dp-val">${new Date(u.created_at).toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'})}</span></div>
+      <div class="dp-row"><span class="dp-key">Last login</span><span class="dp-val">${u.last_login?new Date(u.last_login).toLocaleString('en-ZA'):'Never'}</span></div>
+      <div class="dp-row"><span class="dp-key">Billing cycle</span><span class="dp-val">${new Date(u.billing_cycle).toLocaleDateString('en-ZA')}</span></div>
+    </div>
+    <!-- Consumption -->
+    <div class="dp-section">
+      <div class="dp-section-title">Consumption</div>
+      <div class="dp-row"><span class="dp-key">Messages used</span><span class="dp-val">${u.messages_used||0} / ${u.messages_limit||0} (${msgPct}%)</span></div>
+      <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin:6px 0">
+        <div style="width:${Math.min(100,msgPct)}%;height:100%;background:${msgPct>90?'var(--red)':msgPct>70?'var(--amber)':'var(--green)'};border-radius:3px"></div>
+      </div>
+      <div class="dp-row"><span class="dp-key">Chats</span><span class="dp-val">${u.chat_count||0}</span></div>
+      <div class="dp-row"><span class="dp-key">Reports saved</span><span class="dp-val">${data.reports?.length||0}</span></div>
+      <div class="dp-row"><span class="dp-key">Files saved</span><span class="dp-val">${u.file_count||0}</span></div>
+    </div>
+    <!-- Feature usage -->
+    <div class="dp-section">
+      <div class="dp-section-title">Features used</div>
+      ${data.features?.length?`<table class="mini-tbl">
+        <thead><tr><th>Feature</th><th>Uses</th><th>Last used</th></tr></thead>
+        <tbody>${data.features.map(f=>`<tr>
+          <td>${f.feature}</td><td>${f.uses}</td>
+          <td style="color:var(--muted)">${f.last_used?new Date(f.last_used).toLocaleDateString('en-ZA'):'—'}</td>
+        </tr>`).join('')}</tbody>
+      </table>`:'<div class="empty">No feature data yet</div>'}
+    </div>
+    <!-- Reports -->
+    <div class="dp-section">
+      <div class="dp-section-title">Recent reports</div>
+      ${data.reports?.length?`<table class="mini-tbl">
+        <thead><tr><th>Report</th><th>Score</th><th>Date</th></tr></thead>
+        <tbody>${data.reports.map(r=>`<tr>
+          <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.name}</td>
+          <td>${r.score!=null?`<span style="color:${r.colour==='critical'?'var(--red)':r.colour==='elevated'?'var(--amber)':r.colour==='low'?'var(--green)':'var(--text)'}">${r.score}</span>`:'—'}</td>
+          <td style="color:var(--muted)">${new Date(r.created_at).toLocaleDateString('en-ZA')}</td>
+        </tr>`).join('')}</tbody>
+      </table>`:'<div class="empty">No reports yet</div>'}
+    </div>
+    <!-- Prompts used -->
+    <div class="dp-section">
+      <div class="dp-section-title">Prompts used</div>
+      ${data.prompts?.length?`<table class="mini-tbl">
+        <thead><tr><th>Prompt</th><th>Plan</th><th>Uses</th></tr></thead>
+        <tbody>${data.prompts.map(p=>`<tr>
+          <td style="font-family:monospace;font-size:10px">${p.prompt_key}</td>
+          <td>${p.plan||'—'}</td><td>${p.uses}</td>
+        </tr>`).join('')}</tbody>
+      </table>`:'<div class="empty">No prompt data yet</div>'}
+    </div>
+    <!-- Billing history -->
+    <div class="dp-section">
+      <div class="dp-section-title">Billing & plan history</div>
+      ${data.billing?.length?`<table class="mini-tbl">
+        <thead><tr><th>Date</th><th>Event</th><th>From→To</th><th>Amount</th></tr></thead>
+        <tbody>${data.billing.map(b=>`<tr>
+          <td style="white-space:nowrap;color:var(--muted)">${new Date(b.created_at).toLocaleDateString('en-ZA')}</td>
+          <td><span style="color:${b.event_type.includes('fail')||b.event_type.includes('disable')?'var(--red)':b.event_type.includes('create')||b.event_type.includes('success')?'var(--green)':'var(--muted)'}">${b.event_type}</span></td>
+          <td style="font-size:10px">${b.plan_from||'—'} → ${b.plan_to||'—'}</td>
+          <td>${b.amount_zar?'R'+b.amount_zar:'—'}</td>
+        </tr>`).join('')}</tbody>
+      </table>`:'<div class="empty">No billing events yet</div>'}
+    </div>
+    <!-- Actions -->
+    <div class="dp-section">
+      <div class="dp-section-title">Operator actions</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${u.disabled
+          ?`<button class="btn btn-primary btn-sm" onclick="userAction('${u.email}','enable')">✅ Re-enable account</button>`
+          :`<button class="btn btn-danger btn-sm" onclick="userActionPrompt('${u.email}','disable')">⛔ Suspend account</button>`
+        }
+        <button class="btn btn-ghost btn-sm" onclick="userAction('${u.email}','reset_messages')">↺ Reset message count</button>
+      </div>
+    </div>`;
+}
+
+function closeDetail(){
+  document.getElementById('detail-panel').classList.remove('open');
+  document.getElementById('overlay').style.display='none';
+}
+
+async function userActionPrompt(email, action){
+  const reason=prompt('Reason for suspending this account:','Non-payment');
+  if(reason===null)return;
+  await userAction(email, action, reason);
+}
+
+async function userAction(email, action, reason){
+  const r=await opsPost('/api/ops/user/'+encodeURIComponent(email)+'/action',{action,reason});
+  if(r?.ok){toast('Done — '+(action==='disable'?'account suspended':action==='enable'?'account re-enabled':'message count reset'));loadUsers();closeDetail();}
+  else toast('Action failed — try again');
+}
+
+// ── FEATURES ──────────────────────────────────────────────────────
+async function loadFeatures(){
+  // Aggregate from user detail — or use a dedicated endpoint if added later
+  // For now, show data from the users list (feature_usage_log aggregated by feature)
+  const data=await opsGet('/api/ops/users');
+  if(!data)return;
+  // Feature usage requires a dedicated endpoint — show placeholder
+  document.getElementById('feature-tbody').innerHTML=
+    '<tr><td colspan="4" class="empty">Feature usage data accumulates from engine/rate, engine/analyse, chat, file uploads and reports. Data populates as users interact with the platform after this deployment.</td></tr>';
+}
+
+// ── PROMPTS ───────────────────────────────────────────────────────
+async function loadPrompts(){
+  const data=await opsGet('/api/ops/prompts');
+  const tbody=document.getElementById('prompt-tbody');
+  if(!data?.prompts?.length){
+    tbody.innerHTML='<tr><td colspan="6" class="empty">No prompt access logs yet — prompts are logged when users access the prompt library in app.html.</td></tr>';
+    return;
+  }
+  tbody.innerHTML=data.prompts.map(p=>{
+    const st=p.status||'active';
+    const stCol=st==='active'?'ps-active':st==='review'?'ps-review':'ps-sunset';
+    return `<tr>
+      <td style="font-family:monospace;font-size:11px">${p.prompt_key}</td>
+      <td>${p.total_uses||0}</td>
+      <td>${p.unique_users||0}</td>
+      <td style="color:var(--muted)">${p.last_used?new Date(p.last_used).toLocaleDateString('en-ZA'):'—'}</td>
+      <td><span class="${stCol}">${st}</span></td>
+      <td>
+        <select onchange="setPromptStatus('${p.prompt_key}',this.value,'${p.notes||''}')"
+          style="background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:2px 5px;border-radius:4px;font-size:10px;font-family:var(--font)">
+          <option ${st==='active'?'selected':''}>active</option>
+          <option ${st==='review'?'selected':''}>review</option>
+          <option ${st==='sunset'?'selected':''}>sunset</option>
+        </select>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function setPromptStatus(key,status,notes){
+  const r=await opsPost('/api/ops/prompts',{promptKey:key,status,notes});
+  if(r?.ok)toast('Prompt status updated');else toast('Update failed');
+}
+
+// ── BILLING ───────────────────────────────────────────────────────
+async function loadBilling(){
+  // Aggregate all billing events across all users
+  const data=await opsGet('/api/ops/users');
+  if(!data)return;
+  // Show placeholder — dedicated billing endpoint can be added
+  document.getElementById('billing-tbody').innerHTML=
+    '<tr><td colspan="8" class="empty">Billing events are recorded per user. Open a user\'s detail panel to view their billing and plan change history. A dedicated billing timeline endpoint can be added in WS-17.</td></tr>';
+}
+
+// ── Toast ─────────────────────────────────────────────────────────
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>
