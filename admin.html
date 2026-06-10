@@ -3,113 +3,136 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Billi — Operator Console</title>
+<title>Talos Expert — Governance Console</title>
+<!-- Favicon: shield SVG representing governance/control -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path fill='%23C45200' d='M16 2L4 7v9c0 7.5 5.2 14.1 12 16 6.8-1.9 12-8.5 12-16V7L16 2z'/><path fill='white' d='M13 16.5l-3-3 1.4-1.4 1.6 1.6 4.6-4.6 1.4 1.4L13 16.5z'/></svg>">
 <style>
+  /* ── Theme variables — mirrors app.html exactly ── */
   :root {
-    --bg:     #0F0D0B;
-    --bg2:    #1A1614;
-    --card:   #211E1B;
-    --border: #2D2A27;
-    --text:   #E8E4E0;
-    --muted:  #6B6460;
-    --orange: #C45200;
-    --green:  #16A34A;
-    --amber:  #D97706;
-    --red:    #DC2626;
-    --blue:   #3B82F6;
-    --font:   'Inter', 'Segoe UI', Arial, sans-serif;
+    --font: 'Inter','Segoe UI',Arial,sans-serif;
+    --orange:#C45200; --green:#16A34A; --amber:#D97706;
+    --red:#DC2626; --blue:#3B82F6; --purple:#7C3AED;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: var(--font);
-         font-size: 13px; min-height: 100vh; }
+  body.dark {
+    --bg:#0F0D0B; --bg2:#1A1614; --card:#211E1B; --border:#2D2A27;
+    --text:#E8E4E0; --muted:#6B6460; --shadow:rgba(0,0,0,0.4);
+  }
+  body.light {
+    --bg:#F5F0EB; --bg2:#FFFFFF; --card:#FFFFFF; --border:#DDD8D0;
+    --text:#1C1C1E; --muted:#6C6C70; --shadow:rgba(0,0,0,0.08);
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--text); font-family:var(--font);
+         font-size:13px; min-height:100vh; transition:background .3s,color .3s; }
 
   /* ── Auth gate ── */
   #auth-gate { display:flex; align-items:center; justify-content:center;
                min-height:100vh; flex-direction:column; gap:16px; }
-  #auth-gate h1 { font-size:20px; color:var(--orange); }
+  #auth-gate h1 { font-size:22px; font-weight:800; color:var(--orange); }
   #auth-gate p  { color:var(--muted); font-size:12px; }
   #token-input { background:var(--bg2); border:1px solid var(--border); color:var(--text);
                  padding:10px 14px; border-radius:8px; font-size:13px; font-family:var(--font);
-                 width:340px; outline:none; }
+                 width:340px; outline:none; transition:border .2s; }
   #token-input:focus { border-color:var(--orange); }
   #auth-btn { background:var(--orange); color:#fff; border:none; padding:10px 28px;
               border-radius:8px; font-size:13px; font-weight:700; cursor:pointer;
-              font-family:var(--font); }
+              font-family:var(--font); transition:background .15s; }
+  #auth-btn:hover { background:#a33f00; }
   #auth-err { color:var(--red); font-size:12px; display:none; }
 
   /* ── Main shell ── */
   #shell { display:none; flex-direction:column; min-height:100vh; }
 
-  /* ── Top bar ── */
+  /* ── Topbar ── */
   .topbar { background:var(--bg2); border-bottom:1px solid var(--border);
-            padding:0 20px; height:52px; display:flex; align-items:center;
-            justify-content:space-between; flex-shrink:0; }
-  .topbar-brand { font-size:15px; font-weight:800; color:var(--orange);
-                  display:flex; align-items:center; gap:8px; }
-  .topbar-badge { font-size:9px; font-weight:700; background:rgba(196,82,0,0.2);
-                  color:var(--orange); padding:2px 8px; border-radius:10px;
-                  letter-spacing:0.06em; text-transform:uppercase; }
-  .topbar-right { display:flex; align-items:center; gap:12px; }
-  .topbar-env   { font-size:10px; color:var(--muted); }
-  #refresh-btn  { background:transparent; border:1px solid var(--border); color:var(--muted);
-                  padding:5px 12px; border-radius:6px; font-size:11px; cursor:pointer;
-                  font-family:var(--font); transition:all .15s; }
-  #refresh-btn:hover { border-color:var(--orange); color:var(--orange); }
+            padding:0 16px 0 0; height:54px; display:flex; align-items:center;
+            justify-content:space-between; flex-shrink:0;
+            box-shadow:0 1px 4px var(--shadow); }
+  .topbar-left { display:flex; align-items:center; gap:0; height:100%; }
+  /* Billsource logo strip */
+  .topbar-bs-logo { height:54px; padding:0 14px; border-right:1px solid var(--border);
+                    display:flex; align-items:center; }
+  /* Talos brand */
+  .topbar-brand { padding:0 16px; display:flex; align-items:center; gap:10px; }
+  .talos-shield { flex-shrink:0; }
+  .topbar-brand-text { line-height:1.2; }
+  .topbar-brand-name { font-size:15px; font-weight:800; color:var(--orange); display:block; }
+  .topbar-brand-sub  { font-size:9px; font-weight:700; color:var(--muted);
+                       letter-spacing:0.1em; text-transform:uppercase; }
+  /* Right cluster */
+  .topbar-right { display:flex; align-items:center; gap:10px; }
+  .topbar-op-email { font-size:11px; color:var(--green); font-weight:600; }
+  .topbar-env      { font-size:10px; color:var(--muted); }
+  .tb-btn { background:transparent; border:1px solid var(--border); color:var(--muted);
+            padding:5px 11px; border-radius:6px; font-size:11px; cursor:pointer;
+            font-family:var(--font); transition:all .15s; text-decoration:none;
+            display:inline-flex; align-items:center; gap:4px; }
+  .tb-btn:hover { border-color:var(--orange); color:var(--orange); }
+  .theme-btn { width:32px; height:32px; padding:0; justify-content:center;
+               font-size:15px; }
 
   /* ── Body layout ── */
   .body { display:flex; flex:1; overflow:hidden; }
 
   /* ── Nav sidebar ── */
-  .nav { width:180px; background:var(--bg2); border-right:1px solid var(--border);
-         padding:16px 0; flex-shrink:0; }
+  .nav { width:192px; background:var(--bg2); border-right:1px solid var(--border);
+         padding:16px 0; flex-shrink:0; display:flex; flex-direction:column; }
+  .nav-section-label { font-size:9px; font-weight:700; text-transform:uppercase;
+                       letter-spacing:.1em; color:var(--muted); padding:14px 18px 4px; }
   .nav-item { display:block; padding:9px 18px; font-size:12px; font-weight:500;
               color:var(--muted); cursor:pointer; transition:all .15s;
-              border-left:3px solid transparent; }
-  .nav-item:hover { color:var(--text); background:rgba(255,255,255,0.03); }
+              border-left:3px solid transparent; user-select:none; }
+  .nav-item:hover { color:var(--text); background:rgba(196,82,0,0.05); }
   .nav-item.active { color:var(--orange); border-left-color:var(--orange);
-                     background:rgba(196,82,0,0.06); font-weight:700; }
+                     background:rgba(196,82,0,0.07); font-weight:700; }
+  .nav-item.nav-doc { color:var(--blue); }
+  .nav-item.nav-doc:hover { color:var(--blue); background:rgba(59,130,246,0.06); }
+  .nav-spacer { flex:1; }
+  /* Billi governance avatar at bottom of nav */
+  .nav-avatar-wrap { padding:16px; border-top:1px solid var(--border); text-align:center; }
+  .nav-avatar-label { font-size:9px; color:var(--muted); margin-top:6px;
+                      text-transform:uppercase; letter-spacing:.06em; }
 
   /* ── Content area ── */
   .content { flex:1; overflow-y:auto; padding:20px 24px; }
   .section { display:none; }
   .section.active { display:block; }
+  .section-title { font-size:16px; font-weight:800; margin-bottom:18px;
+                   color:var(--text); display:flex; align-items:center; gap:10px; }
 
   /* ── Cards ── */
   .card { background:var(--card); border:1px solid var(--border); border-radius:10px;
-          padding:16px 18px; margin-bottom:14px; }
+          padding:16px 18px; margin-bottom:14px;
+          box-shadow:0 1px 4px var(--shadow); }
   .card-title { font-size:10px; font-weight:700; text-transform:uppercase;
-                letter-spacing:0.08em; color:var(--muted); margin-bottom:10px; }
+                letter-spacing:.08em; color:var(--muted); margin-bottom:10px; }
   .card-value { font-size:28px; font-weight:800; color:var(--text); }
   .card-sub   { font-size:11px; color:var(--muted); margin-top:3px; }
 
   /* ── Metric grid ── */
-  .metric-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px;
-                 margin-bottom:18px; }
+  .metric-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px; }
 
   /* ── REAI gauge ── */
   .reai-wrap { background:var(--card); border:1px solid var(--border); border-radius:10px;
-               padding:18px; margin-bottom:18px; }
-  .reai-top  { display:flex; align-items:center; justify-content:space-between;
-               margin-bottom:12px; }
+               padding:18px; margin-bottom:18px; box-shadow:0 1px 4px var(--shadow); }
+  .reai-top  { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
   .reai-score-big { font-size:48px; font-weight:900; line-height:1; }
   .reai-bar-wrap  { height:10px; background:var(--border); border-radius:5px;
                     overflow:hidden; margin:8px 0 4px; }
   .reai-bar       { height:100%; border-radius:5px; transition:width .6s ease; }
-  .reai-thresholds { display:flex; justify-content:space-between;
-                     font-size:9px; color:var(--muted); }
+  .reai-thresholds { display:flex; justify-content:space-between; font-size:9px; color:var(--muted); }
   .reai-badge { font-size:11px; font-weight:700; padding:4px 12px; border-radius:8px; }
   .badge-green  { background:rgba(22,163,74,0.15);  color:var(--green); }
   .badge-amber  { background:rgba(217,119,6,0.15);  color:var(--amber); }
   .badge-orange { background:rgba(234,88,12,0.15);  color:#ea580c; }
   .badge-red    { background:rgba(220,38,38,0.15);  color:var(--red); }
 
-  /* ── Proposal cards ── */
+  /* ── Proposals ── */
   .proposal { background:var(--bg2); border:1px solid var(--border); border-radius:8px;
               padding:14px 16px; margin-bottom:10px; }
-  .proposal-hdr { display:flex; align-items:center; justify-content:space-between;
-                  margin-bottom:8px; }
+  .proposal-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
   .proposal-type { font-size:9px; font-weight:700; text-transform:uppercase;
-                   letter-spacing:0.06em; color:var(--muted); }
+                   letter-spacing:.06em; color:var(--muted); }
   .proposal-status { font-size:10px; font-weight:700; }
   .proposal-title { font-size:13px; font-weight:600; margin-bottom:6px; }
   .proposal-meta  { font-size:11px; color:var(--muted); line-height:1.5; }
@@ -118,19 +141,19 @@
          cursor:pointer; font-family:var(--font); transition:all .15s; border:none; }
   .btn-primary { background:var(--orange); color:#fff; }
   .btn-primary:hover { background:#a33f00; }
-  .btn-ghost   { background:transparent; color:var(--muted);
-                 border:1px solid var(--border); }
+  .btn-ghost   { background:transparent; color:var(--muted); border:1px solid var(--border); }
   .btn-ghost:hover { border-color:var(--red); color:var(--red); }
-  .btn-outline { background:transparent; color:var(--blue);
-                 border:1px solid var(--blue); }
+  .btn-outline { background:transparent; color:var(--blue); border:1px solid var(--blue); }
   .btn-outline:hover { background:rgba(59,130,246,0.1); }
   .btn-sm { padding:4px 10px; font-size:10px; }
+  .btn-dl { background:rgba(59,130,246,0.1); color:var(--blue); border:1px solid var(--blue);
+            display:inline-flex; align-items:center; gap:6px; }
+  .btn-dl:hover { background:var(--blue); color:#fff; }
 
-  /* ── Config deploy block ── */
-  .deploy-block { background:#0a1a0a; border:1px solid var(--green); border-radius:8px;
-                  padding:14px 16px; margin-top:12px; }
-  .deploy-block-title { font-size:11px; font-weight:700; color:var(--green);
-                        margin-bottom:8px; }
+  /* ── Deploy block ── */
+  .deploy-block { background:rgba(22,163,74,0.06); border:1px solid var(--green);
+                  border-radius:8px; padding:14px 16px; margin-top:12px; }
+  .deploy-block-title { font-size:11px; font-weight:700; color:var(--green); margin-bottom:8px; }
   .config-val { font-family:'Courier New',monospace; font-size:11px; color:#86efac;
                 word-break:break-all; line-height:1.6; }
   .copy-btn { margin-top:8px; }
@@ -139,37 +162,59 @@
   .log-table { width:100%; border-collapse:collapse; font-size:11px; }
   .log-table th { text-align:left; padding:8px 10px; border-bottom:1px solid var(--border);
                   color:var(--muted); font-weight:600; font-size:10px;
-                  text-transform:uppercase; letter-spacing:0.05em; }
+                  text-transform:uppercase; letter-spacing:.05em; }
   .log-table td { padding:8px 10px; border-bottom:1px solid var(--border);
                   color:var(--text); vertical-align:top; }
   .log-table tr:last-child td { border-bottom:none; }
 
-  /* ── Observation stats ── */
+  /* ── Stats ── */
   .stat-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
   .stat-pill { background:var(--bg2); border:1px solid var(--border); border-radius:6px;
                padding:6px 12px; font-size:11px; }
   .stat-pill b { color:var(--orange); }
 
-  /* ── Toasts ── */
+  /* ── Guideline section ── */
+  .guideline-card { background:var(--card); border:1px solid var(--blue);
+                    border-left:4px solid var(--blue); border-radius:10px;
+                    padding:20px 22px; margin-bottom:14px; }
+  .guideline-card h3 { font-size:14px; font-weight:700; color:var(--blue); margin-bottom:8px; }
+  .guideline-card p  { font-size:12px; color:var(--muted); line-height:1.7; margin-bottom:12px; }
+  .guideline-principle { background:var(--bg2); border-radius:7px; padding:10px 14px;
+                          margin-bottom:8px; }
+  .guideline-principle-name { font-size:11px; font-weight:700; color:var(--orange); margin-bottom:4px; }
+  .guideline-principle-desc { font-size:11px; color:var(--text); line-height:1.6; }
+  .guideline-toc { font-size:11px; color:var(--muted); line-height:2; }
+  .guideline-toc a { color:var(--blue); text-decoration:none; }
+  .guideline-toc a:hover { text-decoration:underline; }
+
+  /* ── Toast ── */
   #toast { position:fixed; bottom:20px; right:20px; background:var(--card);
            border:1px solid var(--border); color:var(--text); padding:10px 16px;
            border-radius:8px; font-size:12px; opacity:0; transition:opacity .3s;
-           pointer-events:none; z-index:999; }
+           pointer-events:none; z-index:999; box-shadow:0 4px 12px var(--shadow); }
   #toast.show { opacity:1; }
 
-  /* ── Empty state ── */
+  /* ── Empty ── */
   .empty { color:var(--muted); font-size:12px; padding:24px 0; text-align:center; }
 </style>
 </head>
-<body>
+<body class="dark">
 
 <!-- ── AUTH GATE ── -->
 <div id="auth-gate">
-  <div style="text-align:center">
-    <div style="font-size:28px;margin-bottom:4px">⚡</div>
-    <h1>Billi Operator Console</h1>
-    <p style="margin-bottom:20px">PLM governance · Engine intelligence · Tempered Convergence</p>
-    <!-- Step 1: Google identity (shown if not yet signed in to Google) -->
+  <div style="text-align:center;max-width:380px;padding:0 20px">
+    <!-- Talos shield SVG -->
+    <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin:0 auto 12px;display:block">
+      <path d="M28 4L6 13v17c0 13 9.1 24.7 22 27.7C40.9 54.7 50 43 50 30V13L28 4z" fill="#C45200" opacity=".15"/>
+      <path d="M28 4L6 13v17c0 13 9.1 24.7 22 27.7C40.9 54.7 50 43 50 30V13L28 4z" fill="none" stroke="#C45200" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M21 27.5l5 5 10-10" stroke="#C45200" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="28" cy="20" r="4" fill="#C45200" opacity=".3"/>
+    </svg>
+    <h1>Talos Expert</h1>
+    <p style="margin-bottom:6px;font-size:13px">Governance Console · Tempered Convergence</p>
+    <p style="margin-bottom:24px">PLM governance · Engine intelligence · Human oversight</p>
+
+    <!-- Step 1: Google (fallback if session expired) -->
     <div id="step-google" style="display:none">
       <p style="margin-bottom:16px;color:var(--muted)">Sign in with your operator Google account to continue.</p>
       <a href="/auth/google" style="display:inline-flex;align-items:center;gap:10px;background:#fff;
@@ -179,25 +224,26 @@
         Sign in with Google
       </a>
     </div>
-    <!-- Step 2: Token confirmation (shown after Google identity confirmed) -->
+
+    <!-- Step 2: Token confirmation -->
     <div id="step-token" style="display:none">
       <div id="operator-identity" style="display:flex;align-items:center;gap:10px;
            justify-content:center;margin-bottom:20px">
-        <img id="op-avatar" src="" width="32" height="32" style="border-radius:50%;display:none">
+        <img id="op-avatar" src="" width="36" height="36" style="border-radius:50%;display:none;border:2px solid var(--orange)">
         <div>
-          <div id="op-name" style="font-weight:700;font-size:13px"></div>
+          <div id="op-name"  style="font-weight:700;font-size:13px"></div>
           <div id="op-email" style="font-size:11px;color:var(--muted)"></div>
         </div>
         <span style="font-size:10px;background:rgba(22,163,74,0.15);color:#16a34a;
-              padding:2px 8px;border-radius:6px;font-weight:700">✓ Verified</span>
+              padding:2px 10px;border-radius:6px;font-weight:700">✓ Verified</span>
       </div>
-      <p style="margin-bottom:12px;color:var(--muted);font-size:12px">Enter operator token to proceed.</p>
+      <p style="margin-bottom:12px;color:var(--muted);font-size:12px">Enter operator token to unlock console.</p>
       <input id="token-input" type="password" placeholder="Operator token (ADMIN_TOKEN)" autocomplete="off">
       <br><br>
-      <button id="auth-btn" onclick="authenticate()">Unlock console</button>
+      <button id="auth-btn" onclick="authenticate()">Unlock Talos Expert</button>
       <p id="auth-err">Incorrect token — check ADMIN_TOKEN in Railway Variables</p>
     </div>
-    <!-- Loading -->
+
     <div id="step-loading" style="color:var(--muted);font-size:12px">Checking identity…</div>
   </div>
 </div>
@@ -205,30 +251,100 @@
 <!-- ── MAIN SHELL ── -->
 <div id="shell">
 
-  <!-- Top bar -->
+  <!-- Topbar -->
   <div class="topbar">
-    <div class="topbar-brand">
-      ⚡ Billi
-      <span class="topbar-badge">Operator Console</span>
+    <div class="topbar-left">
+      <!-- Billsource logo (top-left) -->
+      <div class="topbar-bs-logo">
+        <img src="logo2.png" alt="Billsource®" height="26"
+             style="display:block;opacity:0.85;filter:var(--logo-f,none)"
+             onerror="this.style.display='none'">
+      </div>
+      <!-- Talos brand -->
+      <div class="topbar-brand">
+        <!-- Governance shield SVG -->
+        <svg class="talos-shield" width="28" height="28" viewBox="0 0 56 56" fill="none">
+          <path d="M28 4L6 13v17c0 13 9.1 24.7 22 27.7C40.9 54.7 50 43 50 30V13L28 4z"
+                fill="#C45200" opacity=".18"/>
+          <path d="M28 4L6 13v17c0 13 9.1 24.7 22 27.7C40.9 54.7 50 43 50 30V13L28 4z"
+                fill="none" stroke="#C45200" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M21 27.5l5 5 10-10" stroke="#C45200" stroke-width="3"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="topbar-brand-text">
+          <span class="topbar-brand-name">Talos Expert</span>
+          <span class="topbar-brand-sub">Governance Console</span>
+        </div>
+      </div>
     </div>
     <div class="topbar-right">
-      <span class="topbar-env" id="topbar-operator" style="color:var(--green)"></span>
-      <span class="topbar-env" id="env-label" style="margin-left:8px">billsource.ai</span>
-      <button id="refresh-btn" onclick="loadAll()">↻ Refresh</button>
-      <a href="/auth/logout" style="font-size:11px;color:var(--muted);text-decoration:none;
-         padding:5px 10px;border:1px solid var(--border);border-radius:6px;">Sign out</a>
+      <span class="topbar-op-email" id="topbar-operator"></span>
+      <span class="topbar-env" id="env-label">billsource.ai</span>
+      <button class="tb-btn theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle theme">&#9788;</button>
+      <button class="tb-btn" id="refresh-btn" onclick="loadAll()">↻ Refresh</button>
+      <a href="/auth/logout" class="tb-btn">Sign out</a>
     </div>
   </div>
 
   <div class="body">
 
-    <!-- Nav -->
+    <!-- Nav sidebar -->
     <nav class="nav">
-      <div class="nav-item active" onclick="showSection('dashboard')">Dashboard</div>
-      <div class="nav-item" onclick="showSection('proposals')">Proposals</div>
-      <div class="nav-item" onclick="showSection('diagnostics')">Diagnostics</div>
-      <div class="nav-item" onclick="showSection('log')">Governance log</div>
-      <div class="nav-item" onclick="showSection('observations')">Observations</div>
+      <!-- Billi Governance SVG avatar — policing + human control theme -->
+      <div style="padding:16px 18px 12px;display:flex;align-items:center;gap:10px;
+                  border-bottom:1px solid var(--border);margin-bottom:8px">
+        <div style="position:relative;flex-shrink:0">
+          <img src="billiavatarbase.png" alt="Billi" width="36" height="36"
+               style="border-radius:50%;display:block;border:2px solid var(--orange)"
+               onerror="this.style.display='none'">
+          <!-- Governance badge overlay -->
+          <div style="position:absolute;bottom:-2px;right:-2px;width:14px;height:14px;
+                      background:var(--orange);border-radius:50%;display:flex;
+                      align-items:center;justify-content:center;border:1px solid var(--bg2)">
+            <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
+              <path d="M6 1L1 3v3c0 3 2 5 5 6 3-1 5-3 5-6V3L6 1z"
+                    fill="white" opacity=".9"/>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--orange)">Billi Governance</div>
+          <div style="font-size:9px;color:var(--muted)">Human oversight · TC</div>
+        </div>
+      </div>
+
+      <div class="nav-section-label">Engine</div>
+      <div class="nav-item active" onclick="showSection('dashboard')">⚡ Dashboard</div>
+      <div class="nav-item" onclick="showSection('proposals')">📋 Proposals</div>
+      <div class="nav-item" onclick="showSection('diagnostics')">🔬 Diagnostics</div>
+      <div class="nav-item" onclick="showSection('log')">📜 Governance log</div>
+      <div class="nav-item" onclick="showSection('observations')">👁 Observations</div>
+
+      <div class="nav-section-label">Documentation</div>
+      <div class="nav-item nav-doc" onclick="showSection('guidelines')">📖 TC Guidelines</div>
+
+      <div class="nav-spacer"></div>
+
+      <!-- Full governance SVG at nav bottom -->
+      <div class="nav-avatar-wrap">
+        <svg width="64" height="64" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Shield body -->
+          <path d="M40 6L8 18v22c0 17.5 13.3 33.2 32 37.2C57.7 73.2 72 57.5 72 40V18L40 6z"
+                fill="#C45200" opacity=".1"/>
+          <path d="M40 6L8 18v22c0 17.5 13.3 33.2 32 37.2C57.7 73.2 72 57.5 72 40V18L40 6z"
+                fill="none" stroke="#C45200" stroke-width="3" stroke-linejoin="round"/>
+          <!-- Billi avatar circle -->
+          <circle cx="40" cy="32" r="13" fill="#C45200" opacity=".15"/>
+          <circle cx="40" cy="32" r="13" fill="none" stroke="#C45200" stroke-width="1.5"/>
+          <!-- Stylised face suggesting intelligence + oversight -->
+          <circle cx="35" cy="30" r="2" fill="#C45200"/>
+          <circle cx="45" cy="30" r="2" fill="#C45200"/>
+          <path d="M35 36 Q40 40 45 36" stroke="#C45200" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          <!-- Checkmark — human control confirmed -->
+          <path d="M30 52l7 7 14-14" stroke="#C45200" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="nav-avatar-label">Human Oversight</div>
+      </div>
     </nav>
 
     <!-- Content -->
@@ -236,7 +352,15 @@
 
       <!-- DASHBOARD -->
       <div id="section-dashboard" class="section active">
-        <div class="metric-grid" id="metric-grid">
+        <div class="section-title">
+          <svg width="18" height="18" viewBox="0 0 56 56" fill="none">
+            <path d="M28 4L6 13v17c0 13 9.1 24.7 22 27.7C40.9 54.7 50 43 50 30V13L28 4z"
+                  fill="none" stroke="currentColor" stroke-width="2.5"/>
+            <path d="M21 27.5l5 5 10-10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          Dashboard
+        </div>
+        <div class="metric-grid">
           <div class="card"><div class="card-title">REAI Score</div>
             <div class="card-value" id="m-reai">—</div>
             <div class="card-sub">Rating Engine Accuracy Index</div></div>
@@ -250,7 +374,6 @@
             <div class="card-value" id="m-open">—</div>
             <div class="card-sub">Awaiting review</div></div>
         </div>
-
         <div class="reai-wrap">
           <div class="reai-top">
             <div>
@@ -274,36 +397,33 @@
             Config hash: <span id="cfg-hash" style="font-family:monospace">—</span>
           </div>
         </div>
-
         <div class="card">
-          <div class="card-title">Governance gate status</div>
-          <div style="font-size:12px;line-height:1.8;color:var(--text)">
+          <div class="card-title">Governance gate status — Tempered Convergence</div>
+          <div style="font-size:12px;line-height:1.9;color:var(--text)">
             <span style="color:var(--green)">✅</span> PLM never writes to Railway env var autonomously<br>
-            <span style="color:var(--green)">✅</span> All config changes require operator authorisation<br>
-            <span style="color:var(--green)">✅</span> Sandbox test must pass before authorise is enabled<br>
+            <span style="color:var(--green)">✅</span> All engine config changes require operator authorisation<br>
+            <span style="color:var(--green)">✅</span> Sandbox test (7-archetype battery) must pass before authorise is enabled<br>
             <span style="color:var(--green)">✅</span> Every authorisation recorded in immutable governance log<br>
+            <span style="color:var(--green)">✅</span> PLM never generates code or commits to GitHub<br>
             <span id="zdr-status" style="color:var(--amber)">⚠</span>
-            Anthropic ZDR: <span id="zdr-label" style="color:var(--amber)">confirm WS-11.9</span>
+            Anthropic ZDR: <span id="zdr-label" style="color:var(--amber)">pending confirmation (WS-11.9)</span>
           </div>
         </div>
       </div>
 
       <!-- PROPOSALS -->
       <div id="section-proposals" class="section">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-          <div style="font-size:15px;font-weight:700">Pending proposals</div>
-          <button class="btn btn-outline btn-sm" onclick="runDiagnosticsNow()">▷ Run diagnostics now</button>
+        <div class="section-title">
+          <span>📋</span> Pending proposals
+          <button class="btn btn-outline btn-sm" style="margin-left:auto" onclick="runDiagnosticsNow()">▷ Run diagnostics now</button>
         </div>
         <div id="proposals-list"><div class="empty">Loading…</div></div>
-
-        <!-- Deploy instruction (shown after authorise) -->
         <div id="deploy-block" class="deploy-block" style="display:none">
           <div class="deploy-block-title">⚡ NEXT STEP — Deploy new engine config to Railway</div>
           <div style="font-size:11px;color:var(--muted);margin-bottom:8px">
             1. Copy the value below<br>
-            2. Go to Railway → billi-engine service (or billi-gateway) → Variables<br>
-            3. Update RATING_ENGINE_CONFIG with this value<br>
-            4. Railway will auto-restart the service
+            2. Railway → billi-engine service → Variables → RATING_ENGINE_CONFIG<br>
+            3. Paste value → Save → Railway auto-restarts
           </div>
           <div class="config-val" id="config-val">—</div>
           <button class="btn btn-primary btn-sm copy-btn" onclick="copyConfig()">📋 Copy config value</button>
@@ -312,34 +432,210 @@
 
       <!-- DIAGNOSTICS -->
       <div id="section-diagnostics" class="section">
-        <div style="font-size:15px;font-weight:700;margin-bottom:16px">Diagnostics</div>
-        <div style="margin-bottom:12px">
+        <div class="section-title"><span>🔬</span> Diagnostics</div>
+        <div style="margin-bottom:14px;display:flex;align-items:center;gap:12px">
           <button class="btn btn-primary" onclick="runDiagnosticsNow()">▷ Run diagnostic battery now</button>
-          <span style="font-size:11px;color:var(--muted);margin-left:10px">Nightly auto-run at 02:00 SA time</span>
+          <span style="font-size:11px;color:var(--muted)">Auto-runs nightly · Requires n≥10 T+90 outcomes for REAI</span>
         </div>
-        <div id="diag-result"><div class="empty">Run a diagnostic cycle to see results here.</div></div>
+        <div id="diag-result"><div class="empty">Run a diagnostic cycle to see results.</div></div>
       </div>
 
       <!-- GOVERNANCE LOG -->
       <div id="section-log" class="section">
-        <div style="font-size:15px;font-weight:700;margin-bottom:16px">Governance log</div>
+        <div class="section-title"><span>📜</span> Governance log</div>
         <div id="log-content"><div class="empty">Loading…</div></div>
       </div>
 
       <!-- OBSERVATIONS -->
       <div id="section-observations" class="section">
-        <div style="font-size:15px;font-weight:700;margin-bottom:14px">PLM Observations</div>
+        <div class="section-title"><span>👁</span> PLM Observations</div>
         <div id="obs-stats" class="stat-row"></div>
         <div class="card">
           <div class="card-title">Outcome recording</div>
-          <div style="font-size:12px;color:var(--muted);line-height:1.7">
+          <div style="font-size:12px;color:var(--muted);line-height:1.8">
             T+30, T+90, and T+180 outcomes are recorded by users from their own My Reports view.<br>
-            The observation table below shows the most recent engine assessments and their outcome status.<br>
-            REAI requires n ≥ 10 T+90 outcomes before the first diagnostic cycle is statistically meaningful.
+            The observation record includes: userId (hashed), sector, DI score, risk level, collision risk, Adizes stage, timestamp.<br>
+            REAI calculation starts when n ≥ 10 T+90 outcomes exist. Current: <b id="obs-current" style="color:var(--orange)">0</b>.
           </div>
         </div>
-        <div id="obs-content"><div class="empty">Loading…</div></div>
+        <div id="obs-content"></div>
       </div>
+
+      <!-- TC GUIDELINES -->
+      <div id="section-guidelines" class="section">
+        <div class="section-title"><span>📖</span> Talos Governance Guidelines
+          <button class="btn btn-dl btn-sm" style="margin-left:auto" onclick="downloadGuidelines()">
+            ⬇ Download PDF
+          </button>
+        </div>
+
+        <div class="guideline-card">
+          <h3>Document: Talos Governance Guidelines v1.0</h3>
+          <p>This document defines the Tempered Convergence (TC) governance framework as implemented in the Billi BAI platform. It covers the principles, enforcement mechanisms, operator obligations, and escalation procedures that govern all AI engine changes. Updated as features and functionality evolve.</p>
+          <div class="guideline-toc">
+            <b style="color:var(--text)">Contents</b><br>
+            <a onclick="scrollToGuide('g1')">1. Tempered Convergence — the governing principle</a><br>
+            <a onclick="scrollToGuide('g2')">2. What the PLM is and is not permitted to do</a><br>
+            <a onclick="scrollToGuide('g3')">3. The proposal lifecycle</a><br>
+            <a onclick="scrollToGuide('g4')">4. REAI — the engine health baseline</a><br>
+            <a onclick="scrollToGuide('g5')">5. Operator obligations</a><br>
+            <a onclick="scrollToGuide('g6')">6. Escalation and incident response</a><br>
+            <a onclick="scrollToGuide('g7')">7. Third-party AI governance (Anthropic / Flowise)</a><br>
+            <a onclick="scrollToGuide('g8')">8. Version history</a>
+          </div>
+        </div>
+
+        <div id="g1" class="guideline-card">
+          <h3>1. Tempered Convergence (TC) — the governing principle</h3>
+          <p>Tempered Convergence is the AI governance framework developed as part of the Billi MPhil research (Stellenbosch USB, student 11603211). It governs the pace at which AI capabilities are deployed relative to the maturity of governance mechanisms. The core rule: <b style="color:var(--orange)">no AI system in the Billi ecosystem acts autonomously on consequential decisions.</b></p>
+          <div class="guideline-principle">
+            <div class="guideline-principle-name">TC Rule 1 — Observe before acting</div>
+            <div class="guideline-principle-desc">The PLM records observations for a minimum of 10 T+90 outcome cycles before any diagnostic signal is treated as actionable.</div>
+          </div>
+          <div class="guideline-principle">
+            <div class="guideline-principle-name">TC Rule 2 — Propose, don't deploy</div>
+            <div class="guideline-principle-desc">The PLM generates proposals. It never deploys them. A human operator reviews every proposal before any engine parameter changes.</div>
+          </div>
+          <div class="guideline-principle">
+            <div class="guideline-principle-name">TC Rule 3 — Sandbox before authorise</div>
+            <div class="guideline-principle-desc">Every proposal must pass a 7-archetype sandbox test with zero rank violations before the Authorise button is enabled.</div>
+          </div>
+          <div class="guideline-principle">
+            <div class="guideline-principle-name">TC Rule 4 — Log everything</div>
+            <div class="guideline-principle-desc">Every authorisation or rejection is recorded in the immutable governance log with operator identity, timestamp, and rationale.</div>
+          </div>
+          <div class="guideline-principle">
+            <div class="guideline-principle-name">TC Rule 5 — REAI as the baseline</div>
+            <div class="guideline-principle-desc">No proposal may be authorised that does not demonstrably improve at least one REAI component. If REAI drops below 60, all advisory outputs are suspended pending governance review.</div>
+          </div>
+        </div>
+
+        <div id="g2" class="guideline-card">
+          <h3>2. What the PLM is and is not permitted to do</h3>
+          <div class="guideline-principle">
+            <div class="guideline-principle-name">✅ PLM IS permitted to</div>
+            <div class="guideline-principle-desc">
+              Record observations on every /api/engine/rate call.<br>
+              Run nightly diagnostic battery on the observation pool.<br>
+              Generate parameter adjustment proposals (config delta objects).<br>
+              Generate Novel Formula Unit (NFU) specifications.<br>
+              Run sandbox tests against the 7-archetype battery.<br>
+              Generate a new base64 RATING_ENGINE_CONFIG value after authorisation.<br>
+              Surface proposals in the Talos Expert operator console.
+            </div>
+          </div>
+          <div class="guideline-principle">
+            <div class="guideline-principle-name">🚫 PLM is NOT permitted to</div>
+            <div class="guideline-principle-desc">
+              Write to Railway environment variables directly.<br>
+              Commit code to GitHub or any version control system.<br>
+              Deploy any change without explicit operator authorisation.<br>
+              Access user personal data (observations are pseudonymised).<br>
+              Bypass the sandbox test gate under any circumstances.<br>
+              Reduce the ADMIN_TOKEN requirement or weaken authentication.
+            </div>
+          </div>
+        </div>
+
+        <div id="g3" class="guideline-card">
+          <h3>3. The proposal lifecycle</h3>
+          <div class="guideline-principle">
+            <div class="guideline-principle-name">Stage 1 — Proposed</div>
+            <div class="guideline-principle-desc">PLM diagnostics generate a proposal. Operator is notified via the Proposals dashboard. Proposal status: <i>proposed</i>.</div>
+          </div>
+          <div class="guideline-principle">
+            <div class="guideline-principle-name">Stage 2 — Sandbox testing</div>
+            <div class="guideline-principle-desc">Operator clicks "Run sandbox test". 7-archetype battery executes. All archetypes must maintain rank order (no ordinal violations). Status: <i>sandbox_testing → pending_authorisation</i> (if passed) or <i>failed</i>.</div>
+          </div>
+          <div class="guideline-principle">
+            <div class="guideline-principle-name">Stage 3 — Authorisation</div>
+            <div class="guideline-principle-desc">Operator reviews the proposal and sandbox results. Clicks "Authorise" or "Reject". On authorisation: new RATING_ENGINE_CONFIG base64 value generated. Operator pastes it into Railway Variables manually.</div>
+          </div>
+          <div class="guideline-principle">
+            <div class="guideline-principle-name">Stage 4 — Deployment</div>
+            <div class="guideline-principle-desc">Operator sets RATING_ENGINE_CONFIG in Railway. Service restarts. PLM records the config hash. REAI begins measuring improvement against the new baseline.</div>
+          </div>
+          <div class="guideline-principle">
+            <div class="guideline-principle-name">Stage 5 — Code changes (if required)</div>
+            <div class="guideline-principle-desc">If a proposal requires changes to rating_engine.js (new ratio, new friction type, new Adizes variant), the PLM generates a human-readable specification — not code. The developer reviews, writes the change manually, and commits. The PLM never generates executable code for GitHub.</div>
+          </div>
+        </div>
+
+        <div id="g4" class="guideline-card">
+          <h3>4. REAI — Rating Engine Accuracy Index</h3>
+          <p>The REAI is a scalar metric (0–100) measuring how accurately the engine predicts real-world business outcomes. It is the PLM's performance gauge for the engine itself — the immune system's immune system.</p>
+          <div class="guideline-principle">
+            <div class="guideline-principle-name">Formula</div>
+            <div class="guideline-principle-desc" style="font-family:monospace;font-size:11px">
+              REAI = 100 − (w₁·|MeanPredictionError| + w₂·CollisionMissRate×100 + w₃·RemediaryEfficacyGap + w₄·AdizesDisagreementRate×100)
+            </div>
+          </div>
+          <div class="guideline-principle">
+            <div class="guideline-principle-name">Thresholds and responses</div>
+            <div class="guideline-principle-desc">
+              ≥ 90: Engine performing well — no action needed.<br>
+              80–89: Watch — diagnostic frequency increased.<br>
+              70–79: Moderate drift — proposals expected.<br>
+              60–69: Significant drift — mandatory operator review before new assessments presented as actionable.<br>
+              &lt; 60: Governance lockdown — PLM Mode 4 escalated immediately. All advisory outputs marked provisional.
+            </div>
+          </div>
+        </div>
+
+        <div id="g5" class="guideline-card">
+          <h3>5. Operator obligations</h3>
+          <div class="guideline-principle">
+            <div class="guideline-principle-name">Proposal review SLA</div>
+            <div class="guideline-principle-desc">Proposals that have passed sandbox testing should be reviewed within 14 days. Proposals that have been pending for more than 30 days without action are automatically flagged in the governance log.</div>
+          </div>
+          <div class="guideline-principle">
+            <div class="guideline-principle-name">Credential security</div>
+            <div class="guideline-principle-desc">ADMIN_TOKEN must be a minimum of 64 hex characters (32 bytes, generated by crypto.randomBytes). It must never be shared, stored in Git, or transmitted outside Railway Variables. Rotate every 90 days or immediately on suspected compromise.</div>
+          </div>
+          <div class="guideline-principle">
+            <div class="guideline-principle-name">REAI monitoring</div>
+            <div class="guideline-principle-desc">Operator checks the REAI dashboard at minimum weekly. Any REAI drop of more than 10 points in a 7-day period requires immediate investigation regardless of absolute score.</div>
+          </div>
+        </div>
+
+        <div id="g6" class="guideline-card">
+          <h3>6. Escalation and incident response</h3>
+          <div class="guideline-principle">
+            <div class="guideline-principle-name">AI output incident</div>
+            <div class="guideline-principle-desc">
+              Detection: REAI drop or user complaint.<br>
+              Containment: add "provisional" disclaimer to all engine outputs (one line in app.html).<br>
+              Correction: PLM proposal to address root cause.<br>
+              Post-incident: root cause documented in governance log. User notification if DI was materially incorrect (&gt;15 points from true value).
+            </div>
+          </div>
+          <div class="guideline-principle">
+            <div class="guideline-principle-name">Governance lockdown (REAI &lt; 60)</div>
+            <div class="guideline-principle-desc">All DI scores marked "provisional — under review" in app.html. No new assessments saved to My Reports as authoritative. Operator must investigate and authorise a corrective proposal before normal operation resumes.</div>
+          </div>
+        </div>
+
+        <div id="g7" class="guideline-card">
+          <h3>7. Third-party AI governance</h3>
+          <div class="guideline-principle">
+            <div class="guideline-principle-name">Anthropic Claude API</div>
+            <div class="guideline-principle-desc">Zero Data Retention (ZDR) must be formally confirmed before user financial data is processed at scale (WS-11.9). Until confirmed: all AI-processed content is treated as potentially retained. Anthropic model capability updates reviewed quarterly for governance impact.</div>
+          </div>
+          <div class="guideline-principle">
+            <div class="guideline-principle-name">Flowise orchestration</div>
+            <div class="guideline-principle-desc">Flowise version pinned. Security review on every version update. No Flowise plugin installed without operator review. Flowise runs on Railway internal network only — not exposed directly to the internet.</div>
+          </div>
+        </div>
+
+        <div id="g8" class="guideline-card">
+          <h3>8. Version history</h3>
+          <div class="guideline-principle">
+            <div class="guideline-principle-name">v1.0 — June 2026</div>
+            <div class="guideline-principle-desc">Initial publication. Covers TC principles 1–5, PLM permissions, proposal lifecycle, REAI thresholds, operator obligations, incident response, third-party AI governance. Matches platform state: Billi BAI v1.0 (rating_engine.js v1.0, learning_module.js v1.0, server.js v4.0).</div>
+          </div>
+        </div>
+
+      </div><!-- /section-guidelines -->
 
     </div><!-- /content -->
   </div><!-- /body -->
@@ -349,37 +645,52 @@
 
 <script>
 'use strict';
-
 let ADMIN_TOKEN = '';
 let operatorEmail = '';
 
-// ── Auth — two layers ─────────────────────────────────────────────
-// Layer 1: Google session verified server-side before admin.html is served.
-//          We fetch /api/admin/me to confirm identity and get name/avatar.
-// Layer 2: ADMIN_TOKEN entered by operator in the token input.
+// ── Theme (mirrors app.html) ───────────────────────────────────────
+function toggleTheme() {
+  const b = document.body;
+  const btn = document.getElementById('theme-btn');
+  if (b.classList.contains('dark')) {
+    b.classList.replace('dark','light');
+    btn.innerHTML = '&#9790;';
+    localStorage.setItem('talos-theme','light');
+    // Invert logo for light bg
+    document.querySelectorAll('.topbar-bs-logo img').forEach(i => i.style.filter='invert(0.8)');
+  } else {
+    b.classList.replace('light','dark');
+    btn.innerHTML = '&#9788;';
+    localStorage.setItem('talos-theme','dark');
+    document.querySelectorAll('.topbar-bs-logo img').forEach(i => i.style.filter='none');
+  }
+}
+// Apply saved theme on load
+(function(){
+  const t = localStorage.getItem('talos-theme');
+  if (t === 'light') {
+    document.body.classList.replace('dark','light');
+    document.getElementById('theme-btn') && (document.getElementById('theme-btn').innerHTML = '&#9790;');
+  }
+})();
 
+// ── Auth ──────────────────────────────────────────────────────────
 async function initAuth() {
-  // Page has already passed the server-side Google check.
-  // Fetch operator identity to display and confirm.
   try {
-    const res  = await fetch('/api/admin/me');
-    if (!res.ok) {
-      // Session expired or wrong account — redirect to Google sign-in
-      window.location.href = '/auth/google';
-      return;
-    }
+    const res = await fetch('/api/admin/me');
+    if (!res.ok) { window.location.href = '/auth/google'; return; }
     const me = await res.json();
     operatorEmail = me.email;
     document.getElementById('step-loading').style.display = 'none';
     document.getElementById('step-token').style.display = '';
-    document.getElementById('op-name').textContent  = me.name  || me.email;
+    document.getElementById('op-name').textContent  = me.name || me.email;
     document.getElementById('op-email').textContent = me.email;
     if (me.avatar) {
       const av = document.getElementById('op-avatar');
       av.src = me.avatar; av.style.display = '';
     }
   } catch(e) {
-    document.getElementById('step-loading').textContent = 'Could not verify identity. Reload to retry.';
+    document.getElementById('step-loading').textContent = 'Could not verify identity — reload to retry.';
   }
 }
 
@@ -391,10 +702,13 @@ async function authenticate() {
     if (res.ok) {
       ADMIN_TOKEN = t;
       document.getElementById('auth-gate').style.display = 'none';
-      document.getElementById('shell').style.display    = 'flex';
-      document.getElementById('env-label').textContent  = window.location.hostname;
-      // Show operator identity in topbar
+      document.getElementById('shell').style.display     = 'flex';
+      document.getElementById('env-label').textContent   = window.location.hostname;
       document.getElementById('topbar-operator').textContent = operatorEmail;
+      // Apply saved theme after shell is visible
+      if (localStorage.getItem('talos-theme') === 'light') {
+        document.querySelectorAll('.topbar-bs-logo img').forEach(i => i.style.filter='invert(0.8)');
+      }
       loadAll();
     } else {
       document.getElementById('auth-err').style.display = '';
@@ -414,17 +728,13 @@ document.addEventListener('DOMContentLoaded', () => {
 async function plmFetch(method, path, body, token) {
   return fetch(path, {
     method,
-    headers: {
-      'Content-Type': 'application/json',
-      'x-admin-token': token || ADMIN_TOKEN,
-    },
+    headers: { 'Content-Type':'application/json', 'x-admin-token': token || ADMIN_TOKEN },
     body: body ? JSON.stringify(body) : undefined,
   });
 }
-
 async function apiFetch(method, path, body) {
-  const res  = await plmFetch(method, path, body);
-  if (res.status === 403) { toast('Session expired — refresh page'); return null; }
+  const res = await plmFetch(method, path, body);
+  if (res.status === 403) { toast('Session expired — reload page'); return null; }
   return res.json();
 }
 
@@ -432,95 +742,74 @@ async function apiFetch(method, path, body) {
 function showSection(name) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('section-' + name).classList.add('active');
-  // Set nav active
+  const sec = document.getElementById('section-' + name);
+  if (sec) sec.classList.add('active');
+  // Match nav item by onclick content
   document.querySelectorAll('.nav-item').forEach(n => {
-    if (n.textContent.trim().toLowerCase().startsWith(name.toLowerCase().split('-')[0])) {
-      n.classList.add('active');
-    }
+    if (n.getAttribute('onclick') === `showSection('${name}')`) n.classList.add('active');
   });
-  // Lazy-load
   if (name === 'proposals')    loadProposals();
   if (name === 'log')          loadLog();
   if (name === 'observations') loadObservations();
+}
+function scrollToGuide(id) {
+  document.getElementById(id)?.scrollIntoView({behavior:'smooth'});
 }
 
 // ── Load all ─────────────────────────────────────────────────────
 async function loadAll() {
   await loadStatus();
-  if (document.getElementById('section-proposals').classList.contains('active')) loadProposals();
-  if (document.getElementById('section-log').classList.contains('active')) loadLog();
+  const active = document.querySelector('.section.active')?.id?.replace('section-','');
+  if (active === 'proposals')    loadProposals();
+  if (active === 'log')          loadLog();
+  if (active === 'observations') loadObservations();
 }
 
 // ── PLM Status ────────────────────────────────────────────────────
 async function loadStatus() {
   const data = await apiFetch('GET', '/api/plm/status');
   if (!data) return;
-
   const reai = data.reai_score ?? 100;
   document.getElementById('m-reai').textContent     = reai;
-  document.getElementById('m-obs').textContent      = (data.observations_total || 0).toLocaleString();
-  document.getElementById('m-outcomes').textContent = (data.observations_with_outcomes || 0).toLocaleString();
+  document.getElementById('m-obs').textContent      = (data.observations_total||0).toLocaleString();
+  document.getElementById('m-outcomes').textContent = (data.observations_with_outcomes||0).toLocaleString();
   document.getElementById('m-open').textContent     = data.open_proposals || 0;
   document.getElementById('reai-big').textContent   = reai;
   document.getElementById('last-diag').textContent  = data.last_diagnostic || 'pending first cycle';
   document.getElementById('cfg-hash').textContent   = data.config_hash ? data.config_hash.slice(0,12)+'…' : 'unverified';
-
-  // REAI bar + badge
   const bar = document.getElementById('reai-bar');
   bar.style.width = reai + '%';
-  const badgeEl = document.getElementById('reai-badge');
-  const bigEl   = document.getElementById('reai-big');
-  if (reai >= 90) {
-    bar.style.background = 'var(--green)';
-    bigEl.style.color    = 'var(--green)';
-    badgeEl.className    = 'reai-badge badge-green';
-    badgeEl.textContent  = '✓ Engine performing well';
-  } else if (reai >= 80) {
-    bar.style.background = '#22c55e';
-    bigEl.style.color    = '#22c55e';
-    badgeEl.className    = 'reai-badge badge-amber';
-    badgeEl.textContent  = 'Watch — heightened scanning';
-  } else if (reai >= 70) {
-    bar.style.background = 'var(--amber)';
-    bigEl.style.color    = 'var(--amber)';
-    badgeEl.className    = 'reai-badge badge-amber';
-    badgeEl.textContent  = 'Moderate drift detected';
-  } else if (reai >= 60) {
-    bar.style.background = '#ea580c';
-    bigEl.style.color    = '#ea580c';
-    badgeEl.className    = 'reai-badge badge-orange';
-    badgeEl.textContent  = '⚠ Review required';
-  } else {
-    bar.style.background = 'var(--red)';
-    bigEl.style.color    = 'var(--red)';
-    badgeEl.className    = 'reai-badge badge-red';
-    badgeEl.textContent  = '🔴 Governance lockdown';
-  }
+  const badge = document.getElementById('reai-badge');
+  const big   = document.getElementById('reai-big');
+  const bands = [
+    {min:90,col:'var(--green)', cls:'badge-green',  lbl:'✓ Engine performing well'},
+    {min:80,col:'#22c55e',     cls:'badge-amber',   lbl:'Watch — heightened scanning'},
+    {min:70,col:'var(--amber)',cls:'badge-amber',   lbl:'Moderate drift detected'},
+    {min:60,col:'#ea580c',     cls:'badge-orange',  lbl:'⚠ Review required'},
+    {min:0, col:'var(--red)',  cls:'badge-red',     lbl:'🔴 Governance lockdown'},
+  ];
+  const band = bands.find(b => reai >= b.min) || bands[4];
+  bar.style.background = band.col;
+  big.style.color      = band.col;
+  badge.className      = 'reai-badge ' + band.cls;
+  badge.textContent    = band.lbl;
 }
 
 // ── Proposals ────────────────────────────────────────────────────
 const typeLabels = {
-  parameter_adjustment:    'Parameter recalibration',
-  novel_component:         'New Formula Unit',
-  benchmark_update:        'Benchmark update',
-  threshold_recalibration: 'Threshold change',
+  parameter_adjustment:'Parameter recalibration', novel_component:'New Formula Unit',
+  benchmark_update:'Benchmark update', threshold_recalibration:'Threshold change',
 };
-const statusColours = {
-  proposed:              'var(--muted)',
-  sandbox_testing:       'var(--amber)',
-  pending_authorisation: 'var(--green)',
-  authorised:            'var(--green)',
-  rejected:              'var(--red)',
-};
-
 async function loadProposals() {
   const data = await apiFetch('GET', '/api/plm/proposals');
   const el   = document.getElementById('proposals-list');
-  if (!data || !data.proposals?.length) {
-    el.innerHTML = '<div class="empty">No pending proposals — engine is current.</div>';
-    return;
+  if (!data?.proposals?.length) {
+    el.innerHTML = '<div class="empty">No pending proposals — engine is current.</div>'; return;
   }
+  const statusColours = {
+    proposed:'var(--muted)', sandbox_testing:'var(--amber)',
+    pending_authorisation:'var(--green)', authorised:'var(--green)', rejected:'var(--red)',
+  };
   el.innerHTML = data.proposals.map(p => {
     const tLabel = typeLabels[p.proposal_type] || p.proposal_type;
     const sCol   = statusColours[p.status] || 'var(--muted)';
@@ -532,52 +821,44 @@ async function loadProposals() {
     return `<div class="proposal">
       <div class="proposal-hdr">
         <span class="proposal-type">${tLabel}</span>
-        <span class="proposal-status" style="color:${sCol}">${p.status?.replace(/_/g,' ') || 'proposed'}</span>
+        <span class="proposal-status" style="color:${sCol}">${(p.status||'proposed').replace(/_/g,' ')}</span>
       </div>
-      <div class="proposal-title">${p.title || p.proposal_id}</div>
+      <div class="proposal-title">${p.title||p.proposal_id}</div>
       <div class="proposal-meta">
-        ${p.description ? p.description + '<br>' : ''}
+        ${p.description||''} ${p.description?'<br>':''}
         Proposed: ${p.created_at ? new Date(p.created_at).toLocaleDateString('en-ZA') : '—'}
-        ${p.expected_reai_improvement ? ' · Expected REAI +' + p.expected_reai_improvement : ''}
+        ${p.expected_reai_improvement ? ' · Expected REAI +'+p.expected_reai_improvement : ''}
       </div>
       <div class="proposal-actions">${actions}</div>
     </div>`;
   }).join('');
 }
-
 async function sandbox(proposalId) {
-  toast('Running sandbox test — 7-archetype battery…');
+  toast('Running 7-archetype sandbox battery…');
   const data = await apiFetch('POST', '/api/plm/sandbox', { proposalId });
   if (!data) return;
-  const passed = data.acceptance_criteria_met;
-  toast(passed ? '✅ Sandbox passed — ready to authorise' : `⚠ Sandbox: ${data.tests_failed} test(s) failed`);
+  toast(data.acceptance_criteria_met ? '✅ Sandbox passed — ready to authorise' : `⚠ ${data.tests_failed} test(s) failed`);
   loadProposals();
 }
-
 async function authorise(proposalId, approved) {
-  const note = prompt(approved ? 'Authorisation note (optional):' : 'Rejection reason:', '');
-  if (note === null) return;  // cancelled
+  const note = prompt(approved ? 'Authorisation note:' : 'Rejection reason:', '');
+  if (note === null) return;
   const operatorId = operatorEmail || 'operator@' + window.location.hostname;
   toast(approved ? 'Authorising…' : 'Rejecting…');
   const data = await apiFetch('POST', '/api/plm/authorise', { proposalId, approved, note, operatorId });
   if (!data) return;
   if (approved && data.new_config_b64) {
-    // Show deploy block
     const db = document.getElementById('deploy-block');
     document.getElementById('config-val').textContent = data.new_config_b64;
     db.style.display = '';
-    db.scrollIntoView({ behavior: 'smooth' });
+    db.scrollIntoView({behavior:'smooth'});
     toast('✅ Authorised — copy config and set in Railway Variables');
-  } else {
-    toast(approved ? '✅ Authorised' : '✕ Rejected');
-  }
-  loadProposals();
-  loadStatus();
+  } else { toast(approved ? '✅ Authorised' : '✕ Rejected'); }
+  loadProposals(); loadStatus();
 }
-
 function copyConfig() {
-  const val = document.getElementById('config-val').textContent;
-  navigator.clipboard.writeText(val).then(() => toast('Copied to clipboard'));
+  navigator.clipboard.writeText(document.getElementById('config-val').textContent)
+    .then(() => toast('Copied to clipboard'));
 }
 
 // ── Diagnostics ───────────────────────────────────────────────────
@@ -586,79 +867,85 @@ async function runDiagnosticsNow() {
   const data = await apiFetch('POST', '/api/plm/diagnostics');
   const el   = document.getElementById('diag-result');
   if (!data) { el.innerHTML = '<div class="empty">Diagnostics failed — check server logs.</div>'; return; }
-  el.innerHTML = `
-    <div class="card">
-      <div class="card-title">Diagnostic result — ${new Date().toLocaleString('en-ZA')}</div>
-      <div style="font-size:12px;line-height:1.8">
-        ${data.signals_detected ? `<b style="color:var(--orange)">${data.signals_detected}</b> signal(s) detected<br>` : 'No signals detected — engine within normal parameters<br>'}
-        ${data.proposals_created ? `<b style="color:var(--green)">${data.proposals_created}</b> new proposal(s) generated<br>` : ''}
-        ${data.observations_analysed ? `Observations analysed: <b>${data.observations_analysed}</b><br>` : ''}
-        ${data.next_cycle ? `Next scheduled cycle: <b>${data.next_cycle}</b><br>` : ''}
-      </div>
-      ${data.details ? `<pre style="font-size:10px;color:var(--muted);margin-top:8px;white-space:pre-wrap">${JSON.stringify(data.details, null, 2)}</pre>` : ''}
-    </div>`;
-  toast('Diagnostics complete');
-  loadStatus();
-  loadProposals();
+  el.innerHTML = `<div class="card">
+    <div class="card-title">Result — ${new Date().toLocaleString('en-ZA')}</div>
+    <div style="font-size:12px;line-height:1.9">
+      ${data.signals_detected ? `<b style="color:var(--orange)">${data.signals_detected}</b> signal(s) detected<br>` : 'No signals — engine within normal parameters<br>'}
+      ${data.proposals_created ? `<b style="color:var(--green)">${data.proposals_created}</b> proposal(s) generated<br>` : ''}
+      ${data.observations_analysed ? `Observations analysed: <b>${data.observations_analysed}</b><br>` : ''}
+    </div>
+    ${data.details ? `<pre style="font-size:10px;color:var(--muted);margin-top:8px;white-space:pre-wrap;overflow:auto">${JSON.stringify(data.details,null,2)}</pre>` : ''}
+  </div>`;
+  toast('Diagnostics complete'); loadStatus(); loadProposals();
 }
 
 // ── Governance log ────────────────────────────────────────────────
 async function loadLog() {
   const data = await apiFetch('GET', '/api/plm/log');
   const el   = document.getElementById('log-content');
-  if (!data || !data.log?.length) {
-    el.innerHTML = '<div class="empty">No governance events recorded yet.</div>';
-    return;
-  }
-  el.innerHTML = `
-    <table class="log-table">
-      <thead><tr>
-        <th>Date/time</th><th>Event</th><th>Proposal</th>
-        <th>Operator</th><th>Outcome</th>
-      </tr></thead>
-      <tbody>
-        ${data.log.map(e => `<tr>
-          <td style="white-space:nowrap">${new Date(e.created_at||e.ts).toLocaleString('en-ZA')}</td>
-          <td><span style="color:var(--orange);font-weight:600">${e.event_type||e.action||'—'}</span></td>
-          <td style="font-family:monospace;font-size:10px">${(e.proposal_id||'—').slice(0,12)}</td>
-          <td>${e.operator_id||e.user||'—'}</td>
-          <td style="color:${e.outcome==='authorised'?'var(--green)':e.outcome==='rejected'?'var(--red)':'var(--muted)'}">
-            ${e.outcome||e.result||'—'}
-          </td>
-        </tr>`).join('')}
-      </tbody>
-    </table>`;
+  if (!data?.log?.length) { el.innerHTML = '<div class="empty">No governance events recorded yet.</div>'; return; }
+  el.innerHTML = `<table class="log-table">
+    <thead><tr><th>Date/time</th><th>Event</th><th>Proposal</th><th>Operator</th><th>Outcome</th></tr></thead>
+    <tbody>${data.log.map(e => `<tr>
+      <td style="white-space:nowrap">${new Date(e.created_at||e.ts).toLocaleString('en-ZA')}</td>
+      <td><span style="color:var(--orange);font-weight:600">${e.event_type||e.action||'—'}</span></td>
+      <td style="font-family:monospace;font-size:10px">${(e.proposal_id||'—').slice(0,12)}</td>
+      <td>${e.operator_id||e.user||'—'}</td>
+      <td style="color:${e.outcome==='authorised'?'var(--green)':e.outcome==='rejected'?'var(--red)':'var(--muted)'}">
+        ${e.outcome||e.result||'—'}</td>
+    </tr>`).join('')}</tbody>
+  </table>`;
 }
 
 // ── Observations ──────────────────────────────────────────────────
 async function loadObservations() {
   const status = await apiFetch('GET', '/api/plm/status');
   if (!status) return;
-  const el = document.getElementById('obs-stats');
-  el.innerHTML = `
+  const current = status.observations_with_outcomes || 0;
+  document.getElementById('obs-current').textContent = current;
+  document.getElementById('obs-stats').innerHTML = `
     <div class="stat-pill">Total: <b>${(status.observations_total||0).toLocaleString()}</b></div>
-    <div class="stat-pill">With T+30/90/180: <b>${(status.observations_with_outcomes||0).toLocaleString()}</b></div>
-    <div class="stat-pill">Needed for first REAI cycle: <b>${status.observations_with_outcomes >= 10 ? '✅ met' : `${status.observations_with_outcomes||0}/10`}</b></div>
-    <div class="stat-pill">Config hash: <b style="font-family:monospace">${(status.config_hash||'—').slice(0,8)}</b></div>
-  `;
-  document.getElementById('obs-content').innerHTML = `
-    <div class="card">
-      <div class="card-title">Status</div>
-      <div style="font-size:12px;color:var(--muted);line-height:1.8">
-        PLM is live and recording an observation on every /api/engine/rate call.<br>
-        The observation record includes: userId (hashed), sector, DI score, risk level, collision risk, Adizes stage, timestamp.<br>
-        Users record T+90 outcomes from their My Reports view when the outcome prompt appears.<br><br>
-        REAI calculation starts when n ≥ 10 T+90 outcomes exist. Current: <b style="color:var(--orange)">${status.observations_with_outcomes||0}</b>.
-      </div>
-    </div>`;
+    <div class="stat-pill">With outcomes: <b>${current.toLocaleString()}</b></div>
+    <div class="stat-pill">First REAI cycle: <b>${current >= 10 ? '✅ met' : current+'/10'}</b></div>
+    <div class="stat-pill">Config hash: <b style="font-family:monospace">${(status.config_hash||'—').slice(0,8)}</b></div>`;
+}
+
+// ── Guidelines download ──────────────────────────────────────────
+function downloadGuidelines() {
+  // Build a clean printable HTML version of the guidelines section
+  const content = document.getElementById('section-guidelines').innerHTML;
+  const html = `<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><title>Talos Governance Guidelines v1.0</title>
+<style>
+  body{font-family:'Segoe UI',Arial,sans-serif;max-width:800px;margin:0 auto;padding:32px 24px;color:#1a1614}
+  h1{color:#c45200;border-bottom:3px solid #c45200;padding-bottom:10px;margin-bottom:24px}
+  h3{color:#c45200;margin:24px 0 8px}
+  .guideline-card{border:1px solid #ddd;border-left:4px solid #3b82f6;border-radius:8px;padding:16px 20px;margin-bottom:16px}
+  .guideline-principle{background:#f5f0eb;border-radius:6px;padding:10px 14px;margin-bottom:8px}
+  .guideline-principle-name{font-weight:700;color:#c45200;margin-bottom:4px;font-size:12px}
+  .guideline-principle-desc{font-size:12px;line-height:1.7;color:#1a1614}
+  .section-title,.btn-dl,.guideline-toc a,.nav-avatar-wrap,.stat-row{display:none!important}
+  @media print{body{padding:12px}}
+</style>
+</head><body>
+<h1>⚡ Talos Expert — Governance Guidelines v1.0</h1>
+<p style="color:#888;font-size:12px">AnyABEX (Pty) Ltd · billsource.ai · Generated ${new Date().toLocaleDateString('en-ZA')}</p>
+${content}
+</body></html>`;
+  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = 'Talos_Governance_Guidelines_v1.0.html';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  toast('Guidelines downloaded');
 }
 
 // ── Toast ─────────────────────────────────────────────────────────
 function toast(msg) {
   const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 3000);
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3200);
 }
 </script>
 </body>
