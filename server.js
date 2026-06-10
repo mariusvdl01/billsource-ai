@@ -433,6 +433,7 @@ const server = http.createServer(async (req, res) => {
       await db.createSession(sid, profile.email);
       const user = rowToUser(userRow);
       sessionCache[sid] = {sid, user};
+      db.updateLastLogin(profile.email).catch(()=>{});  // track last login
 
       const expiry = new Date(Date.now() + 7*24*60*60*1000).toUTCString();
       res.writeHead(302, {Location: nextPath,
@@ -477,6 +478,10 @@ const server = http.createServer(async (req, res) => {
   // ── API: /api/chat ────────────────────────
   if (pathname === '/api/chat' && method === 'POST') {
     const session = await getSessionUser(req);
+    if (session?.user?.email) {
+      db.incrementChatCount(session.user.email).catch(()=>{});
+      db.logFeatureUse(session.user.email, 'chat', session.user.plan).catch(()=>{});
+    }
     if (!session) {
       res.writeHead(401, {'Content-Type':'application/json'});
       res.end(JSON.stringify({error:'Please sign in to continue.'})); return;
@@ -660,6 +665,7 @@ const server = http.createServer(async (req, res) => {
       console.log(`Webhook: ${event.event} — ${email}`);
       switch (event.event) {
         case 'charge.success': {
+          const prevPlan = (await db.getUser(email))?.plan || 'free';
           const meta = event.data?.metadata || {};
           if (meta.order_type === 'merch') {
             // Merch order — send fulfillment emails
@@ -678,7 +684,9 @@ const server = http.createServer(async (req, res) => {
         }
         case 'subscription.create':
           if (email && planCode) {
+            const prevUser = await db.getUser(email);
             await upgradeUser(email, planCode);
+            await db.logBillingEvent(email, 'subscription.create', prevUser?.plan, PLAN_CODE_MAP[planCode], null, event.data?.reference, event.event, null).catch(()=>{});
             const planName = PLAN_CODE_MAP[planCode];
             if (planName) {
               await mailer.sendPlanUpgradeEmail({
@@ -691,7 +699,12 @@ const server = http.createServer(async (req, res) => {
           break;
         case 'subscription.disable':
         case 'invoice.payment_failed':
-          if (email) await downgradeUser(email); break;
+          if (email) {
+            const pu = await db.getUser(email);
+            await downgradeUser(email);
+            await db.logBillingEvent(email, event.event, pu?.plan, 'free', null, null, event.event, 'Subscription disabled or payment failed — auto-downgraded to free').catch(()=>{});
+          }
+          break;
         case 'subscription.enable':
           if (email && planCode) await upgradeUser(email, planCode); break;
       }
@@ -740,6 +753,21 @@ const server = http.createServer(async (req, res) => {
     await handleSaveReport(req, res, session); return;
   }
 
+  // ── /ops — operational dashboard ─────────────────────────────────
+  if (pathname === '/ops' && method === 'GET') {
+    const session = await getSessionUser(req);
+    if (!session) {
+      res.writeHead(302, { Location: buildGoogleAuthUrl(crypto.randomBytes(16).toString('hex'), '/ops') });
+      res.end(); return;
+    }
+    if (!ADMIN_EMAIL || session.user.email.toLowerCase() !== ADMIN_EMAIL) {
+      res.writeHead(403, { 'Content-Type': 'text/html' });
+      res.end('<html><body style="font-family:sans-serif;padding:40px;background:#0f0d0b;color:#e8e4e0"><h2 style="color:#c45200">Access denied</h2><p>This dashboard is restricted to the operator account.</p><a href="/" style="color:#c45200">Return home</a></body></html>');
+      return;
+    }
+    serveFile(res, path.join(ROOT, 'ops.html')); return;
+  }
+
   // ── /admin — serve admin.html (operator only) ────────────────────
   // Two-layer auth:
   //   Layer 1 (identity): Google OAuth session — email must match ADMIN_EMAIL env var
@@ -778,6 +806,50 @@ const server = http.createServer(async (req, res) => {
       name:  session.user.name,
       avatar: session.user.avatar,
     })); return;
+  }
+
+  // ── Operational dashboard API routes — ADMIN_TOKEN required ──────
+  if (pathname === '/api/ops/users' && method === 'GET') {
+    if (!requireAdmin()) return;
+    const users = await db.getOperationalUsers(500);
+    res.writeHead(200,{'Content-Type':'application/json'});
+    res.end(JSON.stringify({ users })); return;
+  }
+  if (pathname.startsWith('/api/ops/user/') && method === 'GET') {
+    if (!requireAdmin()) return;
+    const email = decodeURIComponent(pathname.replace('/api/ops/user/',''));
+    const detail = await db.getOperationalUserDetail(email);
+    res.writeHead(200,{'Content-Type':'application/json'});
+    res.end(JSON.stringify(detail)); return;
+  }
+  if (pathname.startsWith('/api/ops/user/') && method === 'POST') {
+    if (!requireAdmin()) return;
+    const email = decodeURIComponent(pathname.replace('/api/ops/user/','').split('/action')[0]);
+    const body = JSON.parse(await readBody(req));
+    if (body.action === 'disable') {
+      await db.setUserDisabled(email, true, body.reason || 'Operator action');
+      await db.logBillingEvent(email, 'manual', null, null, null, null, null, 'Account disabled by operator: ' + (body.reason||''));
+    } else if (body.action === 'enable') {
+      await db.setUserDisabled(email, false, '');
+      await db.logBillingEvent(email, 'manual', null, null, null, null, null, 'Account re-enabled by operator');
+    } else if (body.action === 'reset_messages') {
+      await db.pool.query('UPDATE users SET messages_used=0 WHERE email=$1', [email]);
+    }
+    res.writeHead(200,{'Content-Type':'application/json'});
+    res.end(JSON.stringify({ ok: true })); return;
+  }
+  if (pathname === '/api/ops/prompts' && method === 'GET') {
+    if (!requireAdmin()) return;
+    const prompts = await db.getPromptReviewList();
+    res.writeHead(200,{'Content-Type':'application/json'});
+    res.end(JSON.stringify({ prompts })); return;
+  }
+  if (pathname === '/api/ops/prompts' && method === 'POST') {
+    if (!requireAdmin()) return;
+    const body = JSON.parse(await readBody(req));
+    await db.setPromptStatus(body.promptKey, body.status, body.notes);
+    res.writeHead(200,{'Content-Type':'application/json'});
+    res.end(JSON.stringify({ ok: true })); return;
   }
 
   // ── PLM Admin Routes — operator-only, ADMIN_TOKEN required ──────
@@ -899,6 +971,7 @@ const server = http.createServer(async (req, res) => {
   // ── /api/engine/analyse — standard ratio analysis (Professional+) ──
   if (pathname === '/api/engine/analyse' && method === 'POST') {
     const session = await getSessionUser(req);
+    if (session?.user?.email) db.logFeatureUse(session.user.email, 'engine/analyse', session.user?.plan).catch(()=>{});
     if (!session) { res.writeHead(401,{'Content-Type':'application/json'}); res.end(JSON.stringify({error:'Authentication required'})); return; }
     const u = session.user;
     if (!['professional','business','enterprise'].includes(u.plan)) {
@@ -949,6 +1022,7 @@ const server = http.createServer(async (req, res) => {
       // PLM: record this assessment as an observation for learning
       plm.recordObservation(u.email, input.sector, input.country || null, result)
         .catch(e => console.error('PLM observe error:', e.message));
+      db.logFeatureUse(u.email, 'engine/rate', u.plan, { di: result.node_health.digital_index, sector: input.sector }).catch(()=>{});
       res.writeHead(200,{'Content-Type':'application/json'});
       res.end(JSON.stringify(result));
     } catch(err) {
