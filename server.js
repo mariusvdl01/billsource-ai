@@ -451,7 +451,7 @@ const server = http.createServer(async (req, res) => {
     "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
-    "img-src 'self' data: blob: https://lh3.googleusercontent.com",
+    "img-src 'self' data: blob: https: https://lh3.googleusercontent.com",
     "connect-src 'self' https://api.anthropic.com https://api.paystack.co",
     "frame-src 'none'",
     "object-src 'none'"
