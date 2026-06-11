@@ -1485,16 +1485,11 @@
 
   // ══ PWA SERVICE WORKER ══
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      // Unregister all existing service workers, then re-register fresh.
-      // This ensures stale cached versions of app.html are never served.
-      navigator.serviceWorker.getRegistrations().then(regs => {
-        const unreg = regs.map(r => r.unregister());
-        return Promise.all(unreg);
-      }).then(() => {
-        navigator.serviceWorker.register('/sw.js').catch(e => console.log('SW:', e));
-      });
-    });
+    // Unregister all service workers — the /app route already cleared caches.
+    // Not re-registering prevents stale HTML from being served from SW cache.
+    navigator.serviceWorker.getRegistrations()
+      .then(regs => Promise.all(regs.map(r => r.unregister())))
+      .catch(() => {});
   }
 
   // ══ INSTALL PROMPT ══
