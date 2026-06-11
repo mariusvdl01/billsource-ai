@@ -119,6 +119,48 @@ function checkRateLimit(email) {
   return true;
 }
 
+// FIX-002: IP-based rate limiter — auth + engine routes
+// Separate from the per-user message limiter above.
+// Auth: 20 attempts / 15 min per IP  (brute-force protection)
+// Engine/rate: 10 ratings / 60 min per IP  (cost protection)
+// Magic-link: 5 requests / 60 min per IP  (email flooding protection)
+const ipRateLimitMap = {};
+
+function checkIpRateLimit(ip, bucket, maxCount, windowMs) {
+  const key = `${bucket}:${ip}`;
+  const now  = Date.now();
+  if (!ipRateLimitMap[key]) {
+    ipRateLimitMap[key] = { count: 1, windowStart: now };
+    return true;
+  }
+  const rl = ipRateLimitMap[key];
+  if (now - rl.windowStart > windowMs) {
+    rl.count = 1; rl.windowStart = now;
+    return true;
+  }
+  rl.count++;
+  if (rl.count > maxCount) {
+    console.warn(`IP_RATE_LIMIT | bucket:${bucket} | ip:${ip} | count:${rl.count}`);
+    return false;
+  }
+  return true;
+}
+
+// Helper: get real client IP (Railway puts it in x-forwarded-for)
+function getClientIp(req) {
+  return (req.headers['x-forwarded-for'] || '').split(',')[0].trim()
+      || req.socket?.remoteAddress
+      || '0.0.0.0';
+}
+
+// Clean IP rate limit map every 2 hours
+setInterval(() => {
+  const cutoff = Date.now() - 2 * 60 * 60 * 1000;
+  Object.keys(ipRateLimitMap).forEach(k => {
+    if (ipRateLimitMap[k].windowStart < cutoff) delete ipRateLimitMap[k];
+  });
+}, 2 * 60 * 60 * 1000);
+
 // Clean rate limit map every hour to prevent memory leak
 setInterval(() => {
   const cutoff = Date.now() - RATE_WINDOW_MS * 2;
@@ -398,8 +440,30 @@ const server = http.createServer(async (req, res) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
 
+  // FIX-001: Security HTTP headers on every response
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+  res.setHeader('Content-Security-Policy', [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com",
+    "img-src 'self' data: blob: https://lh3.googleusercontent.com",
+    "connect-src 'self' https://api.anthropic.com https://api.paystack.co",
+    "frame-src 'none'",
+    "object-src 'none'"
+  ].join('; '));
+
   // ── AUTH ────────────────────────────────
   if (pathname === '/auth/google' && method === 'GET') {
+    if (!checkIpRateLimit(getClientIp(req), 'auth', 20, 15 * 60 * 1000)) {
+      res.writeHead(429, {'Content-Type':'text/html'});
+      res.end('<html><body style="font-family:sans-serif;padding:40px;background:#0f0d0b;color:#e8e4e0"><h2 style="color:#c45200">Too many requests</h2><p>Please wait 15 minutes before trying again.</p></body></html>');
+      return;
+    }
     const state = crypto.randomBytes(16).toString('hex');
     res.writeHead(302, {Location: buildGoogleAuthUrl(state)});
     res.end(); return;
@@ -948,10 +1012,14 @@ const server = http.createServer(async (req, res) => {
   // These are NOT user routes. No customer plan grants access.
   // ADMIN_TOKEN is a Railway env var known only to the operator.
   // Usage: send header  x-admin-token: <ADMIN_TOKEN>  with every PLM request.
+  // FIX-003: Centralised admin access control — two layers must both pass
+  // Layer 1: ADMIN_TOKEN in x-admin-token header (machine-to-machine and browser)
+  // Layer 2: Google session email must match ADMIN_EMAIL env var
+  // Logs every denied attempt for audit trail
   function requireAdmin() {
-    // Layer 1 check: ADMIN_TOKEN in x-admin-token header (what you know)
     const token = req.headers['x-admin-token'] || '';
     if (!ADMIN_TOKEN || token.length !== ADMIN_TOKEN.length) {
+      console.warn(`[SEC FIX-003] Admin denied | no/wrong token length | IP: ${getClientIp(req)} | ${pathname}`);
       res.writeHead(403, {'Content-Type':'application/json'});
       res.end(JSON.stringify({ error: 'Operator access required' }));
       return false;
@@ -959,6 +1027,7 @@ const server = http.createServer(async (req, res) => {
     const tokBuf = Buffer.from(token);
     const adBuf  = Buffer.from(ADMIN_TOKEN);
     if (!crypto.timingSafeEqual(tokBuf, adBuf)) {
+      console.warn(`[SEC FIX-003] Admin denied | token mismatch | IP: ${getClientIp(req)} | ${pathname}`);
       res.writeHead(403, {'Content-Type':'application/json'});
       res.end(JSON.stringify({ error: 'Operator access required' }));
       return false;
@@ -1092,6 +1161,11 @@ const server = http.createServer(async (req, res) => {
   if (pathname === '/api/engine/rate' && method === 'POST') {
     const session = await getSessionUser(req);
     if (!session) { res.writeHead(401,{'Content-Type':'application/json'}); res.end(JSON.stringify({error:'Authentication required'})); return; }
+    // FIX-002: IP rate limit — 10 ratings per hour
+    if (!checkIpRateLimit(getClientIp(req), 'engine/rate', 10, 60 * 60 * 1000)) {
+      res.writeHead(429,{'Content-Type':'application/json'});
+      res.end(JSON.stringify({error:'rate_limited', message:'Rating limit reached. You can run up to 10 assessments per hour.'})); return;
+    }
     const u = session.user;
     if (!['business','enterprise'].includes(u.plan)) {
       res.writeHead(403,{'Content-Type':'application/json'});

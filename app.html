@@ -657,16 +657,6 @@
       setTimeout(() => window.location.reload(), 5000);
     }
   }
-    } catch(e) {
-        document.getElementById('sb-name').textContent  = 'Cannot reach server';
-      document.getElementById('sb-email').textContent = 'Retrying in 5s…';
-      fetch('/api/client-log', {method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({event:'loadUser_error', msg: e.message, ua: navigator.userAgent})
-      }).catch(()=>{});
-      setTimeout(() => window.location.reload(), 5000);
-    }
-  }
 
   function dismissSSOReminder() {
     var reminder = document.getElementById('sso-activation-reminder');
@@ -2383,6 +2373,32 @@
         <button onclick="runEngineFromChat()" style="flex:1;padding:7px;background:var(--orange);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font)">📈 Run full ratio analysis</button>
         <button onclick="askBilliAboutFileRaw()" style="flex:1;padding:7px;background:var(--bg2);border:0.5px solid var(--border);color:var(--text);border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--font)">💬 Ask Billi about it</button>
       </div>
+      <details style="margin-top:8px" id="ls-inputs-detail">
+        <summary style="font-size:10px;color:var(--orange);cursor:pointer;user-select:none;font-weight:600;letter-spacing:0.04em">⚡ Add Load-Shedding data (optional — improves your score)</summary>
+        <div style="margin-top:8px;padding:8px 10px;background:var(--bg2);border-radius:7px;border:0.5px solid var(--border)">
+          <div style="font-size:9px;color:var(--muted);margin-bottom:8px;line-height:1.4">SA-specific. These figures improve your Digital Index accuracy by factoring in energy cost exposure and grid risk.</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div>
+              <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:2px">Monthly Energy Cost (R)</label>
+              <input id="ls-energy-cost" type="number" min="0" placeholder="e.g. 8000" style="width:100%;box-sizing:border-box;padding:5px 7px;background:var(--bg);border:0.5px solid var(--border);border-radius:5px;color:var(--text);font-size:11px;font-family:var(--font)">
+            </div>
+            <div>
+              <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:2px">Avg Load-Shedding Hours/day</label>
+              <input id="ls-hours" type="number" min="0" max="12" step="0.5" placeholder="e.g. 4" style="width:100%;box-sizing:border-box;padding:5px 7px;background:var(--bg);border:0.5px solid var(--border);border-radius:5px;color:var(--text);font-size:11px;font-family:var(--font)">
+            </div>
+          </div>
+          <div style="margin-top:8px">
+            <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:2px">Backup Power</label>
+            <select id="ls-backup" style="width:100%;padding:5px 7px;background:var(--bg);border:0.5px solid var(--border);border-radius:5px;color:var(--text);font-size:11px;font-family:var(--font)">
+              <option value="none">No backup power</option>
+              <option value="ups_only">UPS only (short buffer)</option>
+              <option value="generator">Generator</option>
+              <option value="solar_partial">Solar — partial coverage</option>
+              <option value="solar_full">Solar — full coverage</option>
+            </select>
+          </div>
+        </div>
+      </details>
       <div style="font-size:10px;color:var(--muted);margin-top:6px;text-align:center">💾 Save to My Reports is available after running the full analysis</div>
     </div>`;
 
@@ -2419,6 +2435,16 @@
       annualRevenue:      data.annualRevenue        || (data.revenue||0)*12
     };
 
+    // ── Load-shedding inputs (optional — NFU-001) ──
+    const lsEnergy  = parseFloat(document.getElementById('ls-energy-cost')?.value || '');
+    const lsHours   = parseFloat(document.getElementById('ls-hours')?.value || '');
+    const lsBackup  = document.getElementById('ls-backup')?.value || 'none';
+    if (!isNaN(lsEnergy) && lsEnergy > 0) {
+      payload.monthly_energy_cost = lsEnergy;
+      payload.backup_power_type   = lsBackup;
+      payload.load_shedding_hours = isNaN(lsHours) ? 0 : lsHours;
+    }
+
     try {
       const res    = await fetch(endpoint, {
         method:'POST', headers:{'Content-Type':'application/json'},
@@ -2437,6 +2463,8 @@
       const drift  = isFullEngine ? (result.drift_detected || false) : false;
       const remedies = isFullEngine ? (result.remedies || []) : [];
       const r      = isFullEngine ? (result.detail?.financialHealth?.ratios || {}) : (result.ratios || {});
+
+      const lsResult  = isFullEngine ? (result.detail?.loadShedding ?? null) : null;
 
       const riskCol = {low:'#16a34a',moderate:'#d97706',elevated:'#ea580c',critical:'#dc2626'};
       const dot     = riskCol[risk] || '#d97706';
@@ -2468,6 +2496,7 @@
           ${fhs !== null ? `<div style="flex:1;background:var(--bg2);border-radius:5px;padding:4px 6px;text-align:center"><div style="font-size:9px;color:var(--muted)">Business Pulse</div><div style="font-size:13px;font-weight:700">${fhs}</div></div>` : ''}
           ${nhs !== null ? `<div style="flex:1;background:var(--bg2);border-radius:5px;padding:4px 6px;text-align:center"><div style="font-size:9px;color:var(--muted)">Ecosystem Fit</div><div style="font-size:13px;font-weight:700">${nhs}</div></div>` : ''}
           ${cr  !== null ? `<div style="flex:1;background:var(--bg2);border-radius:5px;padding:4px 6px;text-align:center"><div style="font-size:9px;color:var(--muted)">Stress Level</div><div style="font-size:13px;font-weight:700;color:${cr>50?'#dc2626':cr>25?'#d97706':'#16a34a'}">${cr}</div></div>` : ''}
+          ${lsResult && lsResult.score !== null ? `<div style="flex:1;background:${lsResult.score>70?'rgba(220,38,38,0.08)':lsResult.score>45?'rgba(217,119,6,0.08)':'rgba(22,163,74,0.08)'};border-radius:5px;padding:4px 6px;text-align:center"><div style="font-size:9px;color:var(--muted)">⚡ Energy</div><div style="font-size:11px;font-weight:700;color:${lsResult.score>70?'#dc2626':lsResult.score>45?'#d97706':'#16a34a'}">${lsResult.label}</div></div>` : ''}
           <div style="flex:1;background:rgba(196,82,0,0.08);border-radius:5px;padding:4px 6px;text-align:center"><div style="font-size:9px;color:var(--muted)">Advisor</div><div style="font-size:11px;font-weight:700;color:var(--orange)">${agent}</div></div>
         </div>` :
         `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
@@ -2506,7 +2535,7 @@
       </div>`;
 
       addBubble(html, 'ai', true);
-      window._lastEngineResult = { score:di, rating:rLabel, colour:risk, ratios:r };
+      window._lastEngineResult = { score:di, rating:rLabel, colour:risk, ratios:r, loadShedding: lsResult };
       window._lastEngineFile   = name;
 
     } catch(e) { addBubble('Could not run analysis — please try again.', 'ai'); }

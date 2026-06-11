@@ -498,7 +498,91 @@ function detectCollisions(data, ratios, ecosystemData) {
 }
 
 // ════════════════════════════════════════════════════════════════════
-// COMPONENT 6 — DIGITAL INDEX (COMPOSITE)
+// NFU-001 — LOAD-SHEDDING RESILIENCE SCORE
+// SA-specific ecosystem risk signal.
+// Contributes up to 20 points to Collision Risk (CR).
+// Activated only when nfu_001_enabled === true in RATING_ENGINE_CONFIG.
+//
+// Optional inputs (all via the main engine input object):
+//   monthly_energy_cost   — R/month
+//   load_shedding_hours   — avg hours/day affected (0–12)
+//   backup_power_type     — 'none'|'ups_only'|'generator'|'solar_partial'|'solar_full'
+//   sector                — reuses existing sector key for multiplier
+// ════════════════════════════════════════════════════════════════════
+
+function computeLoadSheddingScore(input, sector) {
+  const cfg = loadConfig();
+
+  // Guard: NFU not enabled or insufficient inputs
+  if (!cfg.nfu_001_enabled) {
+    return { score: null, risk: 0, label: 'Not assessed', detail: { reason: 'NFU-001 not activated' } };
+  }
+
+  const energyCost = Number(input.monthly_energy_cost);
+  const revenue    = Number(input.revenue);  // monthly revenue already normalised
+
+  if (!energyCost || energyCost <= 0 || !revenue || revenue <= 0) {
+    return { score: null, risk: 0, label: 'Not assessed', detail: { reason: 'Energy cost not provided' } };
+  }
+
+  // ── 1. Energy Cost Ratio ──────────────────────────────────────────
+  const energyCostRatio = energyCost / revenue;
+  let energyRatioScore;
+  if      (energyCostRatio < 0.03) energyRatioScore = 0;
+  else if (energyCostRatio < 0.08) energyRatioScore = 25;
+  else if (energyCostRatio < 0.15) energyRatioScore = 55;
+  else                             energyRatioScore = 85;
+
+  // ── 2. Backup Power Score ─────────────────────────────────────────
+  const backupScoreMap = {
+    solar_full: 0, solar_partial: 20, generator: 35, ups_only: 60, none: 100
+  };
+  const backupType = (input.backup_power_type || 'none').toLowerCase();
+  const backupScore = backupScoreMap[backupType] !== undefined ? backupScoreMap[backupType] : 100;
+
+  // ── 3. Exposure Hours Score ───────────────────────────────────────
+  const hours = Math.min(Math.max(Number(input.load_shedding_hours) || 0, 0), 12);
+  const exposureScore = (hours / 12) * 100;
+
+  // ── 4. Sector Multiplier ──────────────────────────────────────────
+  const sectorMultipliers = cfg.nfu_001_sector_multipliers || {
+    manufacturing: 1.35, retail: 1.20, hospitality: 1.25, healthcare: 1.40,
+    construction: 1.15, agriculture: 1.20, services: 0.85, technology: 0.75, default: 1.00
+  };
+  const multiplier = sectorMultipliers[sector] || sectorMultipliers.default || 1.00;
+
+  // ── 5. Weights ────────────────────────────────────────────────────
+  const w1 = cfg.nfu_001_weights?.energy_cost || 0.45;
+  const w2 = cfg.nfu_001_weights?.backup      || 0.35;
+  const w3 = cfg.nfu_001_weights?.exposure    || 0.20;
+
+  const rawScore = ((w1 * energyRatioScore) + (w2 * backupScore) + (w3 * exposureScore)) * multiplier;
+  const lsScore  = Math.min(100, Math.max(0, Math.round(rawScore)));
+
+  // ── 6. Collision Risk Contribution (0–20 pts) ─────────────────────
+  const maxRisk = cfg.nfu_001_max_collision_contribution || 20;
+  const lsRisk  = Math.round((lsScore / 100) * maxRisk);
+
+  // ── 7. Label ──────────────────────────────────────────────────────
+  const label = lsScore <= 20 ? 'Energy Resilient'
+    : lsScore <= 45            ? 'Moderate Exposure'
+    : lsScore <= 70            ? 'High Exposure'
+    :                            'Critical Energy Risk';
+
+  return {
+    score: lsScore,
+    risk:  lsRisk,
+    label,
+    detail: {
+      energy_cost_ratio_pct: Math.round(energyCostRatio * 1000) / 10,
+      backup_power_type:     backupType,
+      exposure_hours_per_day: hours,
+      sector_multiplier:     multiplier
+    }
+  };
+}
+
+
 // Combines all five component scores into a single Digital Index.
 // This is the master score used for risk classification, sub-agent
 // routing, and remedy generation.
@@ -676,12 +760,34 @@ function runRatingEngine(input) {
     yearsInOperation:      yearsInOperation     ? Number(yearsInOperation)     : null
   };
 
-  // ── Run all 7 components ──
+  // ── Run all 7 components + NFU-001 ──
   const adizes          = assessAdizesStage(numericInput, adizesStage);
   const financialHealth = scoreFinancialHealth(numericInput);
   const sectorPerf      = scoreSectorPerformance(financialHealth.ratios, sector);
   const nodeResilience  = scoreNodeResilience(numericInput, financialHealth.ratios, ecosystemData || null);
-  const collision       = detectCollisions(numericInput, financialHealth.ratios, ecosystemData || null);
+
+  // Run base collision detection first, then NFU-001 adds to its risk score
+  const collisionBase   = detectCollisions(numericInput, financialHealth.ratios, ecosystemData || null);
+
+  // NFU-001: Load-Shedding Resilience Score (SA-specific, optional)
+  const loadShedding    = computeLoadSheddingScore(input, sector);
+
+  // Merge NFU-001 risk into collision risk if active
+  const collision = loadShedding.score !== null && loadShedding.risk > 0
+    ? {
+        ...collisionBase,
+        collisionRisk:  Math.min(100, collisionBase.collisionRisk + loadShedding.risk),
+        collisionScore: Math.max(0,   collisionBase.collisionScore - loadShedding.risk),
+        frictions: [
+          ...collisionBase.frictions,
+          {
+            type:     'energy_shock',
+            severity: loadShedding.risk,
+            detail:   `Load-shedding exposure (${loadShedding.label}) adds ${loadShedding.risk} risk points — energy cost ${loadShedding.detail.energy_cost_ratio_pct}% of revenue, backup: ${loadShedding.detail.backup_power_type}`
+          }
+        ]
+      }
+    : collisionBase;
   const { digitalIndex, riskLevel, riskLabel } = computeDigitalIndex(
     financialHealth.financialHealthScore,
     nodeResilience.nodeHealthScore,
@@ -752,6 +858,12 @@ function runRatingEngine(input) {
         cascadeRisk:collision.cascadeRisk,
         frictions:  collision.frictions
       },
+      loadShedding: loadShedding.score !== null ? {
+        score:  loadShedding.score,
+        risk:   loadShedding.risk,
+        label:  loadShedding.label,
+        detail: loadShedding.detail
+      } : null,
       remedyDetail:      remedies,
       agentScores
     }
