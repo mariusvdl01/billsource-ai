@@ -737,7 +737,36 @@ const server = http.createServer(async (req, res) => {
   if (pathname === '/app' && method === 'GET') {
     const session = await getSessionUser(req);
     if (!session) { res.writeHead(302, {Location:'/auth/google'}); res.end(); return; }
-    serveFile(res, path.join(ROOT, 'app.html')); return;
+    // If ?swcleared=1 is present the SW has already been unregistered — serve app directly
+    if (parsed.query.swcleared) {
+      serveFile(res, path.join(ROOT, 'app.html')); return;
+    }
+    // First visit: serve an inline SW-killer page that unregisters all service workers
+    // then redirects to /app?swcleared=1 — this bypasses any cached app.html in the SW
+    const swKiller = `<!DOCTYPE html><html><head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Loading Billi…</title>
+<style>body{background:#0F0D0B;color:#E8E4E0;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;flex-direction:column;gap:12px}
+.spinner{width:32px;height:32px;border:3px solid #2D2A27;border-top-color:#C45200;border-radius:50%;animation:spin 0.7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}</style></head>
+<body><div class="spinner"></div><div style="font-size:13px;color:#6B6460">Starting Billi…</div>
+<script>
+(async function() {
+  if ('serviceWorker' in navigator) {
+    const regs = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(regs.map(r => r.unregister()));
+  }
+  // Clear all caches
+  if ('caches' in window) {
+    const keys = await caches.keys();
+    await Promise.all(keys.map(k => caches.delete(k)));
+  }
+  window.location.replace('/app?swcleared=1');
+})();
+</script></body></html>`;
+    res.writeHead(200, {'Content-Type':'text/html; charset=utf-8', 'Cache-Control':'no-cache, no-store, must-revalidate'});
+    res.end(swKiller); return;
   }
 
   // ── My Reports & My Files routes ──────────
