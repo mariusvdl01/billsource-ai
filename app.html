@@ -622,31 +622,58 @@
   // ── INIT ──
   async function init() {
     restoreTheme();
+    _dbg('init() started');
     await loadUser();
+    _dbg('loadUser() complete — currentUser=' + (currentUser ? currentUser.email : 'null'));
     renderHistory();
     showWelcome();
   }
 
+  // ── Debug helper — shows messages in the sb-name element AND console ──
+  function _dbg(msg) {
+    console.log('[BILLI-DBG]', msg);
+    try {
+      const el = document.getElementById('sb-name');
+      if (el) el.textContent = msg.substring(0, 40);
+    } catch(_) {}
+  }
+
   async function loadUser() {
+    _dbg('fetch /api/me...');
     try {
       const res = await fetch('/api/me');
+      _dbg('fetch done — status ' + res.status);
       if (!res.ok) {
         document.getElementById('sb-name').textContent  = 'Server error ' + res.status;
         document.getElementById('sb-email').textContent = 'Reload the page';
         return;
       }
-      const data = await res.json();
-      if (!data.authenticated) { window.location.href = '/auth/google'; return; }
+      let data;
+      try {
+        data = await res.json();
+        _dbg('json parsed — auth=' + data.authenticated);
+      } catch(je) {
+        document.getElementById('sb-name').textContent  = 'Bad JSON from /api/me';
+        document.getElementById('sb-email').textContent = je.message.substring(0,40);
+        return;
+      }
+      if (!data.authenticated) {
+        _dbg('not authenticated — redirecting');
+        window.location.href = '/auth/google';
+        return;
+      }
       currentUser = data.user;
+      _dbg('user OK: ' + currentUser.email);
       window._userPlan = (data.user.plan || 'free').toLowerCase();
       chatKey = 'billi_chats_' + currentUser.email.replace(/[^a-z0-9]/gi,'_');
       chats = JSON.parse(localStorage.getItem(chatKey) || '[]');
+      _dbg('calling updateUI()');
       updateUI();
+      _dbg('updateUI() done');
     } catch(e) {
-      // Network error — server is down or not reachable
+      _dbg('CATCH: ' + e.message);
       document.getElementById('sb-name').textContent  = 'Cannot reach server';
       document.getElementById('sb-email').textContent = 'Retrying in 5s…';
-      // Log to server if possible (best-effort)
       fetch('/api/client-log', {method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({event:'loadUser_error', msg: e.message, ua: navigator.userAgent})
@@ -687,12 +714,13 @@
   }
 
   function updateUI() {
-    if (!currentUser) return;
+    if (!currentUser) { _dbg('updateUI: no currentUser'); return; }
     // Reload chats for this user in case it wasn't loaded yet
     if (chatKey === 'billi_chats_anonymous') {
       chatKey = 'billi_chats_' + currentUser.email.replace(/[^a-z0-9]/gi,'_');
       chats = JSON.parse(localStorage.getItem(chatKey) || '[]');
     }
+    _dbg('updateUI: setting sb-name');
     const first = currentUser.name.split(' ')[0];
     document.getElementById('sb-name').textContent = currentUser.name;
     showSSOReminder();

@@ -808,7 +808,34 @@ const server = http.createServer(async (req, res) => {
     })); return;
   }
 
-  // ── /api/healthz — detailed server diagnostic (public, no auth) ──
+  // ── /api/debug-me — detailed session diagnostic (no auth required to read) ──
+  // Shows exactly what /api/me sees: cookie, session lookup result, user object
+  if (pathname === '/api/debug-me' && method === 'GET') {
+    const cookies = req.headers.cookie || '';
+    const sid = parseCookies(cookies)['bs_session'];
+    let sessionResult = null, dbResult = null, dbError = null;
+    if (sid) {
+      try {
+        const row = await db.getSession(sid);
+        dbResult = row ? { email: row.email, plan: row.plan, found: true } : { found: false };
+        if (row) sessionResult = rowToUser(row);
+      } catch(e) { dbError = e.message; }
+    }
+    res.writeHead(200, {'Content-Type':'application/json'});
+    res.end(JSON.stringify({
+      has_cookie:    !!cookies,
+      has_sid:       !!sid,
+      sid_prefix:    sid ? sid.substring(0,8)+'…' : null,
+      session_in_cache: sid ? !!sessionCache[sid] : false,
+      db_lookup:     dbResult,
+      db_error:      dbError,
+      user_object:   sessionResult ? { name: sessionResult.name, email: sessionResult.email, plan: sessionResult.plan } : null,
+      api_me_would_return: sessionResult ? 'authenticated:true' : (sid ? 'authenticated:false (session not found)' : 'authenticated:false (no cookie)'),
+      ts: new Date().toISOString()
+    }, null, 2)); return;
+  }
+
+
   if (pathname === '/api/healthz' && method === 'GET') {
     let dbOk = false, dbError = '';
     try {
