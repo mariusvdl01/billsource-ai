@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Billi — Operator Console</title>
+<title>Talos Expert — Governance Console</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path fill='%23C45200' d='M16 2L4 7v9c0 7.5 5.2 14.1 12 16 6.8-1.9 12-8.5 12-16V7L16 2z'/><path fill='white' d='M13 16.5l-3-3 1.4-1.4 1.6 1.6 4.6-4.6 1.4 1.4L13 16.5z'/></svg>">
 <style>
   :root {
     --bg:     #0F0D0B;
@@ -40,34 +41,50 @@
   /* ── Main shell ── */
   #shell { display:none; flex-direction:column; min-height:100vh; }
 
-  /* ── Top bar ── */
+  /* ── Topbar ── */
   .topbar { background:var(--bg2); border-bottom:1px solid var(--border);
-            padding:0 20px; height:52px; display:flex; align-items:center;
-            justify-content:space-between; flex-shrink:0; }
-  .topbar-brand { font-size:15px; font-weight:800; color:var(--orange);
-                  display:flex; align-items:center; gap:8px; }
-  .topbar-badge { font-size:9px; font-weight:700; background:rgba(196,82,0,0.2);
-                  color:var(--orange); padding:2px 8px; border-radius:10px;
-                  letter-spacing:0.06em; text-transform:uppercase; }
-  .topbar-right { display:flex; align-items:center; gap:12px; }
-  .topbar-env   { font-size:10px; color:var(--muted); }
-  #refresh-btn  { background:transparent; border:1px solid var(--border); color:var(--muted);
-                  padding:5px 12px; border-radius:6px; font-size:11px; cursor:pointer;
-                  font-family:var(--font); transition:all .15s; }
-  #refresh-btn:hover { border-color:var(--orange); color:var(--orange); }
+            padding:0 16px 0 0; height:54px; display:flex; align-items:center;
+            justify-content:space-between; flex-shrink:0;
+            box-shadow:0 1px 4px var(--shadow); }
+  .topbar-left { display:flex; align-items:center; gap:0; height:100%; }
+  .topbar-bs-logo { height:54px; padding:0 14px; border-right:1px solid var(--border);
+                    display:flex; align-items:center; }
+  .topbar-brand { padding:0 16px; display:flex; align-items:center; gap:10px; }
+  .talos-shield { flex-shrink:0; }
+  .topbar-brand-text { line-height:1.2; }
+  .topbar-brand-name { font-size:15px; font-weight:800; color:var(--orange); display:block; }
+  .topbar-brand-sub  { font-size:9px; font-weight:700; color:var(--muted);
+                       letter-spacing:0.1em; text-transform:uppercase; }
+  .topbar-right { display:flex; align-items:center; gap:10px; }
+  .topbar-op-email { font-size:11px; color:var(--green); font-weight:600; }
+  .topbar-env      { font-size:10px; color:var(--muted); }
+  .tb-btn { background:transparent; border:1px solid var(--border); color:var(--muted);
+            padding:5px 11px; border-radius:6px; font-size:11px; cursor:pointer;
+            font-family:var(--font); transition:all .15s; text-decoration:none;
+            display:inline-flex; align-items:center; gap:4px; }
+  .tb-btn:hover { border-color:var(--orange); color:var(--orange); }
+  .theme-btn { width:32px; height:32px; padding:0; justify-content:center; font-size:15px; }
 
   /* ── Body layout ── */
   .body { display:flex; flex:1; overflow:hidden; }
 
   /* ── Nav sidebar ── */
-  .nav { width:180px; background:var(--bg2); border-right:1px solid var(--border);
-         padding:16px 0; flex-shrink:0; }
+  .nav { width:192px; background:var(--bg2); border-right:1px solid var(--border);
+         padding:16px 0; flex-shrink:0; display:flex; flex-direction:column; }
+  .nav-section-label { font-size:9px; font-weight:700; text-transform:uppercase;
+                       letter-spacing:.1em; color:var(--muted); padding:14px 18px 4px; }
   .nav-item { display:block; padding:9px 18px; font-size:12px; font-weight:500;
               color:var(--muted); cursor:pointer; transition:all .15s;
-              border-left:3px solid transparent; }
-  .nav-item:hover { color:var(--text); background:rgba(255,255,255,0.03); }
+              border-left:3px solid transparent; user-select:none; }
+  .nav-item:hover { color:var(--text); background:rgba(196,82,0,0.05); }
   .nav-item.active { color:var(--orange); border-left-color:var(--orange);
-                     background:rgba(196,82,0,0.06); font-weight:700; }
+                     background:rgba(196,82,0,0.07); font-weight:700; }
+  .nav-item.nav-doc { color:var(--blue); }
+  .nav-item.nav-doc:hover { color:var(--blue); background:rgba(59,130,246,0.06); }
+  .nav-spacer { flex:1; }
+  .nav-avatar-wrap { padding:16px; border-top:1px solid var(--border); text-align:center; }
+  .nav-avatar-label { font-size:9px; color:var(--muted); margin-top:6px;
+                      text-transform:uppercase; letter-spacing:.06em; }
 
   /* ── Content area ── */
   .content { flex:1; overflow-y:auto; padding:20px 24px; }
@@ -205,30 +222,95 @@
 <!-- ── MAIN SHELL ── -->
 <div id="shell">
 
-  <!-- Top bar -->
+  <!-- Topbar -->
   <div class="topbar">
-    <div class="topbar-brand">
-      ⚡ Billi
-      <span class="topbar-badge">Operator Console</span>
+    <div class="topbar-left">
+      <!-- Billsource logo (top-left) -->
+      <div class="topbar-bs-logo">
+        <img src="logo2.png" alt="Billsource®" height="26"
+             style="display:block;opacity:0.85;filter:var(--logo-f,none)"
+             onerror="this.style.display='none'">
+      </div>
+      <!-- Talos brand -->
+      <div class="topbar-brand">
+        <svg class="talos-shield" width="28" height="28" viewBox="0 0 56 56" fill="none">
+          <path d="M28 4L6 13v17c0 13 9.1 24.7 22 27.7C40.9 54.7 50 43 50 30V13L28 4z"
+                fill="#C45200" opacity=".18"/>
+          <path d="M28 4L6 13v17c0 13 9.1 24.7 22 27.7C40.9 54.7 50 43 50 30V13L28 4z"
+                fill="none" stroke="#C45200" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M21 27.5l5 5 10-10" stroke="#C45200" stroke-width="3"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="topbar-brand-text">
+          <span class="topbar-brand-name">Talos Expert</span>
+          <span class="topbar-brand-sub">Governance Console</span>
+        </div>
+      </div>
     </div>
     <div class="topbar-right">
-      <span class="topbar-env" id="topbar-operator" style="color:var(--green)"></span>
-      <span class="topbar-env" id="env-label" style="margin-left:8px">billsource.ai</span>
-      <button id="refresh-btn" onclick="loadAll()">↻ Refresh</button>
-      <a href="/auth/logout" style="font-size:11px;color:var(--muted);text-decoration:none;
-         padding:5px 10px;border:1px solid var(--border);border-radius:6px;">Sign out</a>
+      <span class="topbar-op-email" id="topbar-operator"></span>
+      <span class="topbar-env" id="env-label">billsource.ai</span>
+      <button class="tb-btn theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle theme">&#9788;</button>
+      <button class="tb-btn" id="refresh-btn" onclick="loadAll()">↻ Refresh</button>
+      <a href="/auth/logout" class="tb-btn">Sign out</a>
     </div>
   </div>
 
   <div class="body">
 
-    <!-- Nav -->
+    <!-- Nav sidebar -->
     <nav class="nav">
-      <div class="nav-item active" onclick="showSection('dashboard')">Dashboard</div>
-      <div class="nav-item" onclick="showSection('proposals')">Proposals</div>
-      <div class="nav-item" onclick="showSection('diagnostics')">Diagnostics</div>
-      <div class="nav-item" onclick="showSection('log')">Governance log</div>
-      <div class="nav-item" onclick="showSection('observations')">Observations</div>
+      <!-- Billi Governance SVG avatar — policing + human control theme -->
+      <div style="padding:16px 18px 12px;display:flex;align-items:center;gap:10px;
+                  border-bottom:1px solid var(--border);margin-bottom:8px">
+        <div style="position:relative;flex-shrink:0">
+          <img src="billiavatarbase.png" alt="Billi" width="36" height="36"
+               style="border-radius:50%;display:block;border:2px solid var(--orange)"
+               onerror="this.style.display='none'">
+          <!-- Governance badge overlay -->
+          <div style="position:absolute;bottom:-2px;right:-2px;width:14px;height:14px;
+                      background:var(--orange);border-radius:50%;display:flex;
+                      align-items:center;justify-content:center;border:1px solid var(--bg2)">
+            <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
+              <path d="M6 1L1 3v3c0 3 2 5 5 6 3-1 5-3 5-6V3L6 1z"
+                    fill="white" opacity=".9"/>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--orange)">Billi Governance</div>
+          <div style="font-size:9px;color:var(--muted)">Human oversight · TC</div>
+        </div>
+      </div>
+
+      <div class="nav-section-label">Engine</div>
+      <div class="nav-item active" onclick="showSection('dashboard')">⚡ Dashboard</div>
+      <div class="nav-item" onclick="showSection('proposals')">📋 Proposals</div>
+      <div class="nav-item" onclick="showSection('diagnostics')">🔬 Diagnostics</div>
+      <div class="nav-item" onclick="showSection('log')">📜 Governance log</div>
+      <div class="nav-item" onclick="showSection('observations')">👁 Observations</div>
+
+      <div class="nav-section-label">Documentation</div>
+      <div class="nav-item nav-doc" onclick="showSection('guidelines')">📖 TC Guidelines</div>
+
+      <div class="nav-spacer"></div>
+
+      <!-- Full governance SVG at nav bottom -->
+      <div class="nav-avatar-wrap">
+        <svg width="64" height="64" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M40 6L8 18v22c0 17.5 13.3 33.2 32 37.2C57.7 73.2 72 57.5 72 40V18L40 6z"
+                fill="#C45200" opacity=".1"/>
+          <path d="M40 6L8 18v22c0 17.5 13.3 33.2 32 37.2C57.7 73.2 72 57.5 72 40V18L40 6z"
+                fill="none" stroke="#C45200" stroke-width="3" stroke-linejoin="round"/>
+          <circle cx="40" cy="32" r="13" fill="#C45200" opacity=".15"/>
+          <circle cx="40" cy="32" r="13" fill="none" stroke="#C45200" stroke-width="1.5"/>
+          <circle cx="35" cy="30" r="2" fill="#C45200"/>
+          <circle cx="45" cy="30" r="2" fill="#C45200"/>
+          <path d="M35 36 Q40 40 45 36" stroke="#C45200" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          <path d="M30 52l7 7 14-14" stroke="#C45200" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="nav-avatar-label">Human Oversight</div>
+      </div>
     </nav>
 
     <!-- Content -->
@@ -350,6 +432,32 @@
 <script>
 'use strict';
 
+// ── Theme (mirrors app.html) ──────────────────────────────────────
+function toggleTheme() {
+  const b = document.body;
+  const btn = document.getElementById('theme-btn');
+  if (b.classList.contains('dark')) {
+    b.classList.replace('dark','light');
+    if (btn) btn.innerHTML = '&#9790;';
+    localStorage.setItem('talos-theme','light');
+    document.querySelectorAll('.topbar-bs-logo img').forEach(i => i.style.filter='invert(0.8)');
+  } else {
+    b.classList.replace('light','dark');
+    if (btn) btn.innerHTML = '&#9788;';
+    localStorage.setItem('talos-theme','dark');
+    document.querySelectorAll('.topbar-bs-logo img').forEach(i => i.style.filter='none');
+  }
+}
+// Apply saved theme on load
+(function(){
+  const t = localStorage.getItem('talos-theme');
+  if (t === 'light') {
+    document.body.classList.replace('dark','light');
+    const btn = document.getElementById('theme-btn');
+    if (btn) btn.innerHTML = '&#9790;';
+  }
+})();
+
 let ADMIN_TOKEN = '';
 let operatorEmail = '';
 
@@ -432,12 +540,10 @@ async function apiFetch(method, path, body) {
 function showSection(name) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('section-' + name).classList.add('active');
-  // Set nav active
+  const sec = document.getElementById('section-' + name);
+  if (sec) sec.classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => {
-    if (n.textContent.trim().toLowerCase().startsWith(name.toLowerCase().split('-')[0])) {
-      n.classList.add('active');
-    }
+    if (n.getAttribute('onclick') === `showSection('${name}')`) n.classList.add('active');
   });
   // Lazy-load
   if (name === 'proposals')    loadProposals();
