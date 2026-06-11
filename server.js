@@ -10,6 +10,7 @@ const mailer = require('./mailer');
 const { getUserPrompts, resolvePromptTemplate } = require('./promptbook');
 const { runRatingEngine } = require('./rating_engine');
 const plm = require('./learning_module');
+console.log('All modules loaded successfully');
 
 // ═══════════════════════════════════════════
 // IP SAFEGUARDS — Injection filter, output filter, rate limiter
