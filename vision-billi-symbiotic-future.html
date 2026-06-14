@@ -19,26 +19,70 @@
             line-height: 1.6;
         }
 
-        .hero-background {
-            background-image: url('billi-hero-web.png');
-            background-size: contain;
-            background-position: right center;
-            background-repeat: no-repeat;
+        .hero-scenes {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             z-index: 1;
         }
 
-        canvas {
+        .hero-scene {
             position: absolute;
-            top: 0;
-            left: 0;
+            inset: 0;
+            animation: scene-fade 24s infinite;
+        }
+
+        .hero-scene:nth-child(1) { animation-delay: 0s; }
+        .hero-scene:nth-child(2) { animation-delay: 6s; }
+        .hero-scene:nth-child(3) { animation-delay: 12s; }
+        .hero-scene:nth-child(4) { animation-delay: 18s; }
+
+        @keyframes scene-fade {
+            0%, 2% { opacity: 0; }
+            8%, 23% { opacity: 1; }
+            25%, 100% { opacity: 0; }
+        }
+
+        .hero-scene img.scene-photo {
+            position: absolute;
+            inset: 0;
             width: 100%;
             height: 100%;
+            object-fit: cover;
+            object-position: center;
             display: block;
+        }
+
+        .scene-cast {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            mix-blend-mode: color;
+        }
+
+        .hero-scene:nth-child(1) .scene-cast { background: rgba(220, 120, 30, 0.32); }
+        .hero-scene:nth-child(2) .scene-cast { background: rgba(180, 60, 20, 0.28); }
+        .hero-scene:nth-child(3) .scene-cast { background: rgba(20, 80, 120, 0.25); }
+        .hero-scene:nth-child(4) .scene-cast { background: rgba(20, 100, 80, 0.25); }
+
+        .hero-scene-tint {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            mix-blend-mode: multiply;
+            background: rgba(20, 20, 22, 0.42);
+            pointer-events: none;
+        }
+
+        .hero-billi-overlay {
+            position: absolute;
+            inset: 0;
+            background-image: url('billi-hero-web.png');
+            background-repeat: no-repeat;
+            background-position: right center;
+            background-size: contain;
+            z-index: 3;
+            pointer-events: none;
         }
 
         nav {
@@ -346,8 +390,14 @@
     </nav>
 
     <section class="hero">
-        <div class="hero-background" style="background: linear-gradient(135deg,#2A1F10 0%,#1C1C1E 60%,#0D2030 100%), url('billi-hero-web.png') no-repeat right center / contain; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></div>
-        <canvas id="canvas" style="display: none;"></canvas>
+        <div class="hero-scenes">
+            <div class="hero-scene"><img class="scene-photo" src="https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=1600&q=80" alt="Namibia desert" loading="eager"/><div class="scene-cast"></div></div>
+            <div class="hero-scene"><img class="scene-photo" src="https://images.unsplash.com/photo-1682687218608-5e2522b04673?auto=format&fit=crop&w=1600&q=80" alt="Saharan rocky" loading="lazy"/><div class="scene-cast"></div></div>
+            <div class="hero-scene"><img class="scene-photo" src="https://images.unsplash.com/photo-1580502304784-8985b7eb7260?auto=format&fit=crop&w=1600&q=80" alt="African lake" loading="lazy"/><div class="scene-cast"></div></div>
+            <div class="hero-scene"><img class="scene-photo" src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1600&q=80" alt="Victoria Falls" loading="lazy"/><div class="scene-cast"></div></div>
+        </div>
+        <div class="hero-scene-tint"></div>
+        <div class="hero-billi-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('billi-hero-web.png'); background-repeat: no-repeat; background-position: right center; background-size: contain; z-index: 3;"></div>
         <div class="hero-content" style="max-width: 520px; padding: 35px; margin-left: 40px; background: rgba(10, 14, 39, 0.36); backdrop-filter: blur(20px); border-radius: 16px; border: 1px solid rgba(255, 107, 53, 0.2); box-shadow: 0 8px 32px rgba(255, 107, 53, 0.1); animation: slideInFromLeft 0.8s ease-out; position: relative; z-index: 10;">
             <h1>Billi</h1>
             <div class="hero-subtitle">The Symbiotic Future</div>
