@@ -854,12 +854,32 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
     <div class="hero-text-col">
       <div class="hero-card">
         <div class="badge"><span class="badge-dot"></span>Live now &mdash; free to try, no card required</div>
-        <h1>Meet <span>Billi</span> &mdash; the AI that has your back</h1>
+        <h1>Does your business keep you <span>awake at night?</span></h1>
+        <p style="font-family:Helvetica,Arial,sans-serif;font-size:2.4rem;font-weight:700;line-height:1.1;color:#F0EDE8;margin-top:.4rem;text-shadow:0 2px 6px rgba(0,0,0,0.3)">Ask Billi 24/7</p>
       </div>
       <div class="hero-card">
-        <p class="hero-sub">Bean Counter &middot; Brand Guru &middot; Deal Maker &middot; The Rule Book &middot; The Fixer &middot; The IT Guy &mdash; six business advisors in one conversation. Built for the owner who says: <em>&ldquo;the sales are kak, what do we do?&rdquo;</em></p>
+        <p class="hero-sub">Is your business running like it could? Don&rsquo;t know where to start? <img src="billi-avatar.svg" alt="Billi" width="18" height="18" style="vertical-align:middle;border-radius:50%;display:inline-block;margin:0 2px 2px" onerror="this.style.display='none'"/> <strong style="color:#F0EDE8">Talk to Billi first.</strong></p>
+        <!-- Four outcome promises -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.25rem">
+          <div style="display:flex;align-items:flex-start;gap:8px;background:rgba(232,98,26,0.10);border:0.5px solid rgba(232,98,26,0.30);border-radius:8px;padding:9px 11px">
+            <span style="font-size:15px;flex-shrink:0">💸</span>
+            <span style="font-size:12px;color:#FFAA60;font-weight:600;line-height:1.4">Get your customers to pay</span>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px;background:rgba(232,98,26,0.10);border:0.5px solid rgba(232,98,26,0.30);border-radius:8px;padding:9px 11px">
+            <span style="font-size:15px;flex-shrink:0">📈</span>
+            <span style="font-size:12px;color:#FFAA60;font-weight:600;line-height:1.4">Get those sales back up</span>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px;background:rgba(232,98,26,0.10);border:0.5px solid rgba(232,98,26,0.30);border-radius:8px;padding:9px 11px">
+            <span style="font-size:15px;flex-shrink:0">⚖️</span>
+            <span style="font-size:12px;color:#FFAA60;font-weight:600;line-height:1.4">Remain tax compliant</span>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px;background:rgba(232,98,26,0.10);border:0.5px solid rgba(232,98,26,0.30);border-radius:8px;padding:9px 11px">
+            <span style="font-size:15px;flex-shrink:0">🏡</span>
+            <span style="font-size:12px;color:#FFAA60;font-weight:600;line-height:1.4">Grow your business for your kids</span>
+          </div>
+        </div>
         <div class="hero-cta">
-          <button class="btn-lg primary" onclick="showPage('demo')">&#8593; Try Billi free</button>
+          <button class="btn-lg primary" onclick="showPage('demo')">&#8593; Talk to Billi free</button>
           <button class="btn-lg secondary" onclick="showPage('cost')">See what it costs you &#8595;</button>
         </div>
         <a class="google-btn" href="/auth/google">
@@ -869,7 +889,13 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
             <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
             <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
           </svg>
-          Sign in with Google &mdash; it&rsquo;s free
+          Sign in with Google
+        </a>
+        <a class="google-btn" href="/auth/facebook" style="margin-top:8px;background:#1877F2;border-color:#1877F2;color:#fff">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.413c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.265h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z" fill="#fff"/>
+          </svg>
+          Sign in with Facebook
         </a>
         <p class="hero-trust-line" style="margin-top:.75rem;font-size:11px;font-family:Helvetica,Arial,sans-serif"><strong>23,000+</strong> businesses registered interest &middot; Bean Counter basics always free &middot; Top-up packs R50 = 200 messages</p>
         <div style="margin-top:1.25rem">
@@ -926,10 +952,10 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
   <!-- Pivot separator — matches cost page pivot bar -->
   <div style="background:var(--bg2);border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border);margin:1.25rem -1.5rem;padding:1.25rem 2.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
     <div>
-      <p style="font-family:Helvetica,Arial,sans-serif;font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:3px">Billi&rsquo;s six advisors take over here</p>
-      <p style="font-size:11px;color:var(--muted)">Bean Counter &middot; Brand Guru &middot; Deal Maker &middot; The Rule Book &middot; The Fixer &middot; The IT Guy &mdash; 24/7, no salary</p>
+      <p style="font-family:Helvetica,Arial,sans-serif;font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:3px">Six advisors. Different opinions. Your call.</p>
+      <p style="font-size:11px;color:var(--muted)">Bean Counter &middot; Brand Guru &middot; Deal Maker &middot; The Rule Book &middot; The Fixer &middot; The IT Guy &mdash; no salary, no invoice, no judgement</p>
     </div>
-    <button class="btn-primary" onclick="showPage('cost')" style="white-space:nowrap;font-size:12px;padding:8px 16px">See full analysis &rarr;</button>
+    <button class="btn-primary" onclick="showPage('cost')" style="white-space:nowrap;font-size:12px;padding:8px 16px">See the numbers &rarr;</button>
   </div>
   <!-- ACT 2 HEADER — matches cost page section hierarchy -->
   <div style="max-width:1000px;margin:0 auto 1.25rem">
@@ -980,7 +1006,7 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
   <div class="wrap">
     <div class="section-label">The team</div>
     <div class="section-title">Six associates. One conversation.</div>
-    
+    <p style="font-size:13px;color:var(--muted);margin-bottom:1.5rem;line-height:1.7;max-width:580px">You don&rsquo;t need to understand AI. You just need to know if you&rsquo;re making money or losing it &mdash; and what to do about it. Pick a problem. Billi&rsquo;s got the right advisor for it.</p>
     <div class="adv-grid">
       <div class="adv-card"><div class="adv-card-avatar"><img src="billi-bean-counter.png" alt="" width="54" height="54" style="display:block"/></div><div class="adv-icon">&#128176;</div><div class="adv-name" style="color:#1A5FA8">Bean Counter</div><p class="adv-desc">Is your cash running out? Who owes you money? Are you actually making a profit? Bean Counter tells you straight &mdash; and helps you chase debtors too.</p><span class="adv-plan" style="background:#E6F1FB;color:#0C447C">Free + all plans</span></div>
       <div class="adv-card"><div class="adv-card-avatar"><img src="billi-rule-book.png" alt="" width="54" height="54" style="display:block"/></div><div class="adv-icon">&#128203;</div><div class="adv-name" style="color:#7C3AED">The Rule Book</div><p class="adv-desc">Am I breaking any rules I don&rsquo;t know about? POPIA, CIPC, B-BBEE, labour law &mdash; The Rule Book keeps you out of trouble. Always says: talk to a professional for the serious stuff.</p><span class="adv-plan" style="background:#F3E8FF;color:#6D28D9">Professional+</span></div>
@@ -1045,6 +1071,11 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
   <div class="wrap">
     <div class="section-label">Pricing</div>
     <div class="section-title">Simple, transparent plans &mdash; one named user</div>
+    <!-- Price comparison anchor — makes the value visceral before the plans -->
+    <div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:.875rem 1.25rem;margin-bottom:1.25rem;max-width:1000px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div style="font-size:13px;color:var(--muted);line-height:1.6"><span style="font-size:1rem;font-weight:700;color:var(--text)">Your accountant charges more per hour than Billi costs per month.</span><br>A 30-minute consultation: <strong style="color:#dc2626">R750&ndash;R1,500</strong> &nbsp;&#8226;&nbsp; Billi Professional: <strong style="color:var(--green)">R149/month</strong></div>
+      <button class="btn-primary" style="font-size:12px;padding:8px 18px;white-space:nowrap" onclick="openLogin()">Start for free &rarr;</button>
+    </div>
     <div class="roi-anchor">
       <div>
         <p>Your estimated monthly Billi impact</p>
@@ -1085,11 +1116,14 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
       </div>
       <div class="plan-card">
         <div class="plan-name">Business</div><div class="plan-price">R299 <span>/mo</span></div>
-        <div class="plan-msgs">4 advisors &middot; The IT Guy &middot; 1,000 messages</div>
-        <div class="plan-sso">Billsource Small Business Plan (R85/mo value) &mdash; SSO</div>
+        <div class="plan-msgs">4 advisors &middot; 1,000 messages &middot; upload your own financials</div>
+        <span class="roi-chip">Upload any statement &rarr; get your Digital Index score</span>
         <div class="plan-feature"><span class="check">&#10003;</span>Everything in Professional</div>
-        <div class="plan-feature"><span class="check">&#10003;</span>Brand Guru &mdash; marketing &amp; brand strategy</div>
+        <div class="plan-feature"><span class="check">&#10003;</span>Brand Guru &mdash; marketing, positioning &amp; social strategy</div>
+        <div class="plan-feature"><span class="check">&#10003;</span>Digital Index (DI) score &mdash; your business rated 0&ndash;100</div>
+        <div class="plan-feature"><span class="check">&#10003;</span>Upload XLSX, CSV or PDF &mdash; Billi reads your numbers directly</div>
         <div class="plan-feature"><span class="check">&#10003;</span>1,000 messages &middot; Top-up R50 = 200 msgs</div>
+        <div class="plan-feature" style="opacity:.65"><span style="color:var(--muted);font-weight:700;flex-shrink:0">&#8680;</span>Billsource auto-sync coming &mdash; upload manually in the meantime</div>
         <button class="plan-btn outlined" onclick="openLogin()">Choose Business</button>
       </div>
       <div class="plan-card" style="border-color:var(--orange)">
