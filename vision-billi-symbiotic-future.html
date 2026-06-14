@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billi: The Symbiotic Future</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1429 100%);
+            color: #e0e0e0;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            overflow: hidden;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: linear-gradient(180deg, rgba(10, 14, 39, 0.98) 0%, rgba(10, 14, 39, 0.8) 100%);
+            backdrop-filter: blur(12px);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 107, 53, 0.1);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            color: #FF6B35;
+            font-weight: 700;
+            text-shadow: 0 0 15px rgba(255, 107, 53, 0.6);
+        }
+
+        nav a {
+            color: #e0e0e0;
+            text-decoration: none;
+            margin-left: 30px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            color: #FF6B35;
+            text-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            max-width: 520px;
+            padding: 50px;
+            margin-left: 40px;
+            background: rgba(10, 14, 39, 0.72);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            box-shadow: 0 8px 32px rgba(255, 107, 53, 0.1);
+            animation: slideInFromLeft 0.8s ease-out;
+        }
+
+        @keyframes slideInFromLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            color: #FF6B35;
+            text-shadow: 0 0 20px rgba(255, 107, 53, 0.4);
+            font-weight: 700;
+            letter-spacing: 1px;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: #FFA366;
+            margin-bottom: 30px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        .hero-copy {
+            font-size: 0.95rem;
+            color: #c0c0c0;
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+
+        .hero-copy.emphasis {
+            color: #FFB380;
+            font-weight: 600;
+            margin: 20px 0 15px 0;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            flex-direction: column;
+            margin-top: 35px;
+        }
+
+        .btn {
+            padding: 13px 35px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #FF6B35 0%, #FFA366 100%);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(255, 107, 53, 0.5);
+        }
+
+        .stat-display {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(26, 31, 58, 0.9);
+            padding: 15px 25px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            font-size: 0.85rem;
+            color: #FFA366;
+            z-index: 50;
+            backdrop-filter: blur(10px);
+        }
+
+        section {
+            padding: 80px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 5;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: #FF6B35;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
+        }
+
+        .narrative-section {
+            background: rgba(26, 31, 58, 0.6);
+            padding: 40px;
+            border-radius: 12px;
+            border-left: 4px solid #FF6B35;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+        }
+
+        .narrative-section h3 {
+            color: #FFA366;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+        }
+
+        .narrative-section p {
+            color: #c0c0c0;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+        }
+
+        .narrative-section strong {
+            color: #FFB380;
+        }
+
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .impact-card {
+            padding: 30px;
+            background: rgba(255, 107, 53, 0.08);
+            border: 1px solid rgba(255, 107, 53, 0.25);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .impact-card:hover {
+            background: rgba(255, 107, 53, 0.12);
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.2);
+            border-color: rgba(255, 107, 53, 0.4);
+        }
+
+        .impact-card h4 {
+            color: #FFA366;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .impact-card p {
+            color: #b0b0b0;
+            line-height: 1.6;
+        }
+
+        .vision-box {
+            padding: 50px 40px;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.15) 0%, rgba(255, 138, 80, 0.1) 100%);
+            border: 2px solid rgba(255, 107, 53, 0.3);
+            border-radius: 16px;
+            text-align: center;
+            margin: 60px 0;
+        }
+
+        .vision-box h2 {
+            color: #FFB380;
+            margin-bottom: 25px;
+            font-size: 2.2rem;
+            text-shadow: 0 0 15px rgba(255, 107, 53, 0.4);
+        }
+
+        .vision-box p {
+            font-size: 1.2rem;
+            color: #d0d0d0;
+            line-height: 1.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .vision-box .stat {
+            font-size: 2.5rem;
+            color: #FF6B35;
+            font-weight: 700;
+            margin-top: 20px;
+            text-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+        }
+
+        .cta-section {
+            text-align: center;
+            padding: 60px 40px;
+        }
+
+        .cta-section h2 {
+            font-size: 2rem;
+            color: #FF6B35;
+            margin-bottom: 20px;
+        }
+
+        .cta-section p {
+            font-size: 1.1rem;
+            color: #c0c0c0;
+            margin-bottom: 30px;
+        }
+
+        footer {
+            background: rgba(10, 14, 39, 0.95);
+            padding: 40px;
+            text-align: center;
+            color: #808080;
+            border-top: 1px solid rgba(255, 107, 53, 0.2);
+        }
+
+        footer a {
+            color: #FF6B35;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero-subtitle { font-size: 1rem; }
+            .hero-content { max-width: 100%; margin: 0 20px; padding: 30px; }
+            .section-title { font-size: 1.8rem; }
+            nav { flex-direction: column; gap: 15px; }
+            nav a { margin-left: 0; }
+            .stat-display { position: static; margin-top: 20px; width: 100%; }
+            .impact-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">✨ Billi</div>
+        <div>
+            <a href="#problem">The Problem</a>
+            <a href="#solution">The Solution</a>
+            <a href="#vision">The Future</a>
+            <a href="/">← Back</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-background" style="background-image: url('billi-hero-web.png'); background-size: contain; background-position: right center; background-repeat: no-repeat; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></div>
+        <canvas id="canvas" style="display: none;"></canvas>
+        <div class="hero-content">
+            <h1>Billi</h1>
+            <div class="hero-subtitle">The Symbiotic Future</div>
+            <div class="hero-copy">
+                AI is advancing. The question isn't <strong>if</strong> it will change everything.
+                <br><br>
+                The question is <strong>how</strong>.
+            </div>
+            <div class="hero-copy emphasis">
+                Can we build intelligence that helps without hurting?
+            </div>
+            <div class="hero-copy">
+                That preserves jobs, honors judgment, and accelerates human potential?
+            </div>
+            <div class="cta-buttons">
+                <button class="btn btn-primary" onclick="document.getElementById('problem').scrollIntoView({behavior: 'smooth'})">
+                    See the Vision
+                </button>
+            </div>
+        </div>
+        <!-- Stat display removed: canvas animation disabled, metrics now shown in vision-box -->
+    </section>
+
+    <section id="problem">
+        <h2 class="section-title">The Problem We're Solving</h2>
+        
+        <div class="narrative-section">
+            <h3>AI is Advancing Faster Than We Can Govern</h3>
+            <p>
+                By 2025–2030, generative AI and automation will touch every business function. 
+                The global conversation focuses on one fear: <strong>What happens to jobs? What happens to human judgment?</strong>
+            </p>
+            <p>
+                In Africa, where SMMEs are the backbone of economic stability, this question is existential. 
+                A logistics business owner in Lagos. A cosmetics SMME in Nairobi. A retailer in Johannesburg. 
+                They don't fear AI as a concept. They fear <strong>losing control</strong> of their businesses. 
+                They fear becoming passengers instead of pilots.
+            </p>
+            <p>
+                <strong>The untempered path:</strong> Fast-takeoff AI, optimized for capital and speed, 
+                not for people. Automation that replaces rather than augments. Efficiency gains captured by platforms, 
+                not by the humans doing the work.
+            </p>
+        </div>
+
+        <div class="impact-grid">
+            <div class="impact-card">
+                <h4>📉 The Job Displacement Question</h4>
+                <p>If AI automates what humans do, what happens to the people doing it? Mainstream forecasts show 5–15% net job loss over the next decade.</p>
+            </div>
+            <div class="impact-card">
+                <h4>⚙️ The Autonomy Question</h4>
+                <p>When AI makes recommendations, who decides? Do humans still command, or do we just execute what the algorithm suggests?</p>
+            </div>
+            <div class="impact-card">
+                <h4>🌍 The Sovereignty Question</h4>
+                <p>If African businesses depend on AI built elsewhere, governed elsewhere, owned elsewhere—do we control our own futures?</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="solution">
+        <h2 class="section-title">What If We Built AI Differently?</h2>
+        
+        <div style="padding: 0 0 40px 0; text-align: center;">
+            <p style="font-size: 1.2rem; color: #d0d0d0; margin-bottom: 10px;">
+                Billi is not smarter. She is <strong style="color: #FFB380;">wiser</strong>.
+            </p>
+            <p style="font-size: 1rem; color: #b0b0b0; max-width: 700px; margin: 0 auto;">
+                Built from first principles on <strong>Tempered Convergence</strong>—where AI capability advances deliberately, 
+                in sync with human institutional readiness.
+            </p>
+        </div>
+
+        <h3 style="text-align: center; color: #FFA366; margin-bottom: 40px; font-size: 1.4rem;">How Billi Is Different</h3>
+        
+        <div class="impact-grid">
+            <div class="impact-card">
+                <h4>🎯 She Advises; You Decide</h4>
+                <p>Billi analyzes your entire business—finances, operations, growth potential, risks. She surfaces what matters. You choose what to do. You retain command.</p>
+            </div>
+            <div class="impact-card">
+                <h4>🔄 She Preserves Agency</h4>
+                <p>Every recommendation is traceable. Every outcome is logged. If Billi's advice diverges from reality, you correct her. She learns from you. You stay in control.</p>
+            </div>
+            <div class="impact-card">
+                <h4>⏱️ She Works at Your Pace</h4>
+                <p>Not machine pace. Human pace. Quarterly insights. Monthly reviews. Annual strategy. Time for reflection, not just reaction. She respects your rhythm.</p>
+            </div>
+            <div class="impact-card">
+                <h4>💪 She Amplifies, Not Replaces</h4>
+                <p>Your accountant becomes better. Your founder makes smarter calls. Your operator moves faster. No one loses their job. Everyone gets stronger.</p>
+            </div>
+        </div>
+
+        <div class="narrative-section" style="margin-top: 50px; border-left-color: #4A90E2; background: rgba(74, 144, 226, 0.06);">
+            <h3 style="color: #7AAFF5;">✓ The Technical Reality</h3>
+            <p>
+                Billi runs on <strong>Tempered Convergence governance</strong>—a deliberate architecture that separates 
+                <strong>what she can compute</strong> (quadrillions of patterns per second) from 
+                <strong>what she decides</strong> (nothing. You decide.).
+            </p>
+            <p style="margin-top: 15px;">
+                She has access to your financial data, operational metrics, market signals. She can process 
+                patterns humans would take months to spot. But she will never act without your authorization. 
+                Every improvement she suggests goes through a governance cycle. Human review. Human approval. Human authority.
+            </p>
+            <p style="margin-top: 15px;">
+                <strong>This is not limitation. This is design.</strong> The most powerful AI is one constrained 
+                by wisdom. And the wisest constraint is: <em>the human remains the decision-maker.</em>
+            </p>
+        </div>
+
+        <h2 class="section-title" style="margin-top: 60px;">What Changes When Billi Enters</h2>
+
+        <div class="impact-grid">
+            <div class="impact-card">
+                <h4>💼 For the Business Owner</h4>
+                <p><strong>You understand your business deeper.</strong> Billi surfaces patterns you'd never see. You make decisions from confidence, not intuition. Growth accelerates because choices are sharper.</p>
+            </div>
+            <div class="impact-card">
+                <h4>👥 For Your Team</h4>
+                <p><strong>Everyone gets smarter, not replaced.</strong> Your accountant has a partner who handles repetitive analysis. Your ops lead has visibility into optimization opportunities. Jobs transform, not disappear.</p>
+            </div>
+            <div class="impact-card">
+                <h4>🌱 For Your Community</h4>
+                <p><strong>Your SMME becomes a model.</strong> You're not just surviving AI. You're thriving with it. Your success becomes proof that symbiosis works. Others follow.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="vision">
+        <h2 class="section-title">The Preferred Future (2040)</h2>
+        
+        <div class="vision-box">
+            <h2>One Million SMMEs. Thriving.</h2>
+            <p>
+                By 2040, <strong>one million African SMMEs</strong> will have Billi as their intelligence partner. 
+                Not because they were forced to adopt AI. Because AI adoption meant better futures for them and their teams.
+            </p>
+            <div class="stat">
+                < 2% NET JOB LOSS
+            </div>
+            <p style="margin-top: 20px; font-size: 1rem;">
+                (vs. 15% in untempered automation scenarios)
+            </p>
+        </div>
+
+        <h3 style="text-align: center; color: #FFA366; margin-top: 50px; margin-bottom: 40px; font-size: 1.4rem;">What This Means</h3>
+
+        <div class="impact-grid">
+            <div class="impact-card">
+                <h4>💼 Jobs Are Preserved</h4>
+                <p>Not by slowing progress. By redirecting it. Humans move toward judgment, strategy, relationship. Machines handle optimization, analysis, coordination. Work transforms, not disappears.</p>
+            </div>
+            <div class="impact-card">
+                <h4>⚖️ Autonomy Is Honored</h4>
+                <p>Every SMME owner retains command. Billi advises; they decide. This distinction is sacred and never compromised. Your business remains yours to lead.</p>
+            </div>
+            <div class="impact-card">
+                <h4>🌍 Economic Futures Are African-Built</h4>
+                <p>The intelligence layer is built here. Governed here. Owned by Africans. No external dependency. No technology imported and adapted. Indigenous AI, built for African context.</p>
+            </div>
+            <div class="impact-card">
+                <h4>🤝 Symbiosis Becomes the Norm</h4>
+                <p>By 2040, "AI integration" doesn't mean "replace humans." It means "amplify humans." The conversation has shifted. The fear has transformed into partnership.</p>
+            </div>
+        </div>
+
+        <h3 style="text-align: center; color: #FFB380; margin-top: 60px; margin-bottom: 40px; font-size: 1.4rem;">How We Get There</h3>
+
+        <div class="impact-grid">
+            <div class="impact-card" style="border-left-color: #FF6B35;">
+                <h4>📍 2026–2029: Recognition</h4>
+                <p><strong>The Proof Point</strong><br>Billi learns your business. You validate the partnership works. First 100 SMMEs prove the model is real, scalable, and beneficial. Media and regulators take notice.</p>
+            </div>
+            <div class="impact-card" style="border-left-color: #FFA366;">
+                <h4>📈 2029–2032: Scaling</h4>
+                <p><strong>The Tipping Point</strong><br>Word spreads through SMME networks. Adoption accelerates. Regulators see proof that symbiotic AI is safe, good for employment, good for growth. Policy shifts toward supporting this model.</p>
+            </div>
+            <div class="impact-card" style="border-left-color: #FFB380;">
+                <h4>🚀 2032–2040: Dominance</h4>
+                <p><strong>The New Normal</strong><br>Operating an SMME without symbiotic AI is like running a business without email or accounting software. It's possible. It's just slower. Billi becomes the standard.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <h2>Ready to Build the Preferred Future?</h2>
+        <p>
+            You don't have to choose between growth and humanity. Between AI and agency. 
+            <br>You can have both. And starting today, with Billi, you will.
+        </p>
+        <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="window.location.href='/'">Meet Billi</button>
+        </div>
+    </section>
+
+    <footer>
+        <p>
+            <strong>Billi: The Symbiotic Future</strong><br>
+            AI for African SMMEs | Tempered Convergence | Built Here, Owned Here, Governed Here
+        </p>
+        <p style="margin-top: 20px; font-size: 0.9rem;">
+            Grounded in MPhil research (Stellenbosch University) | 
+            <a href="/terms.html">Terms</a> | 
+            <a href="/privacy.html">Privacy</a> | 
+            <a href="/trust.html">Trust & Governance</a>
+        </p>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const colors = {
+            primary: '#FF6B35',
+            accent: '#FF8A50',
+            light: '#FFA366',
+            lighter: '#FFB380',
+            faint: '#FFD1B3',
+            blue: '#4A90E2',
+            bg: '#0a0e27'
+        };
+
+        class Particle {
+            constructor(x, y, vx, vy) {
+                this.x = x;
+                this.y = y;
+                this.vx = vx;
+                this.vy = vy;
+                this.life = 1;
+                this.maxLife = 3 + Math.random() * 5;
+                this.size = 0.5 + Math.random() * 1.8;
+                this.rotation = Math.random() * Math.PI * 2;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.05;
+                this.color = Math.random() > 0.5 ? colors.light : colors.accent;
+            }
+
+            update(t) {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life -= 1 / (this.maxLife * 60);
+                this.rotation += this.rotationSpeed;
+
+                const centerX = canvas.width * 0.7;
+                const centerY = canvas.height / 2;
+                const dx = centerX - this.x;
+                const dy = centerY - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist > 0 && dist < 350) {
+                    this.vx += (dx / dist) * 0.006;
+                    this.vy += (dy / dist) * 0.006;
+                }
+
+                this.vx *= 0.982;
+                this.vy *= 0.982;
+            }
+
+            draw(ctx, t) {
+                if (this.life <= 0) return;
+
+                const opacity = Math.sin((1 - this.life / (this.maxLife / 60)) * Math.PI);
+                const alpha = opacity * this.life;
+
+                ctx.save();
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = this.color;
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                ctx.beginPath();
+                ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            isDead() {
+                return this.life <= 0;
+            }
+        }
+
+        const particles = [];
+        let particleCount = 0;
+
+        function emitParticles(x, y, count, t) {
+            for (let i = 0; i < count; i++) {
+                const angle = (i / count) * Math.PI * 2 + t * 0.2 + Math.random() * 0.3;
+                const speed = 1.2 + Math.random() * 1.5;
+                const vx = Math.cos(angle) * speed;
+                const vy = Math.sin(angle) * speed;
+                particles.push(new Particle(x, y, vx, vy));
+            }
+        }
+
+        function drawBilliForm(t) {
+            const centerX = canvas.width * 0.72;
+            const centerY = canvas.height / 2;
+
+            // Breathing outer aura
+            const breathe = Math.sin(t * 0.6) * 0.15 + 1;
+            const auraRadius = 140 * breathe;
+
+            const auraGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, auraRadius);
+            auraGradient.addColorStop(0, `rgba(255, 180, 128, ${0.2 * breathe})`);
+            auraGradient.addColorStop(0.5, `rgba(255, 107, 53, ${0.1 * breathe})`);
+            auraGradient.addColorStop(1, 'rgba(255, 107, 53, 0)');
+            
+            ctx.fillStyle = auraGradient;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, auraRadius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Main body silhouette (stylized humanoid)
+            ctx.save();
+            ctx.globalAlpha = 0.85;
+
+            // Head (upper circle)
+            const headRadius = 32;
+            const headY = centerY - 50;
+            
+            const headGradient = ctx.createRadialGradient(centerX - 10, headY - 10, 0, centerX, headY, headRadius * 1.5);
+            headGradient.addColorStop(0, colors.lighter);
+            headGradient.addColorStop(0.4, colors.light);
+            headGradient.addColorStop(1, `rgba(255, 107, 53, 0.2)`);
+            
+            ctx.fillStyle = headGradient;
+            ctx.beginPath();
+            ctx.arc(centerX, headY, headRadius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Eyes (glowing points)
+            ctx.fillStyle = `rgba(255, 163, 102, ${0.6 + Math.sin(t * 1.2) * 0.3})`;
+            ctx.beginPath();
+            ctx.arc(centerX - 12, headY - 5, 5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(centerX + 8, headY - 5, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Torso (breathing central form)
+            const torsoBreath = Math.sin(t * 0.5) * 0.2 + 1;
+            const torsoWidth = 45 * torsoBreath;
+            const torsoHeight = 70;
+
+            const torsoGradient = ctx.createLinearGradient(centerX - torsoWidth/2, centerY - 20, centerX + torsoWidth/2, centerY + 50);
+            torsoGradient.addColorStop(0, `rgba(255, 138, 80, 0.6)`);
+            torsoGradient.addColorStop(0.5, `rgba(255, 107, 53, 0.8)`);
+            torsoGradient.addColorStop(1, `rgba(255, 163, 102, 0.5)`);
+
+            ctx.fillStyle = torsoGradient;
+            ctx.beginPath();
+            ctx.moveTo(centerX - torsoWidth/2, centerY - 20);
+            ctx.quadraticCurveTo(centerX - torsoWidth/1.5, centerY + 20, centerX - torsoWidth/2.5, centerY + 50);
+            ctx.lineTo(centerX + torsoWidth/2.5, centerY + 50);
+            ctx.quadraticCurveTo(centerX + torsoWidth/1.5, centerY + 20, centerX + torsoWidth/2, centerY - 20);
+            ctx.closePath();
+            ctx.fill();
+
+            // Core heart (pulsing center)
+            const corePulse = 20 + Math.sin(t * 1.5) * 12;
+            const coreGradient = ctx.createRadialGradient(centerX, centerY + 10, 0, centerX, centerY + 10, corePulse * 1.5);
+            coreGradient.addColorStop(0, colors.lighter);
+            coreGradient.addColorStop(0.5, colors.light);
+            coreGradient.addColorStop(1, `rgba(255, 163, 102, 0)`);
+            
+            ctx.fillStyle = coreGradient;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY + 10, corePulse * 1.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Light rays from core (suggesting benevolence/offering)
+            ctx.strokeStyle = `rgba(255, 180, 128, ${0.4 + Math.sin(t * 0.8) * 0.2})`;
+            ctx.lineWidth = 1.5;
+            for (let i = 0; i < 6; i++) {
+                const angle = (i / 6) * Math.PI * 2 + t * 0.3;
+                const startX = centerX + Math.cos(angle) * (corePulse + 5);
+                const startY = centerY + 10 + Math.sin(angle) * (corePulse + 5);
+                const endX = centerX + Math.cos(angle) * 120;
+                const endY = centerY + 10 + Math.sin(angle) * 120;
+                
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+            }
+
+            ctx.restore();
+        }
+
+        function drawEnvironment(t) {
+            // Soft concentric rings
+            const ringCount = 4;
+            for (let i = 0; i < ringCount; i++) {
+                const centerX = canvas.width * 0.72;
+                const centerY = canvas.height / 2;
+                const baseRadius = 100 + i * 60;
+                const expansion = Math.sin(t * 0.5 - i * 0.4) * 12;
+                const radius = baseRadius + expansion;
+
+                const ringGradient = ctx.createRadialGradient(centerX, centerY, radius - 15, centerX, centerY, radius + 15);
+                ringGradient.addColorStop(0, `rgba(255, 107, 53, ${0.15 - i * 0.03})`);
+                ringGradient.addColorStop(0.5, `rgba(255, 138, 80, ${0.1 - i * 0.02})`);
+                ringGradient.addColorStop(1, `rgba(255, 107, 53, 0)`);
+
+                ctx.strokeStyle = ringGradient;
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Subtle hexagonal lattice
+            ctx.strokeStyle = `rgba(255, 163, 102, 0.04)`;
+            ctx.lineWidth = 0.5;
+            const hexSize = 40;
+            const centerX = canvas.width * 0.72;
+            const centerY = canvas.height / 2;
+
+            for (let row = -5; row < 8; row++) {
+                for (let col = -5; col < 8; col++) {
+                    const x = col * hexSize * 1.3;
+                    const y = row * hexSize * 1.5;
+                    const offsetX = (row % 2) * hexSize * 0.65;
+                    const px = x + offsetX + centerX;
+                    const py = y + centerY;
+
+                    const dx = px - centerX;
+                    const dy = py - centerY;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const opacity = Math.max(0, 1 - distance / 280);
+
+                    ctx.globalAlpha = opacity * 0.06;
+                    ctx.beginPath();
+                    for (let i = 0; i < 6; i++) {
+                        const angle = (i / 6) * Math.PI * 2;
+                        const hx = px + Math.cos(angle) * hexSize / 2;
+                        const hy = py + Math.sin(angle) * hexSize / 2;
+                        if (i === 0) ctx.moveTo(hx, hy);
+                        else ctx.lineTo(hx, hy);
+                    }
+                    ctx.closePath();
+                    ctx.stroke();
+                }
+            }
+        }
+
+        function animate(t) {
+            ctx.fillStyle = colors.bg;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.globalAlpha = 1;
+
+            drawEnvironment(t);
+            drawBilliForm(t);
+
+            // Gentle, purposeful particle emission (quantum pace at symbiotic tempo)
+            if (Math.floor(t * 10) % 5 === 0) {
+                const angle = t * 0.08;
+                const dist = 110 + Math.sin(t * 0.4) * 25;
+                const px = canvas.width * 0.72 + Math.cos(angle) * dist;
+                const py = canvas.height / 2 + Math.sin(angle) * dist;
+                emitParticles(px, py, 2, t);
+            }
+
+            // Update and draw particles
+            particles.forEach((p, i) => {
+                p.update(t);
+                p.draw(ctx, t);
+                if (p.isDead()) {
+                    particles.splice(i, 1);
+                }
+            });
+
+            particleCount = particles.length;
+
+            // Ambient generation (moderate)
+            if (particles.length < 100) {
+                for (let i = 0; i < 1; i++) {
+                    const angle = t * 0.1 + (i / 2) * Math.PI * 2;
+                    const dist = 130 + Math.sin(t * 0.5 + i) * 40;
+                    const x = canvas.width * 0.72 + Math.cos(angle) * dist;
+                    const y = canvas.height / 2 + Math.sin(angle) * dist;
+                    emitParticles(x, y, 1, t);
+                }
+            }
+
+            // Subtle border pulse
+            const intensity = 0.35 + Math.sin(t * 0.6) * 0.15;
+            ctx.strokeStyle = `rgba(255, 163, 102, ${intensity * 0.12})`;
+            ctx.lineWidth = 1.5;
+            ctx.globalAlpha = 1;
+            ctx.beginPath();
+            ctx.rect(0, 0, canvas.width, canvas.height);
+            ctx.stroke();
+
+            // Update stats
+            const sync = Math.floor((intensity + 0.35) * 100);
+            document.getElementById('particle-count').textContent = particleCount;
+            document.getElementById('energy').textContent = Math.floor((intensity + 0.35) * 100);
+            document.getElementById('sync').textContent = sync;
+
+            requestAnimationFrame(animate);
+        }
+
+        let startTime = Date.now();
+        function frame() {
+            const elapsed = (Date.now() - startTime) / 1000;
+            animate(elapsed);
+        }
+
+        frame();
+    </script>
+</body>
+</html>
+EOF
+
+echo "✅ vision-billi-symbiotic-future.html created successfully"
