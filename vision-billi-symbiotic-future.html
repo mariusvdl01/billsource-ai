@@ -19,13 +19,29 @@
             line-height: 1.6;
         }
 
-        .hero {
-            position: relative;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            overflow: hidden;
+        .hero-background {
+            background: linear-gradient(135deg,#2A1F10 0%,#1C1C1E 60%,#0D2030 100%);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        .hero-background::after {
+            content: '';
+            position: absolute;
+            right: -10%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60%;
+            height: 100%;
+            background-image: url('billi-hero-web.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: right center;
+            z-index: 2;
+            opacity: 1;
         }
 
         canvas {
@@ -76,9 +92,9 @@
             position: relative;
             z-index: 10;
             max-width: 520px;
-            padding: 50px;
+            padding: 35px;
             margin-left: 40px;
-            background: rgba(10, 14, 39, 0.72);
+            background: rgba(10, 14, 39, 0.36);
             backdrop-filter: blur(20px);
             border-radius: 16px;
             border: 1px solid rgba(255, 107, 53, 0.2);
@@ -99,7 +115,7 @@
 
         .hero h1 {
             font-size: 2.8rem;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
             color: #FF6B35;
             text-shadow: 0 0 20px rgba(255, 107, 53, 0.4);
             font-weight: 700;
@@ -110,7 +126,7 @@
         .hero-subtitle {
             font-size: 1.1rem;
             color: #FFA366;
-            margin-bottom: 30px;
+            margin-bottom: 15px;
             font-weight: 300;
             letter-spacing: 0.5px;
         }
@@ -118,7 +134,7 @@
         .hero-copy {
             font-size: 0.95rem;
             color: #c0c0c0;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             line-height: 1.7;
         }
 
@@ -132,7 +148,7 @@
             display: flex;
             gap: 15px;
             flex-direction: column;
-            margin-top: 35px;
+            margin-top: 20px;
         }
 
         .btn {
@@ -336,9 +352,9 @@
     </nav>
 
     <section class="hero">
-        <div class="hero-background" style="background-image: url('billi-hero-web.png'); background-size: contain; background-position: right center; background-repeat: no-repeat; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></div>
+        <div class="hero-background" style="background: linear-gradient(135deg,#2A1F10 0%,#1C1C1E 60%,#0D2030 100%); background-size: cover; background-position: center; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></div>
         <canvas id="canvas" style="display: none;"></canvas>
-        <div class="hero-content">
+        <div class="hero-content" style="max-width: 520px; padding: 35px; margin-left: 40px; background: rgba(10, 14, 39, 0.36); backdrop-filter: blur(20px); border-radius: 16px; border: 1px solid rgba(255, 107, 53, 0.2); box-shadow: 0 8px 32px rgba(255, 107, 53, 0.1); animation: slideInFromLeft 0.8s ease-out; position: relative; z-index: 10;">
             <h1>Billi</h1>
             <div class="hero-subtitle">The Symbiotic Future</div>
             <div class="hero-copy">
