@@ -270,8 +270,9 @@
 
         /* Animation Container */
         .animation-container {
-            display: flex;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
             align-items: center;
             margin: 40px 0;
             min-height: 250px;
@@ -285,14 +286,21 @@
         .animation-content {
             display: flex;
             flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+            text-align: left;
+        }
+
+        .animation-video-container {
+            display: flex;
+            justify-content: center;
             align-items: center;
-            gap: 20px;
-            text-align: center;
+            width: 100%;
         }
 
         .animation-video {
-            width: 120px;
-            height: 120px;
+            width: 160px;
+            height: 160px;
             border-radius: 50%;
             object-fit: cover;
         }
@@ -300,11 +308,31 @@
         .animation-content h3 {
             color: #FF6B35;
             font-size: 1.3rem;
+            margin: 0;
         }
 
         .animation-content p {
             color: #888;
             font-size: 0.95rem;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .animation-container {
+                grid-template-columns: 1fr;
+                gap: 25px;
+                min-height: auto;
+            }
+
+            .animation-content {
+                align-items: center;
+                text-align: center;
+            }
+
+            .animation-video {
+                width: 120px;
+                height: 120px;
+            }
         }
 
         /* Promise Cards - Compact */
@@ -731,13 +759,15 @@
         <!-- Animation Container with MP4 Video -->
         <div class="animation-container">
             <div class="animation-content">
+                <h3>Pure AI Autonomy</h3>
+                <p>Advanced Billi is thinking deeply about your request, processing millions of data points in real-time to surface what matters most to your business.</p>
+            </div>
+            <div class="animation-video-container">
                 <video class="animation-video" autoplay muted loop playsinline>
                     <source src="billi-ai-core-animation-web.mp4" type="video/mp4">
                     <source src="billi-ai-core-animation.webm" type="video/webm">
                     <img src="billi-ai-core-sm.png" alt="Billi AI Core">
                 </video>
-                <h3>Pure AI Autonomy</h3>
-                <p>Advanced Billi is thinking deeply about your request...</p>
             </div>
         </div>
 
