@@ -87,35 +87,6 @@
             align-items: center;
         }
 
-        @media (max-width: 768px) {
-            nav {
-                padding: 12px 15px;
-                gap: 10px;
-            }
-
-            .logo {
-                font-size: 1.2rem;
-            }
-
-            .nav-links {
-                gap: 8px;
-                flex-wrap: wrap;
-                justify-content: flex-end;
-            }
-
-            nav a {
-                font-size: 0.8rem;
-                padding: 5px 8px;
-                background: rgba(255, 107, 53, 0.1);
-                border-radius: 4px;
-                border: 1px solid rgba(255, 107, 53, 0.2);
-            }
-
-            nav a:hover {
-                background: rgba(255, 107, 53, 0.2);
-            }
-        }
-
         .hero h1 {
             font-size: 2.2rem;
             margin-bottom: 4px;
@@ -174,11 +145,62 @@
             box-shadow: 0 8px 20px rgba(255, 107, 53, 0.4);
         }
 
+        /* ==================== CONTENT SECTIONS ==================== */
+
+        .section {
+            padding: 100px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: #FF6B35;
+            text-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+            margin-bottom: 50px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(10, 14, 39, 0.6);
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            border-radius: 12px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(255, 107, 53, 0.4);
+            box-shadow: 0 8px 20px rgba(255, 107, 53, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            color: #FF6B35;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            color: #c0c0c0;
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
         /* ==================== ADVANCED BILLI SECTION ==================== */
 
         .advanced-billi-section {
             position: relative;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -352,26 +374,81 @@
             gap: 8px;
         }
 
-        /* Call to Action */
-        .cta-section {
-            margin-top: 50px;
+        /* Pricing Section */
+        .pricing-card {
+            max-width: 750px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.15) 0%, rgba(255, 107, 53, 0.05) 100%);
+            border: 2px solid #FF6B35;
+            border-radius: 16px;
+            padding: 40px;
             text-align: center;
+            backdrop-filter: blur(10px);
         }
 
-        .cta-section h3 {
+        .pricing-card h3 {
             color: #FF6B35;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            text-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+            font-size: 2rem;
+            margin-bottom: 15px;
         }
 
-        .cta-section p {
-            color: #c0c0c0;
+        .pricing-card p {
+            color: #FFA366;
+            margin-bottom: 30px;
             font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .price-box {
+            background: rgba(255, 107, 53, 0.2);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 35px;
+            border: 1px solid rgba(255, 107, 53, 0.3);
+        }
+
+        .price-box .amount {
+            color: #FF6B35;
+            font-size: 3.2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .price-box .period {
+            color: #FFA366;
+            font-size: 1.5rem;
+        }
+
+        .price-box .desc {
+            color: #c0c0c0;
+            font-size: 0.95rem;
+            margin-top: 8px;
+        }
+
+        .features-list {
+            text-align: left;
+            color: #c0c0c0;
+            font-size: 0.98rem;
+            line-height: 2;
+        }
+
+        .features-list .feature-group {
             margin-bottom: 25px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
+        }
+
+        .features-list .feature-title {
+            color: #FF6B35;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .features-list .agent-item {
+            color: #a0a0a0;
+            font-size: 0.95rem;
+            margin-left: 25px;
+            margin-bottom: 8px;
+            line-height: 1.5;
         }
 
         .large-btn {
@@ -385,6 +462,8 @@
             transition: all 0.3s ease;
             font-weight: 700;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            margin-top: 25px;
+            width: 100%;
         }
 
         .large-btn:hover {
@@ -392,9 +471,36 @@
             box-shadow: 0 12px 30px rgba(255, 107, 53, 0.5);
         }
 
-        /* ==================== SHARED STYLES ==================== */
+        /* ==================== RESPONSIVE ==================== */
 
         @media (max-width: 768px) {
+            nav {
+                padding: 12px 15px;
+                gap: 10px;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .nav-links {
+                gap: 8px;
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+
+            nav a {
+                font-size: 0.8rem;
+                padding: 5px 8px;
+                background: rgba(255, 107, 53, 0.1);
+                border-radius: 4px;
+                border: 1px solid rgba(255, 107, 53, 0.2);
+            }
+
+            nav a:hover {
+                background: rgba(255, 107, 53, 0.2);
+            }
+
             .hero-content {
                 max-width: 100%;
                 width: calc(100% - 40px);
@@ -406,17 +512,12 @@
                 font-size: 2rem;
             }
 
-            .promise-grid {
-                grid-template-columns: 1fr;
+            .section {
+                padding: 60px 20px;
             }
 
-            nav {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            nav a {
-                margin-left: 0;
+            .section-title {
+                font-size: 2rem;
             }
         }
     </style>
@@ -447,7 +548,72 @@
             <p class="hero-copy" style="margin-top: 10px; margin-bottom: 6px;">Can we build intelligence that helps without hurting?</p>
             <p class="hero-copy">That preserves jobs, honors judgment, and accelerates human potential?</p>
             <div class="cta-buttons">
-                <button class="cta-button" onclick="document.getElementById('advanced').scrollIntoView({behavior: 'smooth'})">SEE THE VISION</button>
+                <button class="cta-button" onclick="document.getElementById('problem').scrollIntoView({behavior: 'smooth'})">SEE THE VISION</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== PROBLEM SECTION ==================== -->
+    <section class="section" id="problem">
+        <h2 class="section-title">The Problem</h2>
+        <div class="card-grid">
+            <div class="card">
+                <h3>💼 Job Displacement</h3>
+                <p>AI advances faster than society adapts. Automation threatens livelihoods across Africa without transition pathways or retraining.</p>
+            </div>
+            <div class="card">
+                <h3>⚖️ Loss of Autonomy</h3>
+                <p>AI makes decisions for us. Black boxes replace judgment. Humans become passengers in their own destiny, not drivers.</p>
+            </div>
+            <div class="card">
+                <h3>🌍 Sovereignty Risk</h3>
+                <p>Africa's future shouldn't be written by Silicon Valley algorithms. We need African-built intelligence that respects our values, context, and ambitions.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== SOLUTION SECTION ==================== -->
+    <section class="section" id="solution">
+        <h2 class="section-title">The Solution</h2>
+        <div class="card-grid">
+            <div class="card">
+                <h3>🎯 She Advises / You Decide</h3>
+                <p>Billi processes information at superhuman speed. You retain judgment, authority, and responsibility. AI is the tool. You remain in control.</p>
+            </div>
+            <div class="card">
+                <h3>🔄 Preserves Agency</h3>
+                <p>Jobs transform, not disappear. Workers reskill into higher-value roles. Humans focus on what we do best: judgment, creativity, leadership.</p>
+            </div>
+            <div class="card">
+                <h3>⏱️ Your Pace</h3>
+                <p>You decide when to adopt, how to integrate, what to change. AI works on your timeline, not its own competitive schedule.</p>
+            </div>
+            <div class="card">
+                <h3>💪 Amplifies</h3>
+                <p>One person with Billi advising outthinks ten without. Teams move faster. Entrepreneurs see around corners. Impact multiplies.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FUTURE SECTION ==================== -->
+    <section class="section" id="future">
+        <h2 class="section-title">The Future: 2040</h2>
+        <div class="card-grid">
+            <div class="card">
+                <h3>💼 Jobs Transformed</h3>
+                <p>New roles emerge that didn't exist before. African SMMEs compete globally. Remote work becomes truly borderless and equitable.</p>
+            </div>
+            <div class="card">
+                <h3>⚖️ Autonomy Restored</h3>
+                <p>Humans decide. Billi advises. Technology serves humanity, not the reverse. Dignity and agency become non-negotiable principles.</p>
+            </div>
+            <div class="card">
+                <h3>🌍 African Built</h3>
+                <p>Billi is built by Africans, for Africans, with African values. Our intelligence solves our problems on our terms.</p>
+            </div>
+            <div class="card">
+                <h3>🤝 Symbiosis</h3>
+                <p>Humans + AI + governance create something new. Not replacement. Not competition. Partnership. Synergy. A preferred future.</p>
             </div>
         </div>
     </section>
@@ -534,49 +700,6 @@
                 </div>
             </div>
 
-            <!-- Pricing: Advanced Billi Enterprise -->
-            <div style="margin: 60px 0;">
-                <h3 style="color: #FF6B35; font-size: 2rem; margin-bottom: 15px; text-shadow: 0 0 20px rgba(255, 107, 53, 0.3);">Advanced Billi: Enterprise Intelligence</h3>
-                <p style="color: #888; text-align: center; margin-bottom: 40px; font-size: 1.05rem;">Available exclusively on the Symbiotic Future plan</p>
-                
-                <div style="max-width: 700px; margin: 0 auto; background: linear-gradient(135deg, rgba(255, 107, 53, 0.15) 0%, rgba(255, 107, 53, 0.05) 100%); border: 2px solid #FF6B35; border-radius: 16px; padding: 40px; text-align: center; backdrop-filter: blur(10px);">
-                    
-                    <h3 style="color: #FF6B35; font-size: 2rem; margin-bottom: 15px;">Advanced Billi</h3>
-                    <p style="color: #FFA366; margin-bottom: 30px; font-size: 1.1rem; font-weight: 600;">Full AI Agent Suite with Lifecycle Intelligence</p>
-                    
-                    <div style="background: rgba(255, 107, 53, 0.2); padding: 30px; border-radius: 12px; margin-bottom: 35px; border: 1px solid rgba(255, 107, 53, 0.3);">
-                        <p style="color: #FF6B35; font-size: 3.2rem; font-weight: 800; margin-bottom: 8px;">R899<span style="font-size: 1.5rem; color: #FFA366;">/month</span></p>
-                        <p style="color: #c0c0c0; font-size: 0.95rem;">Per organization • All 6 Billi Agents included</p>
-                    </div>
-                    
-                    <div style="text-align: left; color: #c0c0c0; font-size: 0.98rem; line-height: 2;">
-                        <p style="margin-bottom: 20px;"><strong style="color: #FF6B35; font-size: 1.1rem;">✓ All 6 Billi Agents</strong></p>
-                        <div style="margin-left: 25px; margin-bottom: 25px; color: #a0a0a0; font-size: 0.95rem; line-height: 1.8;">
-                            <p>→ The Fixer (Operations & Problem Solving)</p>
-                            <p>→ Deal Maker (Sales & Partnerships)</p>
-                            <p>→ Brand Guru (Marketing & Strategy)</p>
-                            <p>→ IT Guy (Technology & Systems)</p>
-                            <p>→ Rule Book (Compliance & Governance)</p>
-                            <p>→ Bean Counter (Finance & Analytics)</p>
-                        </div>
-                        
-                        <p style="margin-bottom: 15px;"><strong style="color: #FF6B35; font-size: 1.1rem;">✓ Adizes Lifecycle Architecture</strong></p>
-                        <p style="margin-left: 25px; margin-bottom: 25px; font-size: 0.95rem;">Each agent understands your business lifecycle stage and provides context-aware advice</p>
-                        
-                        <p style="margin-bottom: 15px;"><strong style="color: #FF6B35; font-size: 1.1rem;">✓ Augmented Super Intelligence</strong></p>
-                        <p style="margin-left: 25px; margin-bottom: 25px; font-size: 0.95rem;">AI consciousness that amplifies your judgment, not replaces it</p>
-                        
-                        <p style="margin-bottom: 15px;"><strong style="color: #FF6B35; font-size: 1.1rem;">✓ Real-Time Processing</strong></p>
-                        <p style="margin-left: 25px; margin-bottom: 25px; font-size: 0.95rem;">Instant analysis, patterns recognition, and strategic recommendations</p>
-                        
-                        <p style="margin-bottom: 15px;"><strong style="color: #FF6B35; font-size: 1.1rem;">✓ Enterprise Support</strong></p>
-                        <p style="margin-left: 25px; font-size: 0.95rem;">Priority access, custom configurations, dedicated guidance</p>
-                    </div>
-
-                    <button class="large-btn" style="margin-top: 35px; width: 100%; padding: 18px;">Unlock Advanced Billi</button>
-                </div>
-            </div>
-
             <!-- Chat Demo -->
             <div class="chat-demo">
                 <div class="chat-message user">
@@ -623,11 +746,55 @@
                 </p>
             </div>
 
+            <!-- Pricing: Advanced Billi Super Intelligence -->
+            <div style="margin: 60px 0;">
+                <h3 style="color: #FF6B35; font-size: 2rem; margin-bottom: 15px; text-shadow: 0 0 20px rgba(255, 107, 53, 0.3);">Advanced Billi: Super Intelligence</h3>
+                <p style="color: #888; text-align: center; margin-bottom: 40px; font-size: 1.05rem;">Available exclusively on the Symbiotic Future plan</p>
+                
+                <div class="pricing-card">
+                    <h3>Advanced Billi</h3>
+                    <p>Full AI Agent Suite with Lifecycle Intelligence</p>
+                    
+                    <div class="price-box">
+                        <div class="amount">R899<span class="period">/month</span></div>
+                        <div class="desc">Per organization • All 6 Billi Agents included</div>
+                    </div>
+                    
+                    <div class="features-list">
+                        <div class="feature-group">
+                            <div class="feature-title">✓ All 6 Billi Agents with Lifecycle Intelligence</div>
+                            <div class="agent-item">→ <strong>Bean Counter</strong> uses Adizes to diagnose lifecycle stage</div>
+                            <div class="agent-item">→ <strong>IT Guy</strong> uses Gartner to time technology adoption</div>
+                            <div class="agent-item">→ <strong>Fixer</strong> uses S-curve to navigate operational disruption</div>
+                            <div class="agent-item">→ <strong>Deal Maker</strong> uses Product Lifecycle to time market entry</div>
+                            <div class="agent-item">→ <strong>Rule Book</strong> uses Regulatory Lifecycle to prioritize compliance</div>
+                            <div class="agent-item">→ <strong>Brand Guru</strong> uses Diffusion Curves to set realistic growth expectations</div>
+                        </div>
+
+                        <div class="feature-group">
+                            <div class="feature-title">✓ Augmented Super Intelligence</div>
+                            <p style="margin-left: 25px; font-size: 0.95rem;">AI consciousness that amplifies your judgment, not replaces it</p>
+                        </div>
+
+                        <div class="feature-group">
+                            <div class="feature-title">✓ Real-Time Processing</div>
+                            <p style="margin-left: 25px; font-size: 0.95rem;">Instant analysis, pattern recognition, and strategic recommendations</p>
+                        </div>
+
+                        <div class="feature-group">
+                            <div class="feature-title">✓ Enterprise Support</div>
+                            <p style="margin-left: 25px; font-size: 0.95rem;">Priority access, custom configurations, dedicated guidance</p>
+                        </div>
+                    </div>
+
+                    <button class="large-btn">Unlock Advanced Billi</button>
+                </div>
+            </div>
+
             <!-- Call to Action -->
-            <div class="cta-section">
-                <h3>Ready for the Preferred Future?</h3>
-                <p>Join thousands of African SMMEs building the symbiotic economy. Let Advanced Billi amplify your intelligence.</p>
-                <button class="large-btn">Start Your Journey</button>
+            <div style="margin-top: 50px; text-align: center;">
+                <h3 style="color: #FF6B35; font-size: 1.5rem; margin-bottom: 20px;">Ready for the Preferred Future?</h3>
+                <p style="color: #c0c0c0; font-size: 1.1rem; margin-bottom: 25px; max-width: 600px; margin-left: auto; margin-right: auto;">Join thousands of African SMMEs building the symbiotic economy. Let Advanced Billi amplify your intelligence.</p>
             </div>
         </div>
     </section>
