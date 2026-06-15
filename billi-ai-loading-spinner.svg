@@ -1,0 +1,54 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+      .spinner { animation: rotate 3s linear infinite; transform-origin: 100px 100px; }
+      .core { animation: pulse 2s ease-in-out infinite; }
+    </style>
+    <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#FFFFF0;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FFE4A0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF9D4D;stop-opacity:0.6" />
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Rotating outer ring -->
+  <g class="spinner">
+    <circle cx="100" cy="100" r="85" fill="none" stroke="rgba(255,200,100,0.3)" stroke-width="2"/>
+    <circle cx="100" cy="100" r="75" fill="none" stroke="rgba(255,150,50,0.4)" stroke-width="2"/>
+  </g>
+  
+  <!-- Rotating energy lines -->
+  <g class="spinner" opacity="0.7">
+    <line x1="100" y1="20" x2="100" y2="40" stroke="rgba(255,180,80,0.6)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="100" y1="160" x2="100" y2="180" stroke="rgba(255,180,80,0.4)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="20" y1="100" x2="40" y2="100" stroke="rgba(255,200,100,0.6)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="160" y1="100" x2="180" y2="100" stroke="rgba(255,200,100,0.4)" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Pulsing core -->
+  <circle cx="100" cy="100" r="50" fill="url(#coreGlow)" filter="url(#glow)" class="core"/>
+  
+  <!-- Inner bright center -->
+  <circle cx="100" cy="100" r="35" fill="#FFFFF8" opacity="0.7" class="core"/>
+  <circle cx="100" cy="100" r="20" fill="#FFFEF5" opacity="0.5" class="core"/>
+  <circle cx="100" cy="100" r="8" fill="#FFFFFF" opacity="0.4" class="core"/>
+  
+  <!-- Particles (static) -->
+  <g opacity="0.6">
+    <circle cx="60" cy="50" r="2" fill="#FFE4A0"/>
+    <circle cx="140" cy="50" r="1.5" fill="#FFD700"/>
+    <circle cx="150" cy="100" r="1.5" fill="#FFA500"/>
+    <circle cx="140" cy="150" r="2" fill="#FFE4A0"/>
+    <circle cx="60" cy="150" r="1.5" fill="#FFD700"/>
+    <circle cx="50" cy="100" r="1.5" fill="#FFA500"/>
+  </g>
+</svg>
