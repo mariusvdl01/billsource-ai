@@ -613,20 +613,21 @@
             <img src="billi-ai-core-sm.png" alt="Billi" style="width:28px;height:28px;margin-right:4px;"/>
             Billi
         </div>
-        <div class="nav-links" id="mobile-nav">
+        <div class="nav-links mobile" id="mobile-nav">
             <a href="/">Home</a>
             <a href="#problem">Problem</a>
             <a href="#solution">Solution</a>
             <a href="#future">Future</a>
             <a href="#pricing-section">Pricing</a>
         </div>
+        <button class="theme-toggle" onclick="toggleTheme()" style="background:transparent;border:0.5px solid rgba(255,107,53,0.3);color:#FF6B35;width:34px;height:34px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;margin-right:8px" title="Toggle theme">🌙</button>
         <button class="menu-toggle" onclick="toggleMobileMenu()" id="menu-toggle">☰</button>
     </nav>
 
     <!-- ==================== HERO ==================== -->
     <section class="hero" style="background: url('billi-hero-web.png') no-repeat center / contain, linear-gradient(135deg, #2A1F10 0%, #1C1C1E 60%, #0D2030 100%);">
         <div class="hero-content">
-            <h1>Billi</h1>
+            <h1>Billi <span style="color: #FF6B35;">Superintelligence</span></h1>
             <p class="hero-subtitle">The Symbiotic Future</p>
             <p class="hero-copy">AI is advancing. The question isn't if it will change everything.</p>
             <p class="hero-copy">The question is <span class="hero-copy emphasis">how.</span></p>
@@ -725,7 +726,7 @@
             </p>
         </div>
 
-        <h2 class="section-title" style="margin-top: 60px;">What Changes When Billi Enters</h2>
+        <h2 class="section-title" style="margin-top: 60px;" id="future">What Changes When Billi Enters</h2>
 
         <div class="impact-grid">
             <div class="impact-card">
@@ -864,7 +865,7 @@
         </div>
 
         <!-- Pricing Card - Compact -->
-        <div class="pricing-compact">
+        <div class="pricing-compact" id="pricing-section">
             <h3>Advanced Billi: Cognitive Super Intelligence</h3>
             <p>Full AI Cognitive Architecture with Lifecycle Intelligence</p>
             
@@ -943,12 +944,21 @@
 
 
     <script>
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            document.body.classList.toggle('light');
+        }
+        
         function toggleMobileMenu() {
-            document.getElementById('mobile-nav').classList.toggle('open');
+            var nav = document.getElementById('mobile-nav');
+            nav.classList.toggle('open');
+            nav.classList.toggle('mobile');
         }
         
         function closeMobileMenu() {
-            document.getElementById('mobile-nav').classList.remove('open');
+            var nav = document.getElementById('mobile-nav');
+            nav.classList.remove('open');
+            nav.classList.remove('mobile');
         }
     </script>
 </body>
