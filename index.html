@@ -1517,6 +1517,9 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
+try {
+console.log('=== BILLI SCRIPT STARTING ===');
+
 // ── ENSURE FUNCTIONS ARE GLOBAL ──
 window.showPage = window.showPage || null;
 window.openLogin = window.openLogin || null;
@@ -2401,6 +2404,12 @@ console.log('closeMobileMenu defined?', typeof closeMobileMenu !== 'undefined');
 console.log('window.showPage:', typeof window.showPage);
 console.log('window.openLogin:', typeof window.openLogin);
 console.log('=== BILLI SCRIPT LOADED SUCCESSFULLY ===');
+
+} catch(e) {
+  console.error('❌ SCRIPT ERROR:', e.message);
+  console.error('Stack:', e.stack);
+  console.error('Full error:', e);
+}
 </script>
 </body>
 </html>
