@@ -11,12 +11,30 @@
             box-sizing: border-box;
         }
 
+        /* ──── DARK/LIGHT MODE VARIABLES ──── */
+        :root {
+            --bg: #0a0e27;
+            --bg2: #1a1f3a;
+            --text: #e0e0e0;
+            --muted: #999;
+            --border: rgba(255, 107, 53, 0.1);
+        }
+
+        body.light {
+            --bg: #f5f0eb;
+            --bg2: #ede8e2;
+            --text: #1a1614;
+            --muted: #6b6460;
+            --border: rgba(232, 98, 26, 0.2);
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1429 100%);
-            color: #e0e0e0;
+            background: linear-gradient(135deg, var(--bg) 0%, var(--bg2) 50%, var(--bg) 100%);
+            color: var(--text);
             overflow-x: hidden;
             line-height: 1.6;
+            transition: background 0.3s, color 0.3s;
         }
 
         .hero {
@@ -40,7 +58,39 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(255, 107, 53, 0.1);
+            border-bottom: 1px solid var(--border);
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        body.light nav {
+            background: linear-gradient(180deg, rgba(245, 240, 235, 0.98) 0%, rgba(237, 232, 226, 0.95) 100%);
+        }
+
+        body.light .hero {
+            background: linear-gradient(135deg, #f5f0eb 0%, #ede8e2 50%, #e8ddd6 100%) !important;
+        }
+
+        body.light .hero-content h1,
+        body.light .hero-content h2,
+        body.light .hero-content p,
+        body.light section h2,
+        body.light section p,
+        body.light .pricing-card {
+            color: #1a1614;
+        }
+
+        body.light .section {
+            background: rgba(245, 240, 235, 0.8);
+            color: #1a1614;
+        }
+
+        body.light .pricing-card {
+            border-color: rgba(232, 98, 26, 0.3);
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        body.light a {
+            color: #FF6B35;
         }
 
         .logo {
