@@ -86,6 +86,10 @@
 
         .nav-links.mobile {
             display: none;
+        }
+
+        .nav-links.mobile.open {
+            display: flex;
             position: fixed;
             top: 60px;
             left: 0;
@@ -96,13 +100,10 @@
             border-bottom: 1px solid rgba(255, 107, 53, 0.1);
             max-height: calc(100vh - 60px);
             overflow-y: auto;
+            z-index: 99;
         }
 
-        .nav-links.mobile.open {
-            display: flex;
-        }
-
-        .nav-links.mobile a {
+        .nav-links.mobile.open a {
             padding: 12px 20px;
             border-bottom: 1px solid rgba(255, 107, 53, 0.1);
             width: 100%;
@@ -612,21 +613,13 @@
             <img src="billi-ai-core-sm.png" alt="Billi" style="width:28px;height:28px;margin-right:4px;"/>
             Billi
         </div>
-        <div class="nav-links">
+        <div class="nav-links" id="mobile-nav">
             <a href="/">Home</a>
             <a href="#problem">Problem</a>
             <a href="#solution">Solution</a>
             <a href="#future">Future</a>
             <a href="#pricing-section">Pricing</a>
             <a href="/terms.html">Terms</a>
-        </div>
-        <div class="nav-links mobile" id="mobile-nav">
-            <a href="/" onclick="closeMobileMenu()">Home</a>
-            <a href="#problem" onclick="closeMobileMenu()">Problem</a>
-            <a href="#solution" onclick="closeMobileMenu()">Solution</a>
-            <a href="#future" onclick="closeMobileMenu()">Future</a>
-            <a href="#pricing-section" onclick="closeMobileMenu()">Pricing</a>
-            <a href="/terms.html" onclick="closeMobileMenu()">Terms</a>
         </div>
         <button class="menu-toggle" onclick="toggleMobileMenu()" id="menu-toggle">☰</button>
     </nav>

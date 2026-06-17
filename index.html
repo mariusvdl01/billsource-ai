@@ -1,4 +1,10 @@
-<!DOCTYPE html>
+<!DOC
+  <div class="nav-menu mobile" id="mobile-nav">
+    <button class="nav-item" onclick="switchPage('home');closeMobileMenu()">Home</button>
+    <button class="nav-item" onclick="switchPage('about');closeMobileMenu()">About</button>
+    <button class="nav-item" onclick="window.location.href='/vision-billi-symbiotic-future.html'">Vision</button>
+    <button class="nav-item" onclick="switchPage('faqs');closeMobileMenu()">FAQs</button>
+  </div>TYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -53,7 +59,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:0 2.5r
           font-size:13px;cursor:pointer;font-family:Helvetica,Arial,sans-serif;transition:all .2s;position:relative}
 .nav-item:hover{color:var(--text);background:var(--bg2)}
 .nav-item.active{color:var(--orange);font-weight:600}
-.nav-item.active::after{content:'';position:absolute;bottom:-1px;left:13px;right:13px;
+.nav-item.active::after{content:\'\';position:absolute;bottom:-1px;left:13px;right:13px;
                          height:2px;background:var(--orange);border-radius:1px}
 .nav-right{display:flex;gap:8px;align-items:center}
 .btn-ghost{background:transparent;border:0.5px solid var(--border);color:var(--muted);
@@ -67,25 +73,13 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:0 2.5r
               width:34px;height:34px;border-radius:6px;cursor:pointer;font-size:15px;
               display:flex;align-items:center;justify-content:center}
 .theme-toggle:hover{border-color:var(--orange);color:var(--orange)}
-
-/* ── HAMBURGER MENU ── */
-.menu-toggle{display:none;background:transparent;border:0.5px solid var(--border);
-             color:var(--muted);width:34px;height:34px;border-radius:6px;cursor:pointer;
-             font-size:20px;align-items:center;justify-content:center}
+/* ── MOBILE HAMBURGER ── */
+.menu-toggle{display:none;background:transparent;border:none;color:var(--muted);width:34px;height:34px;border-radius:6px;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center}
 .menu-toggle:hover{border-color:var(--orange);color:var(--orange)}
-.nav-menu.mobile{display:none;position:absolute;top:60px;left:0;right:0;flex-direction:column;
-                  background:var(--nav-bg);border-bottom:0.5px solid var(--border);
-                  backdrop-filter:blur(10px);z-index:199;max-height:calc(100vh - 60px);overflow-y:auto}
+.nav-menu.mobile{display:none;position:absolute;top:60px;left:0;right:0;flex-direction:column;background:var(--nav-bg);border-bottom:0.5px solid var(--border);backdrop-filter:blur(10px);z-index:199;max-height:calc(100vh - 60px);overflow-y:auto;padding:0}
 .nav-menu.mobile.open{display:flex}
-.nav-menu.mobile .nav-item{width:100%;text-align:left;padding:12px 20px;border-radius:0;
-                            border-bottom:0.5px solid var(--border)}
-
-@media(max-width:780px){
-  .nav-menu{display:none}
-  .menu-toggle{display:flex}
-  .nav-menu.mobile{display:none}
-  nav{padding:0 1.25rem}
-}
+.nav-menu.mobile .nav-item{width:100%;text-align:left;padding:12px 20px;border-radius:0;border-bottom:0.5px solid var(--border)}
+@media(max-width:780px){.nav-menu:not(.mobile){display:none}.menu-toggle{display:flex}nav{padding:0 1.25rem}}
 
 /* ── PAGES ── */
 .page{display:none}.page.active{display:block}
@@ -102,6 +96,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:0 2.5r
 .hero .btn-lg.secondary{background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.5);color:rgba(255,255,255,0.88);backdrop-filter:blur(4px)}
 .btn-lg.secondary:hover{border-color:var(--orange);color:var(--orange)}
 
+/* ── HERO ── */
 /* ── HERO ── */
 .hero{padding:4rem 2.5rem 3rem;position:relative;overflow:hidden;background:linear-gradient(135deg,#2A1F10 0%,#1C1C1E 60%,#0D2030 100%)}
 .hero-inner{display:flex;align-items:center;gap:3rem;max-width:1000px;margin:0 auto}
@@ -127,6 +122,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:0 2.5r
 .google-btn:hover{opacity:.9}
 .hero-trust-line{color:var(--muted)!important}
 .hero-trust-line strong{color:var(--text)!important}
+/* Hero text contrast on photo backgrounds */
 .hero .hero-sub{text-shadow:0 1px 4px rgba(0,0,0,0.35)}
 .hero h1{text-shadow:0 2px 6px rgba(0,0,0,0.3)}
 @media(max-width:740px){
@@ -146,309 +142,2127 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:0 2.5r
   box-shadow:0 4px 24px rgba(0,0,0,0.4);
   margin-bottom:10px;
 }
+/* text inside cards always readable regardless of photo */
 .hero-card h1{color:#F0EDE8!important;text-shadow:none}
 .hero-card h1 span{color:#E8621A!important}
 .hero-card .hero-sub{color:rgba(240,237,232,0.9)!important;text-shadow:none}
 .hero-card .hero-sub em{color:#F0EDE8!important}
+.hero-card .badge{background:rgba(232,98,26,0.28)!important;border-color:rgba(232,98,26,0.6)!important;color:#FFAA60!important}
+.hero-card .badge-dot{background:#FFAA60!important}
+.hero-card .hero-trust-line{color:rgba(240,237,232,0.72)!important}
+.hero-card .hero-trust-line strong{color:#F0EDE8!important}
+body.light .hero-card{
+  background:rgba(26,22,20,0.68);
+  border-color:rgba(255,255,255,0.18);
+  box-shadow:0 4px 24px rgba(0,0,0,0.38);
+}
+.hero-card:last-child{margin-bottom:0}
 
-/* ── VISION LINK CARD ── */
-.pricing-teaser-card{
-  background:rgba(232,98,26,0.08);
-  border:1px solid rgba(232,98,26,0.3);
-  border-radius:12px;
-  padding:1.5rem;
-  margin-bottom:1rem;
-  cursor:pointer;
-  transition:all .3s;
-  text-decoration:none;
-  display:block;
-  color:inherit;
-}
-.pricing-teaser-card:hover{
-  background:rgba(232,98,26,0.15);
-  border-color:rgba(232,98,26,0.6);
-  transform:translateY(-2px);
-  box-shadow:0 8px 20px rgba(232,98,26,0.2);
-}
-.pricing-teaser-card h3{
-  color:var(--orange);
-  font-size:1.2rem;
-  margin-bottom:0.5rem;
-  font-weight:700;
-}
-.pricing-teaser-card .price{
-  font-size:1.8rem;
-  color:var(--text);
-  font-weight:700;
-  margin:0.8rem 0;
-}
-.pricing-teaser-card .price-sub{
-  font-size:0.9rem;
-  color:var(--muted);
-  margin-bottom:1rem;
-}
-.pricing-teaser-card .features-list{
-  font-size:0.9rem;
-  color:var(--muted);
-  line-height:1.6;
-  margin-bottom:1rem;
-}
-.pricing-teaser-card .features-list li{
-  margin-left:1.5rem;
-}
-.pricing-teaser-card .cta-text{
-  color:var(--orange);
-  font-weight:600;
-  font-size:0.95rem;
-}
+/* ── GAUGE STRIP ── */
+.gauge-strip{background:var(--alt);border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border);padding:2rem 1.5rem}
+.gs-grid{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.gs-card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;
+         padding:16px 14px;text-align:center;position:relative;overflow:hidden}
+.gs-card::before{content:\'\';position:absolute;top:0;left:0;right:0;height:3px}
+.gs-card.g-red::before{background:#e74c3c}
+.gs-card.g-teal::before{background:var(--teal-mid)}
+.gs-card.g-purp::before{background:var(--purp)}
+.gs-card.g-amb::before{background:var(--amb)}
+.gs-lbl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+        color:var(--muted);margin-bottom:8px}
+.gs-fig{font-family:Helvetica,Arial,sans-serif;font-size:1.4rem;font-weight:700;line-height:1;margin-bottom:3px}
+.gs-sub{font-size:11px;color:var(--muted);line-height:1.4;margin-bottom:8px}
+.gs-delta{font-size:10px;font-weight:600;padding:2px 8px;border-radius:3px;display:inline-block}
+@media(max-width:600px){.gs-grid{grid-template-columns:1fr}}
 
-/* ── CARDS GRID ── */
-.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin-top:2rem}
-@media(max-width:640px){.card-grid{grid-template-columns:1fr}}
+/* ── PIVOT ── */
+.pivot-bar{background:var(--bg2);border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border);padding:2rem 2.5rem;display:flex;align-items:center;
+           justify-content:space-between;gap:20px;flex-wrap:wrap}
+.pivot-msg{font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.pivot-sub{font-size:12px;color:var(--muted)}
+.pivot-total{font-size:2.2rem;font-weight:700;color:var(--orange)}
+.pivot-lbl{font-size:11px;color:var(--muted)}
+
+/* ── ADVISOR CARDS ── */
+.advisors-section{padding:4rem 1.5rem}
+.network-wrap{display:none}
+.adv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem}
+.adv-card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;
+          padding:1.25rem;transition:border-color .2s,transform .2s;
+          backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+          position:relative;overflow:hidden}
+.adv-card-avatar{position:absolute;top:10px;right:10px;opacity:0.55;
+                 transition:opacity .3s}
+.adv-card:hover .adv-card-avatar{opacity:0.85}
+.adv-card:hover{border-color:var(--orange);transform:translateY(-2px)}
+.adv-icon{font-size:1.4rem;margin-bottom:.5rem}
+.adv-name{font-weight:700;font-size:.9rem;margin-bottom:.25rem}
+.adv-desc{font-size:.82rem;color:var(--muted);line-height:1.6}
+.adv-plan{font-size:9px;font-weight:600;margin-top:.75rem;padding:2px 7px;
+          border-radius:3px;display:inline-block}
+
+/* ── PERSONAS ── */
+.personas-section{padding:4rem 1.5rem;background:var(--alt)}
+.pc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+         gap:1rem;margin-top:1.5rem}
+.pc{background:var(--card);border:0.5px solid var(--border);border-radius:12px;
+    padding:1.1rem;transition:border-color .2s}
+.pc:hover{border-color:var(--orange)}
+.pc-tier{font-size:9px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+         padding:2px 7px;border-radius:3px;display:inline-block;margin-bottom:.6rem}
+.pc-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;
+           justify-content:center;font-weight:700;margin-bottom:.6rem;font-size:14px}
+.pc-name{font-weight:700;font-size:.9rem;margin-bottom:2px}
+.pc-role{font-size:10px;color:var(--muted);margin-bottom:.6rem}
+.pc-pain{font-size:11px;color:var(--muted);line-height:1.55;border-left:2px solid var(--border);
+         padding-left:8px;margin-bottom:.6rem}
+.pc-aspire{font-size:11px;color:var(--orange);display:flex;gap:4px;align-items:flex-start}
+.pc-aspire::before{content:"\2192";font-weight:700;flex-shrink:0}
+.pc-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:.6rem}
+.pc-tag{font-size:9px;padding:2px 6px;border-radius:3px}
+.pc-tag-billi{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:600;padding:2px 7px 2px 3px;border-radius:20px;line-height:1}
+.pc-tag-billi img{display:block;flex-shrink:0;border-radius:50%}
+
+/* ── LOGO SLIDER ── */
+.logo-slider-section{padding:1.75rem 0;border-top:0.5px solid var(--border);
+                     border-bottom:0.5px solid var(--border);overflow:hidden}
+.logo-slider-label{text-align:center;font-size:11px;font-weight:600;letter-spacing:.1em;
+                   text-transform:uppercase;color:var(--muted);margin-bottom:1.25rem}
+.logo-track-wrap{overflow:hidden;position:relative}
+.logo-track-wrap::before,.logo-track-wrap::after{content:\'\';position:absolute;
+  top:0;bottom:0;width:80px;z-index:2;pointer-events:none}
+.logo-track-wrap::before{left:0;background:linear-gradient(to right,var(--bg),transparent)}
+.logo-track-wrap::after{right:0;background:linear-gradient(to left,var(--bg),transparent)}
+.logo-track{display:flex;gap:40px;align-items:center;
+            animation:scroll-logos 28s linear infinite;width:max-content}
+.logo-track:hover{animation-play-state:paused}
+@keyframes scroll-logos{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.logo-item{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:60px}
+.logo-svg{width:40px;height:40px;opacity:.6;transition:opacity .2s}
+.logo-item:hover .logo-svg{opacity:1}
+.logo-name{font-size:10px;color:var(--muted);font-weight:600;text-align:center}
+
+/* ── EMBED BANNER ── */
+.embed-banner{background:var(--orange-dim);border:0.5px solid var(--orange-border);
+              border-radius:12px;padding:1.25rem 1.5rem;display:flex;
+              align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.embed-banner-text{font-size:13px;color:var(--text);line-height:1.6;max-width:560px}
+
+/* ── PRICING ── */
+.plans{padding:4rem 1.5rem;background:var(--alt)}
+.plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));
+            gap:14px;max-width:1000px;margin:0 auto}
+.plan-card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;
+           padding:1.25rem;position:relative;transition:border-color .2s}
+.plan-card:hover{border-color:var(--orange)}
+.plan-card.featured{border-color:var(--orange);border-width:1.5px}
+.plan-badge-tag{position:absolute;top:-10px;left:50%;transform:translateX(-50%);
+                background:var(--orange);color:#fff;font-size:9px;font-weight:700;
+                padding:3px 12px;border-radius:20px;white-space:nowrap;letter-spacing:.04em}
+.plan-name{font-weight:700;font-size:.9rem;margin-bottom:2px}
+.plan-price{font-size:1.7rem;font-weight:700;color:var(--orange);line-height:1;margin-bottom:2px}
+.plan-price span{font-size:.85rem;font-weight:400;color:var(--muted)}
+.plan-msgs{font-size:10px;color:var(--muted);margin-bottom:.75rem;line-height:1.4}
+.plan-sso{font-size:10px;font-weight:600;color:var(--teal);background:var(--teal-light);
+          padding:3px 8px;border-radius:4px;margin-bottom:.6rem;display:block}
+.plan-feature{font-size:11px;color:var(--muted);display:flex;gap:5px;margin-bottom:5px;line-height:1.4}
+.check{color:var(--orange);font-weight:700;flex-shrink:0}
+.plan-btn{width:100%;padding:10px;border-radius:8px;font-size:12px;font-weight:700;
+          cursor:pointer;font-family:Helvetica,Arial,sans-serif;border:none;margin-top:12px}
+.plan-btn.filled{background:var(--orange);color:#fff}.plan-btn.filled:hover{opacity:.88}
+.plan-btn.outlined{background:transparent;border:0.5px solid var(--border);color:var(--muted)}
+.plan-btn.outlined:hover{border-color:var(--orange);color:var(--orange)}
+.roi-chip{font-size:10px;color:var(--teal);font-weight:600;margin-bottom:.5rem;display:block}
+.roi-anchor{background:var(--orange-dim);border:0.5px solid var(--orange-border);
+            border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;
+            align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+            max-width:1000px;margin-left:auto;margin-right:auto}
+.roi-anchor p{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:3px}
+.roi-anchor small{font-size:12px;color:var(--muted)}
+.roi-big{font-size:2.4rem;font-weight:700;color:var(--orange);line-height:1}
+.roi-lbl{font-size:11px;color:var(--muted)}
+
+/* ── TRADEMARK ── */
+.trademark-section{padding:1.5rem 2rem;border-top:0.5px solid var(--border);display:flex;
+                   align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;text-align:center}
+.tm-divider{width:1px;height:40px;background:var(--border)}
+.tm-desc{font-size:12px;color:var(--muted);max-width:520px;line-height:1.6}
+.tm-bai{font-size:11px;font-weight:700;color:var(--orange);background:var(--orange-dim);
+        padding:4px 10px;border-radius:4px}
+
+/* ── COST PAGE ── */
+.cost-page{padding:3rem 1.5rem}
+.slider-strip{background:var(--bg2);border-radius:12px;padding:1.25rem 1.5rem;
+              display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;margin:1.5rem 0}
+.sl-group label{font-size:11px;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:5px}
+.sl-group label span{font-weight:600;color:var(--text)}
+.sl-group input[type=range]{width:100%;accent-color:var(--orange)}
+@media(max-width:650px){.slider-strip{grid-template-columns:1fr 1fr}}
+.bleed-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+.bleed-card{background:var(--card);border:0.5px solid #F09595;border-radius:12px;
+            padding:1.25rem;position:relative;overflow:hidden}
+.bleed-card::before{content:\'\';position:absolute;top:0;left:0;right:0;height:3px;background:#e74c3c}
+.bleed-quote{font-size:13px;font-weight:600;font-style:italic;line-height:1.4;
+             margin-bottom:.75rem;color:var(--text)}
+.bleed-quote::before{content:"\201C";font-size:28px;color:#F09595;line-height:.7;
+                     display:block;margin-bottom:2px;font-style:normal}
+.bleed-total{font-size:1.7rem;font-weight:700;color:#e74c3c}
+.bleed-lbl{font-size:10px;color:#e74c3c;opacity:.7;margin-bottom:.75rem}
+.w-list{display:flex;flex-direction:column;gap:4px;margin-bottom:.75rem}
+.w-item{display:flex;justify-content:space-between;align-items:center;
+        padding:5px 8px;background:#FCEBEB;border-radius:5px}
+body.dark .w-item{background:rgba(231,76,60,.1)}
+.w-l{font-size:10px;color:#791F1F}
+body.dark .w-l{color:#F09595}
+.w-v{font-size:10px;font-weight:600;color:#e74c3c}
+.bstats{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;
+        border-top:0.5px solid #F09595;padding-top:.75rem}
+.bs{text-align:center}.bs-n{font-size:13px;font-weight:700;color:#e74c3c}.bs-l{font-size:9px;color:var(--muted)}
+.thrive-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-top:1rem}
+.thrive-card{background:var(--card);border:0.5px solid #9FE1CB;border-radius:12px;
+             padding:1.25rem;position:relative;overflow:hidden}
+.thrive-card::before{content:\'\';position:absolute;top:0;left:0;right:0;height:3px}
+.tc-teal::before{background:var(--teal-mid)}.tc-purp::before{background:var(--purp)}.tc-amb::before{background:var(--amb)}
+.agent-chip{display:inline-flex;font-size:9px;font-weight:600;padding:3px 8px;border-radius:20px;margin-bottom:.75rem}
+.ac-teal{background:var(--teal-light);color:var(--teal)}
+.ac-purp{background:var(--purp-light);color:var(--purp)}
+.ac-amb{background:var(--amb-light);color:var(--amb)}
+.g-wrap{display:flex;justify-content:center;margin:4px 0 .75rem}
+.t-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px}
+.t-sub{font-size:10px;color:var(--muted);margin-bottom:.6rem}
+.gain-list{display:flex;flex-direction:column;gap:4px;margin-bottom:.75rem}
+.gi{display:flex;justify-content:space-between;align-items:center;padding:5px 8px;border-radius:5px}
+.gi-teal{background:var(--teal-light)}.gi-purp{background:var(--purp-light)}.gi-amb{background:var(--amb-light)}
+.gl{font-size:10px}.gi-teal .gl{color:#085041}.gi-purp .gl{color:#3C3489}.gi-amb .gl{color:#633806}
+.gv{font-size:10px;font-weight:600}
+.gi-teal .gv{color:var(--teal)}.gi-purp .gv{color:var(--purp)}.gi-amb .gv{color:var(--amb)}
+.tstats{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;
+        border-top:0.5px solid rgba(0,0,0,.08);padding-top:.75rem}
+.ts{text-align:center}.ts-n{font-size:13px;font-weight:700}.ts-l{font-size:9px;color:var(--muted)}
+@media(max-width:700px){.bleed-grid,.thrive-grid{grid-template-columns:1fr}}
+
+/* ── DEMO PAGE ── */
+.demo-page{padding:3rem 1.5rem}
+.demo-layout{display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:1000px;margin:0 auto}
+@media(max-width:740px){.demo-layout{grid-template-columns:1fr}}
+.chat-container{background:var(--card);border:0.5px solid var(--border);border-radius:16px;overflow:hidden}
+body.light .chat-container{box-shadow:0 2px 14px var(--shadow)}
+.chat-header{padding:1rem 1.25rem;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:10px}
+.billi-name-text{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:14px;color:var(--text)}
+.billi-status{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;margin-top:2px}
+.status-dot{width:6px;height:6px;background:var(--green);border-radius:50%}
+.chat-messages{padding:1.25rem;display:flex;flex-direction:column;gap:12px;
+               min-height:280px;max-height:340px;overflow-y:auto}
+.msg{display:flex;gap:8px;align-items:flex-start}
+.msg.user{flex-direction:row-reverse}
+.msg-avatar-user{width:28px;height:28px;border-radius:50%;background:var(--border);
+                 display:flex;align-items:center;justify-content:center;
+                 font-size:11px;color:var(--muted);flex-shrink:0;font-weight:700}
+.msg-bubble{max-width:80%;padding:10px 14px;border-radius:10px;font-size:13.5px;line-height:1.6}
+.msg-bubble.ai{background:var(--msg-ai);border:0.5px solid var(--border);color:var(--text)}
+.msg-bubble.user{background:var(--orange);color:#fff}
+.typing{display:flex;gap:4px;align-items:center;padding:4px 2px}
+.dot{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+.chat-suggestions{padding:0 1.25rem .875rem;display:flex;gap:8px;flex-wrap:wrap}
+.suggestion{background:transparent;border:0.5px solid var(--border);color:var(--muted);
+            padding:6px 12px;border-radius:20px;font-size:12px;cursor:pointer;
+            font-family:Helvetica,Arial,sans-serif;transition:all .2s}
+.suggestion:hover{border-color:var(--orange);color:var(--orange)}
+.chat-input-area{padding:1rem 1.25rem;border-top:0.5px solid var(--border);display:flex;gap:10px;align-items:center}
+.chat-input{flex:1;background:var(--input-bg);border:0.5px solid var(--border);border-radius:8px;
+            padding:10px 14px;color:var(--text);font-size:14px;font-family:Helvetica,Arial,sans-serif;
+            outline:none;transition:border-color .2s}
+.chat-input:focus{border-color:var(--orange)}
+.chat-input::placeholder{color:var(--muted)}
+.send-btn{width:38px;height:38px;border-radius:8px;background:var(--orange);border:none;
+          cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.send-btn:hover{opacity:.85}
+.upload-zone{border:1.5px dashed var(--orange-border);border-radius:12px;padding:2rem;
+             text-align:center;cursor:pointer;background:var(--orange-dim);transition:all .2s}
+.upload-zone:hover{border-color:var(--orange)}
+.upload-icon{font-size:2rem;margin-bottom:.75rem;display:block}
+.upload-title{font-weight:700;font-size:.95rem;color:var(--text);margin-bottom:.25rem}
+.upload-sub{font-size:12px;color:var(--muted)}
+.upload-types{display:flex;gap:8px;justify-content:center;margin-top:.75rem;flex-wrap:wrap}
+.upload-type{background:var(--orange-dim);border:0.5px solid var(--orange-border);color:var(--orange);
+             font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:.05em}
+.score-preview{background:var(--card);border:0.5px solid var(--border);border-radius:12px;
+               padding:1.25rem;margin-top:1rem;display:none}
+.score-preview.visible{display:block;animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.score-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.score-badge{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px}
+.score-badge.amber{background:#FEF3C7;color:#92400E}
+.risk-meter{margin-bottom:1rem}
+.risk-meter-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:5px}
+.risk-bar{height:6px;background:var(--bg2);border-radius:3px;overflow:hidden}
+.risk-fill{height:100%;background:linear-gradient(to right,var(--green),var(--amber-c),var(--red-c));
+           border-radius:3px;width:0;transition:width 1s ease}
+.ratio-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem}
+.ratio-item{background:var(--bg2);border-radius:8px;padding:.6rem .75rem}
+.ratio-label{font-size:10px;color:var(--muted);margin-bottom:2px}
+.ratio-value{font-size:1rem;font-weight:700;color:var(--text)}
+.ratio-ok{font-size:9px;color:var(--green);margin-top:2px}
+.ratio-warn{font-size:9px;color:var(--amber-c);margin-top:2px}
+.ratio-bad{font-size:9px;color:var(--red-c);margin-top:2px}
+
+/* ── MERCH PAGE ── */
+.merch-page{padding:4rem 2rem;text-align:center}
+.merch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+            gap:1.5rem;max-width:1000px;margin:2.5rem auto 0;text-align:left}
+.merch-card{background:var(--card);border:0.5px solid var(--border);border-radius:14px;
+            padding:1.75rem 1.5rem;position:relative;transition:box-shadow .2s}
+.merch-card:hover{box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.merch-badge{position:absolute;top:-10px;right:16px;background:#92400E;color:#FEF3C7;
+             font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.06em}
+.merch-product-img{display:flex;justify-content:center;align-items:center;margin-bottom:1rem;
+                   border-radius:10px;overflow:hidden;background:var(--bg2);
+                   height:200px;font-size:5rem;line-height:200px}
+.merch-product-img img{width:100%;height:200px;object-fit:cover}
+.merch-name{font-size:1rem;font-weight:700;margin-bottom:.25rem}
+.merch-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:1.25rem}
+.merch-sizes{display:flex;flex-direction:column;gap:6px;margin-bottom:1.25rem}
+.merch-size-row{display:flex;justify-content:space-between;align-items:center;font-size:12px}
+.merch-size-label{color:var(--muted)}.merch-size-price{font-weight:700;color:var(--orange)}
+.merch-btn{width:100%;padding:9px;background:var(--orange);border:none;color:#fff;
+           border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:Helvetica,Arial,sans-serif}
+.merch-btn:hover{opacity:.88}
+.cart-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);
+              z-index:600;align-items:center;justify-content:center}
+.cart-overlay.open{display:flex}
+.cart-box{background:var(--card);border:0.5px solid var(--border);border-radius:16px;
+          padding:2rem;width:400px;max-width:94vw;position:relative}
+.cart-title{font-size:1.1rem;font-weight:700;margin-bottom:.25rem;font-family:Helvetica,Arial,sans-serif}
+.cart-sub{font-size:12px;color:var(--muted);margin-bottom:1.25rem}
+.cart-error{font-size:12px;color:var(--red-c);display:none;margin-bottom:.75rem}
+.cart-field,.cart-select{width:100%;padding:10px 12px;border:0.5px solid var(--border);border-radius:8px;
+  font-size:13px;background:var(--bg);color:var(--text);font-family:Helvetica,Arial,sans-serif;margin-bottom:10px;outline:none}
+.cart-field:focus,.cart-select:focus{border-color:var(--orange)}
+.cart-btn{width:100%;padding:12px;background:var(--orange);border:none;color:#fff;border-radius:8px;
+          font-size:14px;font-weight:700;cursor:pointer;font-family:Helvetica,Arial,sans-serif}
+.cart-btn:hover{opacity:.88}.cart-btn:disabled{opacity:.5;cursor:not-allowed}
+.cart-close{position:absolute;top:1rem;right:1rem;background:transparent;border:none;
+            color:var(--muted);font-size:18px;cursor:pointer}
+
+/* ── MODALS ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);
+               z-index:500;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.login-box{background:var(--card);border:0.5px solid var(--border);border-radius:20px;
+           padding:2.5rem 2rem;width:380px;max-width:94vw;text-align:center}
+.login-title{font-size:1.2rem;font-weight:700;margin-bottom:.5rem;font-family:Helvetica,Arial,sans-serif}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:1.5rem;line-height:1.6}
+.login-google{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+              padding:12px;background:#fff;border:0.5px solid #D8D0C8;border-radius:10px;
+              font-size:14px;font-weight:600;cursor:pointer;font-family:Helvetica,Arial,sans-serif;
+              color:#333;margin-bottom:1rem;transition:opacity .2s}
+.login-google:hover{opacity:.9}
+.divider-or{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);margin-bottom:1rem}
+.divider-or::before,.divider-or::after{content:\'\';flex:1;height:.5px;background:var(--border)}
+.email-input{width:100%;padding:11px 14px;border:0.5px solid var(--border);border-radius:8px;
+             font-size:14px;font-family:Helvetica,Arial,sans-serif;background:var(--input-bg);
+             color:var(--text);margin-bottom:10px;outline:none}
+.email-input:focus{border-color:var(--orange)}
 
 /* ── FOOTER ── */
-footer{background:var(--footer-bg);color:var(--footer-text);padding:3rem 2.5rem;margin-top:4rem;
-       border-top:0.5px solid var(--border);text-align:center}
-.footer-content{max-width:1000px;margin:0 auto}
-.footer-links{display:flex;justify-content:center;gap:2rem;margin-bottom:2rem;flex-wrap:wrap}
-.footer-links a{color:var(--footer-text);text-decoration:none;font-size:13px;transition:color .2s}
-.footer-links a:hover{color:var(--orange)}
-.footer-note{font-size:12px;color:var(--footer-muted);margin-top:1rem}
-@media(max-width:640px){.footer-links{gap:1rem}.footer-links a{font-size:12px}}
+footer{background:var(--footer-bg);border-top:0.5px solid var(--border);padding:1.75rem 2.5rem;display:flex;
+       justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-brand{display:flex;align-items:center;gap:10px}
+.footer-brand-text .footer-brand-name{font-size:13px;font-weight:700;color:var(--footer-text)}
+.footer-brand-text div:last-child{font-size:10px;color:var(--footer-muted);margin-top:2px}
+.footer-links{display:flex;gap:16px;flex-wrap:wrap}
+.footer-links a{font-size:11px;color:var(--footer-muted);text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:var(--footer-text)}
+
+/* ── HERO SCENIC SLIDESHOW ── */
+.hero-scenes{
+  position:absolute;inset:0;z-index:0;overflow:hidden;
+}
+.hero-scene{
+  position:absolute;inset:0;
+  opacity:0;
+  animation:scene-fade 24s infinite;
+  will-change:opacity;
+}
+.hero-scene:nth-child(1){animation-delay:0s}
+.hero-scene:nth-child(2){animation-delay:6s}
+.hero-scene:nth-child(3){animation-delay:12s}
+.hero-scene:nth-child(4){animation-delay:18s}
+@keyframes scene-fade{
+  0%,2%{opacity:0}
+  8%,23%{opacity:1}
+  25%,100%{opacity:0}
+}
+/* ── HERO PHOTO SCENES ── */
+.hero-scene img.scene-photo{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center;
+  display:block;
+}
+/* per-scene warm colour cast over photo to tie into brand palette */
+.scene-cast{
+  position:absolute;inset:0;z-index:2;pointer-events:none;
+  mix-blend-mode:color;
+}
+/* scene 1: amber/gold cast — desert */
+.hero-scene:nth-child(1) .scene-cast{background:rgba(220,120,30,0.32)}
+/* scene 2: red-ochre cast — rocky Mars */
+.hero-scene:nth-child(2) .scene-cast{background:rgba(180,60,20,0.28)}
+/* scene 3: blue-teal cast — lake */
+.hero-scene:nth-child(3) .scene-cast{background:rgba(20,80,120,0.25)}
+/* scene 4: cool-green cast — falls */
+.hero-scene:nth-child(4) .scene-cast{background:rgba(20,100,80,0.25)}
+
+/* tint overlay — tones scenes to brand palette in dark/light */
+.hero-scene-tint{
+  position:absolute;inset:0;z-index:1;
+  mix-blend-mode:multiply;
+  transition:background .3s;
+}
+body.dark  .hero-scene-tint{background:rgba(20,20,22,0.42)}
+body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
+/* waterfall animation */
+@keyframes waterfall-drop{
+  0%{transform:translateY(-8px);opacity:.7}
+  100%{transform:translateY(8px);opacity:.95}
+}
+@keyframes mist-drift{
+  0%{transform:translateX(0) scaleX(1);opacity:.18}
+  50%{transform:translateX(6px) scaleX(1.05);opacity:.28}
+  100%{transform:translateX(0) scaleX(1);opacity:.18}
+}
+@keyframes dune-shimmer{
+  0%,100%{opacity:.85}50%{opacity:1}
+}
+
 </style>
 </head>
 <body class="light">
 
 <!-- NAV -->
 <nav>
-  <a href="/" class="logo">
-    <img src="billi-ai-core-sm.png" alt="Billi" style="width:32px;height:32px"/>
-    <div>
-      <div class="logo-text">Billi</div>
-      <div class="logo-sub">BAI</div>
+  <div class="logo" onclick="showPage('home')" style="align-items:flex-start;gap:6px">
+    <img src="logo2.png" alt="Billsource" height="32" style="display:block;filter:var(--logo-filter,none);"/>
+    <div style="margin-top:2px">
+      <span class="logo-bai" style="display:inline-block">BAI</span>
     </div>
-  </a>
-  
+  </div>
   <div class="nav-menu">
-    <button class="nav-item active" onclick="switchPage('home')">Home</button>
-    <button class="nav-item" onclick="switchPage('about')">About</button>
-    <button class="nav-item" onclick="window.location.href='/vision-billi-symbiotic-future.html'">Vision</button>
-    <button class="nav-item" onclick="switchPage('faqs')">FAQs</button>
+    <button class="nav-item active" id="nav-home"  onclick="showPage('home')">Home</button>
+<button class="menu-toggle" id="menu-toggle" onclick="toggleMobileMenu()" title="Menu">☰</button>
+    <button class="nav-item"        id="nav-cost"  onclick="showPage('cost')">Cost analysis</button>
+    <button class="nav-item"        id="nav-demo"  onclick="showPage('demo')">Demo &amp; report</button>
+    <button class="nav-item"        id="nav-merch" onclick="showPage('merch')">Merch</button>
+    <a class="nav-item" href="/vision-billi-symbiotic-future.html" style="text-decoration:none;display:flex;align-items:center">The Symbiotic Future</a>
   </div>
-
-  <div class="nav-menu mobile" id="mobile-nav">
-    <button class="nav-item" onclick="switchPage('home');closeMobileMenu()">Home</button>
-    <button class="nav-item" onclick="switchPage('about');closeMobileMenu()">About</button>
-    <button class="nav-item" onclick="window.location.href='/vision-billi-symbiotic-future.html'">Vision</button>
-    <button class="nav-item" onclick="switchPage('faqs');closeMobileMenu()">FAQs</button>
-  </div>
-  
   <div class="nav-right">
-    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
-    <button class="menu-toggle" id="menu-toggle" onclick="toggleMobileMenu()" title="Menu">☰</button>
+    <button class="theme-toggle" id="themeBtn">&#9788;</button>
+    <button class="btn-ghost" onclick="openLogin()">Sign in</button>
+    <button class="btn-primary" onclick="openLogin()">Start free</button>
   </div>
 </nav>
 
-<!-- HOME PAGE -->
-<div id="home" class="page active">
-  <section class="hero">
-    <div class="hero-inner">
-      <div class="hero-text-col">
-        <div class="badge"><span class="badge-dot"></span> AI-powered business intelligence</div>
-        <h1>Meet <span>Billi</span>.</h1>
-        <div class="hero-sub">Six advisors<em>in your pocket.</em> Bean Counter, IT Guy, Fixer, Deal Maker, Rule Book, Brand Guru.</div>
-        <div class="hero-sub"><em>Built for African entrepreneurs.</em></div>
-        
-        <div class="hero-cta">
-          <a href="#" class="google-btn" onclick="openLogin(); return false;">
-            <span>📧</span> Sign in with Google
-          </a>
-        </div>
-        
-        <div class="hero-trust-line"><strong>Free to try.</strong> Full intelligence, zero card required.</div>
-      </div>
-      
-      <div class="hero-logo-col">
-        <img src="billiheroavatar.png" alt="Billi Avatar" style="width:280px;height:auto;max-width:100%;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.4)"/>
+<!-- ══════════════════════════════════ PAGE: HOME ══════════════════════════════════ -->
+<div class="page active" id="page-home">
+<section class="hero">
+  <!-- Scenic slideshow backgrounds -->
+  <div class="hero-scenes">
+    <div class="hero-scene"><img class="scene-photo" src="https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=1600&q=80" alt="Namibia desert dunes" loading="eager"/><div class="scene-cast"></div></div>
+    <div class="hero-scene"><img class="scene-photo" src="https://images.unsplash.com/photo-1682687218608-5e2522b04673?auto=format&fit=crop&w=1600&q=80" alt="Saharan rocky landscape" loading="lazy"/><div class="scene-cast"></div></div>
+    <div class="hero-scene"><img class="scene-photo" src="https://images.unsplash.com/photo-1580502304784-8985b7eb7260?auto=format&fit=crop&w=1600&q=80" alt="African great lake" loading="lazy"/><div class="scene-cast"></div></div>
+    <div class="hero-scene"><img class="scene-photo" src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1600&q=80" alt="Victoria Falls" loading="lazy"/><div class="scene-cast"></div></div>
+    <!-- Billi network overlay -->
+    <div style="position:absolute;inset:0;z-index:3;pointer-events:none;display:flex;align-items:center;justify-content:center;overflow:hidden">
+      <div style="width:min(900px,110%);opacity:0.14;filter:blur(0.4px)">        <svg xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 900 940"
+  width="100%" height="100%"
+  style="max-width:900px;display:block;margin:0 auto"
+  preserveAspectRatio="xMidYMid meet">
+<defs>
+  <radialGradient id="bgGlow" cx="50%" cy="48%" r="52%">
+    <stop offset="0%"  stop-color="#c87020" stop-opacity="0.10"/>
+    <stop offset="60%" stop-color="#c87020" stop-opacity="0.03"/>
+    <stop offset="100%" stop-color="#c87020" stop-opacity="0"/>
+  </radialGradient>
+  <filter id="gAmber"  x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="10" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="gGreen"  x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="7"  result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="gPurple" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="7"  result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="gGold"   x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="7"  result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="gBlue"   x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="7"  result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="gRed"    x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="7"  result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="gCyan"   x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="7"  result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <style>
+    .nd1{animation:nd 4.4s ease-in-out infinite 0.00s;}
+    .nd2{animation:nd 4.4s ease-in-out infinite 0.73s;}
+    .nd3{animation:nd 4.4s ease-in-out infinite 1.47s;}
+    .nd4{animation:nd 4.4s ease-in-out infinite 2.20s;}
+    .nd5{animation:nd 4.4s ease-in-out infinite 2.93s;}
+    .nd6{animation:nd 4.4s ease-in-out infinite 3.67s;}
+    @keyframes nd{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .orbit{animation:orb 20s linear infinite;transform-origin:50% 50%;}
+    @keyframes orb{to{transform:rotate(360deg)}}
+    .pulse{animation:pulseR 3.2s ease-in-out infinite;}
+    @keyframes pulseR{0%,100%{opacity:0.22}50%{opacity:0.06}}
+    @keyframes billi-eye-ball{0%,13%{transform:scaleY(1);}16%,21%{transform:scaleY(0.05);}25%,47%{transform:scaleY(1);}51%,100%{transform:scaleY(0.05);}}
+    @keyframes billi-eye-hi{0%,13%{opacity:1;}16%,21%{opacity:0;}25%,47%{opacity:1;}51%,100%{opacity:0;}}
+    @keyframes billi-wink-bar{0%,13%{opacity:0;}16%,21%{opacity:1;}25%,47%{opacity:0;}51%,100%{opacity:1;}}
+    .b-eye-ball{animation:billi-eye-ball 4.5s ease-in-out 1s infinite;transform-box:fill-box;transform-origin:center;}
+    .b-eye-hi  {animation:billi-eye-hi   4.5s ease-in-out 1s infinite;}
+    .b-wink-bar{animation:billi-wink-bar 4.5s ease-in-out 1s infinite;opacity:0;}
+    .ib{fill-opacity:0.18;}
+  </style>
+</defs>
+
+<!-- Warm radial wash -->
+<circle cx="450" cy="450" r="440" fill="url(#bgGlow)"/>
+
+<!--
+  6 nodes at r=215, 60° apart, top=270°
+  Node 1 top        (450,235)  — Bean Counter   green   #2ecc71
+  Node 2 top-right  (636,342)  — Brand Guru     purple  #c77dff
+  Node 3 bot-right  (636,558)  — Deal Maker     gold    #f4a100
+  Node 4 bottom     (450,665)  — IT Guy         cyan    #00d4d4
+  Node 5 bot-left   (264,558)  — Rule Book      sky     #38bdf8
+  Node 6 top-left   (264,343)  — The Fixer      coral   #ff6b6b
+
+  Lines (inner r=82 → outer r=178):
+  ln1 (450,368)→(450,272)
+  ln2 (521,409)→(604,361)
+  ln3 (521,491)→(604,539)
+  ln4 (450,532)→(450,628)
+  ln5 (379,491)→(296,539)
+  ln6 (379,409)→(296,361)
+
+  Icon midpoints (r=130):
+  ic1 (450,320)  ic2 (563,385)  ic3 (563,515)
+  ic4 (450,580)  ic5 (337,515)  ic6 (337,385)
+-->
+
+<!-- ══ DASHED CONNECTOR LINES ══ -->
+<line id="ln1" x1="450" y1="368" x2="450" y2="272" stroke="#2ecc71" stroke-width="2" stroke-opacity="0.55" stroke-dasharray="6 7"/>
+<line id="ln2" x1="521" y1="409" x2="604" y2="361" stroke="#c77dff" stroke-width="2" stroke-opacity="0.55" stroke-dasharray="6 7"/>
+<line id="ln3" x1="521" y1="491" x2="604" y2="539" stroke="#f4a100" stroke-width="2" stroke-opacity="0.55" stroke-dasharray="6 7"/>
+<line id="ln4" x1="450" y1="532" x2="450" y2="628" stroke="#00d4d4" stroke-width="2" stroke-opacity="0.55" stroke-dasharray="6 7"/>
+<line id="ln5" x1="379" y1="491" x2="296" y2="539" stroke="#38bdf8" stroke-width="2" stroke-opacity="0.55" stroke-dasharray="6 7"/>
+<line id="ln6" x1="379" y1="409" x2="296" y2="361" stroke="#ff6b6b" stroke-width="2" stroke-opacity="0.55" stroke-dasharray="6 7"/>
+
+<!-- ══ TRAVELLING DOTS ══ -->
+<circle r="4" fill="#2ecc71" filter="url(#gGreen)"><animateMotion dur="2.2s" repeatCount="indefinite" keyPoints="0;1;0" keyTimes="0;0.5;1" calcMode="linear"><mpath href="#ln1"/></animateMotion></circle>
+<circle r="4" fill="#c77dff" filter="url(#gPurple)"><animateMotion dur="2.7s" repeatCount="indefinite" keyPoints="0;1;0" keyTimes="0;0.5;1" calcMode="linear"><mpath href="#ln2"/></animateMotion></circle>
+<circle r="4" fill="#f4a100" filter="url(#gGold)"><animateMotion dur="1.9s" repeatCount="indefinite" keyPoints="0;1;0" keyTimes="0;0.5;1" calcMode="linear"><mpath href="#ln3"/></animateMotion></circle>
+<circle r="4" fill="#00d4d4" filter="url(#gCyan)"><animateMotion dur="2.3s" repeatCount="indefinite" keyPoints="0;1;0" keyTimes="0;0.5;1" calcMode="linear"><mpath href="#ln4"/></animateMotion></circle>
+<circle r="4" fill="#38bdf8" filter="url(#gBlue)"><animateMotion dur="2.5s" repeatCount="indefinite" keyPoints="0;1;0" keyTimes="0;0.5;1" calcMode="linear"><mpath href="#ln5"/></animateMotion></circle>
+<circle r="4" fill="#ff6b6b" filter="url(#gRed)"><animateMotion dur="2.9s" repeatCount="indefinite" keyPoints="0;1;0" keyTimes="0;0.5;1" calcMode="linear"><mpath href="#ln6"/></animateMotion></circle>
+
+<!-- ══ ICONS ON CONNECTOR LINES ══ -->
+<!-- ln1 (450,320) bar chart — Bean Counter -->
+<circle cx="450" cy="320" r="14" fill="#2ecc71" class="ib"/>
+<g transform="translate(450,320)" stroke="#2ecc71" stroke-width="2" stroke-linecap="round" fill="none">
+  <rect x="-10" y="-8" width="20" height="15" rx="2"/>
+  <line x1="-5" y1="2" x2="-5" y2="-3"/><line x1="0" y1="2" x2="0" y2="-5"/><line x1="5" y1="2" x2="5" y2="-7"/>
+</g>
+<!-- ln2 (563,385) sparkle — Brand Guru -->
+<circle cx="563" cy="385" r="14" fill="#c77dff" class="ib"/>
+<g transform="translate(563,385)" stroke="#c77dff" stroke-width="2" stroke-linecap="round" fill="none">
+  <circle cx="0" cy="0" r="5"/>
+  <line x1="0" y1="-10" x2="0" y2="-7"/><line x1="0" y1="7" x2="0" y2="10"/>
+  <line x1="-10" y1="0" x2="-7" y2="0"/><line x1="7" y1="0" x2="10" y2="0"/>
+  <line x1="-7" y1="-7" x2="-5" y2="-5"/><line x1="5" y1="5" x2="7" y2="7"/>
+  <line x1="7" y1="-7" x2="5" y2="-5"/><line x1="-5" y1="5" x2="-7" y2="7"/>
+</g>
+<!-- ln3 (563,515) dollar — Deal Maker -->
+<circle cx="563" cy="515" r="14" fill="#f4a100" class="ib"/>
+<g transform="translate(563,515)" stroke="#f4a100" stroke-width="2" stroke-linecap="round" fill="none">
+  <line x1="0" y1="-11" x2="0" y2="11"/>
+  <path d="M6,-6 C6,-10 -6,-10 -6,-5 C-6,-1 6,-1 6,4 C6,8 -6,8 -6,5"/>
+</g>
+<!-- ln4 (450,580) monitor/screen — IT Guy -->
+<circle cx="450" cy="580" r="14" fill="#00d4d4" class="ib"/>
+<g transform="translate(450,580)" stroke="#00d4d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+  <rect x="-10" y="-8" width="20" height="14" rx="2"/>
+  <line x1="0" y1="6" x2="0" y2="10"/>
+  <line x1="-6" y1="10" x2="6" y2="10"/>
+  <circle cx="0" cy="-1" r="2.5"/>
+</g>
+<!-- ln5 (337,515) open book — Rule Book -->
+<circle cx="337" cy="515" r="14" fill="#38bdf8" class="ib"/>
+<g transform="translate(337,515)" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+  <path d="M-9,-9 C-9,-9 -4,-11 0,-8 L0,9 C-4,7 -9,9 -9,9 Z"/>
+  <path d="M9,-9 C9,-9 4,-11 0,-8 L0,9 C4,7 9,9 9,9 Z"/>
+  <line x1="-7" y1="-3" x2="-2" y2="-3"/><line x1="-7" y1="1" x2="-2" y2="1"/>
+  <line x1="2" y1="-3" x2="7" y2="-3"/><line x1="2" y1="1" x2="7" y2="1"/>
+</g>
+<!-- ln6 (337,385) wrench — The Fixer -->
+<circle cx="337" cy="385" r="14" fill="#ff6b6b" class="ib"/>
+<g transform="translate(337,385)" stroke="#ff6b6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+  <path d="M5,-9 A5,5 0 0,1 10,-3 A5,5 0 0,1 3,1 L-8,10 A1.8,1.8 0 0,1 -10,8 L1,-3 A5,5 0 0,1 5,-9Z"/>
+</g>
+
+
+<!-- ══ CENTRE BILLI ══ -->
+<circle cx="450" cy="450" r="94" fill="none" stroke="#c87020" stroke-width="1.2" stroke-opacity="0.25" class="pulse"/>
+<circle cx="450" cy="450" r="98" fill="none" stroke="#c87020" stroke-width="0.6" stroke-opacity="0.07"/>
+<g class="orbit"><circle cx="450" cy="356" r="4" fill="#d4821a" opacity="0.8" filter="url(#gAmber)"/></g>
+<circle cx="450" cy="450" r="82" fill="none" stroke="#c87020" stroke-width="2.5" stroke-opacity="0.4" filter="url(#gAmber)"/>
+<g transform="translate(450,447) scale(0.355)">
+  <circle cx="0" cy="0" r="170" fill="#F59E0B" stroke="#92400E" stroke-width="12"/>
+  <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(-18,-87,-160)"/>
+  <rect x="-16"  y="-230" width="52" height="124" rx="26" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(5,10,-168)"/>
+  <rect x="72"   y="-208" width="42" height="96"  rx="21" fill="#FEF3C7" stroke="#92400E" stroke-width="10" transform="rotate(22,93,-160)"/>
+  <ellipse cx="0" cy="50" rx="144" ry="96" fill="#FEF3C7" stroke="#92400E" stroke-width="10"/>
+  <circle class="b-eye-ball" cx="-72" cy="46" r="46" fill="#92400E"/>
+  <circle class="b-eye-hi"   cx="-56" cy="28" r="15" fill="#FEF3C7"/>
+  <circle class="b-eye-hi"   cx="-78" cy="58" r="5"  fill="#FEF3C7" opacity="0.55"/>
+  <rect   class="b-wink-bar" x="-118" y="38" width="92" height="14" rx="7" fill="#92400E"/>
+  <circle cx="72" cy="46" r="46" fill="#92400E"/>
+  <circle cx="88" cy="28" r="15" fill="#FEF3C7"/>
+  <circle cx="66" cy="58" r="5"  fill="#FEF3C7" opacity="0.55"/>
+  <rect x="-118" y="122" width="96" height="14" rx="7" fill="#92400E" opacity="0.15"/>
+</g>
+<text x="450" y="548" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="17" font-weight="800" fill="#c87020" letter-spacing="3">Billi</text>
+<text x="450" y="563" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#888780" letter-spacing="2">Advisor AI</text>
+
+
+<!-- ══ NODE 1: BEAN COUNTER — green — top (450,235) ══ -->
+<g class="nd1">
+  <g transform="translate(450,235) scale(0.22)">
+    <circle cx="0" cy="0" r="170" fill="#1a7a44" stroke="#0d4024" stroke-width="14"/>
+    <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#d4f7e4" stroke="#0d4024" stroke-width="11" transform="rotate(-18,-87,-160)"/>
+    <rect x="-16"  y="-230" width="52" height="124" rx="26" fill="#d4f7e4" stroke="#0d4024" stroke-width="11" transform="rotate(5,10,-168)"/>
+    <rect x="72"   y="-208" width="42" height="96"  rx="21" fill="#d4f7e4" stroke="#0d4024" stroke-width="11" transform="rotate(22,93,-160)"/>
+    <ellipse cx="0" cy="50" rx="144" ry="96" fill="#d4f7e4" stroke="#0d4024" stroke-width="11"/>
+    <circle cx="-72" cy="46" r="46" fill="#0d4024"/><circle cx="-56" cy="28" r="15" fill="#d4f7e4"/>
+    <circle cx="72"  cy="46" r="46" fill="#0d4024"/><circle cx="88"  cy="28" r="15" fill="#d4f7e4"/>
+  </g>
+  <text x="450" y="284" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="12" font-weight="800" fill="#2ecc71">Bean Counter</text>
+  <text x="450" y="298" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9.5" fill="#888780">Finance &amp; Cash Flow</text>
+</g>
+
+<!-- ══ NODE 2: BRAND GURU — purple — top-right (636,342) ══ -->
+<g class="nd2">
+  <g transform="translate(636,342) scale(0.22)">
+    <circle cx="0" cy="0" r="170" fill="#6b2fa0" stroke="#3d1260" stroke-width="14"/>
+    <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#ead4f7" stroke="#3d1260" stroke-width="11" transform="rotate(-18,-87,-160)"/>
+    <rect x="-16"  y="-230" width="52" height="124" rx="26" fill="#ead4f7" stroke="#3d1260" stroke-width="11" transform="rotate(5,10,-168)"/>
+    <rect x="72"   y="-208" width="42" height="96"  rx="21" fill="#ead4f7" stroke="#3d1260" stroke-width="11" transform="rotate(22,93,-160)"/>
+    <ellipse cx="0" cy="50" rx="144" ry="96" fill="#ead4f7" stroke="#3d1260" stroke-width="11"/>
+    <circle cx="-72" cy="46" r="46" fill="#3d1260"/><circle cx="-56" cy="28" r="15" fill="#ead4f7"/>
+    <circle cx="72"  cy="46" r="46" fill="#3d1260"/><circle cx="88"  cy="28" r="15" fill="#ead4f7"/>
+  </g>
+  <text x="636" y="391" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="12" font-weight="800" fill="#c77dff">Brand Guru</text>
+  <text x="636" y="405" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9.5" fill="#888780">Identity &amp; Marketing</text>
+</g>
+
+<!-- ══ NODE 3: DEAL MAKER — gold — bottom-right (636,558) ══ -->
+<g class="nd3">
+  <g transform="translate(636,558) scale(0.22)">
+    <circle cx="0" cy="0" r="170" fill="#a06600" stroke="#5a3700" stroke-width="14"/>
+    <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#faecd4" stroke="#5a3700" stroke-width="11" transform="rotate(-18,-87,-160)"/>
+    <rect x="-16"  y="-230" width="52" height="124" rx="26" fill="#faecd4" stroke="#5a3700" stroke-width="11" transform="rotate(5,10,-168)"/>
+    <rect x="72"   y="-208" width="42" height="96"  rx="21" fill="#faecd4" stroke="#5a3700" stroke-width="11" transform="rotate(22,93,-160)"/>
+    <ellipse cx="0" cy="50" rx="144" ry="96" fill="#faecd4" stroke="#5a3700" stroke-width="11"/>
+    <circle cx="-72" cy="46" r="46" fill="#5a3700"/><circle cx="-56" cy="28" r="15" fill="#faecd4"/>
+    <circle cx="72"  cy="46" r="46" fill="#5a3700"/><circle cx="88"  cy="28" r="15" fill="#faecd4"/>
+  </g>
+  <text x="636" y="607" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="12" font-weight="800" fill="#f4a100">Deal Maker</text>
+  <text x="636" y="621" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9.5" fill="#888780">Sales &amp; Negotiation</text>
+</g>
+
+<!-- ══ NODE 4: IT GUY — cyan — bottom (450,665) ══ -->
+<g class="nd4">
+  <g transform="translate(450,665) scale(0.22)">
+    <circle cx="0" cy="0" r="170" fill="#0a6868" stroke="#044040" stroke-width="14"/>
+    <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#d4f7f7" stroke="#044040" stroke-width="11" transform="rotate(-18,-87,-160)"/>
+    <rect x="-16"  y="-230" width="52" height="124" rx="26" fill="#d4f7f7" stroke="#044040" stroke-width="11" transform="rotate(5,10,-168)"/>
+    <rect x="72"   y="-208" width="42" height="96"  rx="21" fill="#d4f7f7" stroke="#044040" stroke-width="11" transform="rotate(22,93,-160)"/>
+    <ellipse cx="0" cy="50" rx="144" ry="96" fill="#d4f7f7" stroke="#044040" stroke-width="11"/>
+    <circle cx="-72" cy="46" r="46" fill="#044040"/><circle cx="-56" cy="28" r="15" fill="#d4f7f7"/>
+    <circle cx="72"  cy="46" r="46" fill="#044040"/><circle cx="88"  cy="28" r="15" fill="#d4f7f7"/>
+  </g>
+  <text x="450" y="714" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="12" font-weight="800" fill="#00d4d4">The IT Guy</text>
+  <text x="450" y="728" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9.5" fill="#888780">1st, 2nd &amp; 3rd Line Support</text>
+</g>
+
+<!-- ══ NODE 5: RULE BOOK — sky — bottom-left (264,558) ══ -->
+<g class="nd5">
+  <g transform="translate(264,558) scale(0.22)">
+    <circle cx="0" cy="0" r="170" fill="#0a6080" stroke="#043348" stroke-width="14"/>
+    <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#d4f0fa" stroke="#043348" stroke-width="11" transform="rotate(-18,-87,-160)"/>
+    <rect x="-16"  y="-230" width="52" height="124" rx="26" fill="#d4f0fa" stroke="#043348" stroke-width="11" transform="rotate(5,10,-168)"/>
+    <rect x="72"   y="-208" width="42" height="96"  rx="21" fill="#d4f0fa" stroke="#043348" stroke-width="11" transform="rotate(22,93,-160)"/>
+    <ellipse cx="0" cy="50" rx="144" ry="96" fill="#d4f0fa" stroke="#043348" stroke-width="11"/>
+    <circle cx="-72" cy="46" r="46" fill="#043348"/><circle cx="-56" cy="28" r="15" fill="#d4f0fa"/>
+    <circle cx="72"  cy="46" r="46" fill="#043348"/><circle cx="88"  cy="28" r="15" fill="#d4f0fa"/>
+  </g>
+  <text x="264" y="607" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="12" font-weight="800" fill="#38bdf8">The Rule Book</text>
+  <text x="264" y="621" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9.5" fill="#888780">Compliance &amp; Legal</text>
+</g>
+
+<!-- ══ NODE 6: THE FIXER — coral — top-left (264,343) ══ -->
+<g class="nd6">
+  <g transform="translate(264,343) scale(0.22)">
+    <circle cx="0" cy="0" r="170" fill="#a03030" stroke="#5a1010" stroke-width="14"/>
+    <rect x="-110" y="-214" width="46" height="108" rx="23" fill="#fad4d4" stroke="#5a1010" stroke-width="11" transform="rotate(-18,-87,-160)"/>
+    <rect x="-16"  y="-230" width="52" height="124" rx="26" fill="#fad4d4" stroke="#5a1010" stroke-width="11" transform="rotate(5,10,-168)"/>
+    <rect x="72"   y="-208" width="42" height="96"  rx="21" fill="#fad4d4" stroke="#5a1010" stroke-width="11" transform="rotate(22,93,-160)"/>
+    <ellipse cx="0" cy="50" rx="144" ry="96" fill="#fad4d4" stroke="#5a1010" stroke-width="11"/>
+    <circle cx="-72" cy="46" r="46" fill="#5a1010"/><circle cx="-56" cy="28" r="15" fill="#fad4d4"/>
+    <circle cx="72"  cy="46" r="46" fill="#5a1010"/><circle cx="88"  cy="28" r="15" fill="#fad4d4"/>
+  </g>
+  <text x="264" y="392" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="12" font-weight="800" fill="#ff6b6b">The Fixer</text>
+  <text x="264" y="406" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9.5" fill="#888780">Ops &amp; Problem Solving</text>
+</g>
+
+</svg>
       </div>
     </div>
-  </section>
-
-  <section class="wrap" style="padding:3rem 1.5rem">
-    <h2 style="font-size:1.8rem;font-weight:700;margin-bottom:2rem">Why Billi?</h2>
-    
-    <div class="card-grid">
-      <div class="hero-card">
-        <h3 style="font-size:1.2rem;margin-bottom:0.8rem;color:#E8621A">Bean Counter</h3>
-        <p style="font-size:0.95rem;line-height:1.6;color:rgba(240,237,232,0.9)">Financial diagnostician. Reads your P&L like a doctor reads an X-ray. Tells you which stage of the Adizes lifecycle you're in — Infancy, Survival, Growth, Maturity, Decline — and how to fix it.</p>
-      </div>
-      
-      <div class="hero-card">
-        <h3 style="font-size:1.2rem;margin-bottom:0.8rem;color:#E8621A">IT Guy</h3>
-        <p style="font-size:0.95rem;line-height:1.6;color:rgba(240,237,232,0.9)">Technology timing expert. Uses Gartner Hype Cycle to tell you when to adopt new tools. Avoids the hype. Rides the plateau. Scales when others do.</p>
-      </div>
-      
-      <div class="hero-card">
-        <h3 style="font-size:1.2rem;margin-bottom:0.8rem;color:#E8621A">Fixer</h3>
-        <p style="font-size:0.95rem;line-height:1.6;color:rgba(240,237,232,0.9)">Operations resilience expert. Navigates the S-Curve of operational disruption. Anticipates transition points before they hit. Prevents chaos.</p>
-      </div>
-      
-      <div class="hero-card">
-        <h3 style="font-size:1.2rem;margin-bottom:0.8rem;color:#E8621A">Deal Maker</h3>
-        <p style="font-size:0.95rem;line-height:1.6;color:rgba(240,237,232,0.9)">Market strategy expert. Times go-to-market, pricing, and product lifecycle. Knows when to introduce, grow, mature, or decline offerings.</p>
-      </div>
-      
-      <div class="hero-card">
-        <h3 style="font-size:1.2rem;margin-bottom:0.8rem;color:#E8621A">Rule Book</h3>
-        <p style="font-size:0.95rem;line-height:1.6;color:rgba(240,237,232,0.9)">Compliance expert. Prioritizes what matters NOW vs. what's coming. Keeps you legal. Avoids fines and restructuring.</p>
-      </div>
-      
-      <div class="hero-card">
-        <h3 style="font-size:1.2rem;margin-bottom:0.8rem;color:#E8621A">Brand Guru</h3>
-        <p style="font-size:0.95rem;line-height:1.6;color:rgba(240,237,232,0.9)">Growth expectations expert. Uses Diffusion Curves to show who adopts first (innovators), middle (majority), last (laggards). Sets realistic targets.</p>
-      </div>
-    </div>
-
-    <!-- SUPERINTELLIGENCE TEASER CARD -->
-    <a href="/vision-billi-symbiotic-future.html#pricing-section" class="pricing-teaser-card" style="margin-top:3rem">
-      <h3>Unlock Cognitive Super Intelligence</h3>
-      <div class="price">R899<span style="font-size:0.6em;font-weight:400">/month</span></div>
-      <div class="price-sub">Advanced Billi: Full AI Cognitive Architecture</div>
-      <ul class="features-list">
-        <li>6 Billi Agents + Cognitive Architecture</li>
-        <li>Pattern recognition from 100+ SMMEs</li>
-        <li>Transparent reasoning (see why)</li>
-        <li>All features + Enterprise support</li>
-      </ul>
-      <div class="cta-text">Learn more →</div>
-    </a>
-  </section>
-</div>
-
-<!-- ABOUT PAGE -->
-<div id="about" class="page">
-  <section class="wrap" style="padding:3rem 1.5rem">
-    <h2 style="font-size:1.8rem;font-weight:700;margin-bottom:2rem">About Billi</h2>
-    <p style="font-size:1rem;line-height:1.8;margin-bottom:1.5rem">Billi is business associate intelligence — not artificial general intelligence, not a chatbot, but a real business OS.</p>
-    <p style="font-size:1rem;line-height:1.8;margin-bottom:1.5rem">We built Billi for entrepreneurs in South Africa, the continent, and emerging markets globally. The world's business advice is written for Fortune 500 companies. Small business owners get generic tools. Billi is different — she knows SMME challenges, constraints, and opportunities.</p>
-    <p style="font-size:1rem;line-height:1.8">Built by AnyABEX (Pty) Ltd, a South African fintech and AI company. <a href="/vision-billi-symbiotic-future.html" style="color:var(--orange);text-decoration:none">See our full vision →</a></p>
-  </section>
-</div>
-
-<!-- FAQS PAGE -->
-<div id="faqs" class="page">
-  <section class="wrap" style="padding:3rem 1.5rem">
-    <h2 style="font-size:1.8rem;font-weight:700;margin-bottom:2rem">FAQs</h2>
-    
-    <div style="max-width:700px">
-      <div style="margin-bottom:2rem">
-        <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem;color:var(--orange)">What is Billi?</h3>
-        <p style="font-size:0.95rem;line-height:1.6;color:var(--muted)">Billi is an AI-powered business operating system with six specialized advisors (Bean Counter, IT Guy, Fixer, Deal Maker, Rule Book, Brand Guru). Each advisor uses proven business frameworks to diagnose problems and recommend solutions.</p>
-      </div>
-      
-      <div style="margin-bottom:2rem">
-        <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem;color:var(--orange)">Is it free?</h3>
-        <p style="font-size:0.95rem;line-height:1.6;color:var(--muted)">Yes. Sign in with Google to get started free. Two advisors (Bean Counter and IT Guy) are always free. Full six-agent access (Advanced Billi) is R899/month.</p>
-      </div>
-      
-      <div style="margin-bottom:2rem">
-        <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem;color:var(--orange)">How does Billi analyze my business?</h3>
-        <p style="font-size:0.95rem;line-height:1.6;color:var(--muted)">Upload your financial statements (P&L, balance sheet, cash flow) or describe your situation in chat. The rating engine analyzes your numbers against patterns from 100+ SMMEs, detects signals, and recommends remedies.</p>
-      </div>
-      
-      <div style="margin-bottom:2rem">
-        <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem;color:var(--orange)">Is my data private?</h3>
-        <p style="font-size:0.95rem;line-height:1.6;color:var(--muted)">Yes. POPIA compliant. Your data is encrypted at rest and in transit. We don't sell or share your information. <a href="/privacy.html" style="color:var(--orange);text-decoration:none">See Privacy Policy →</a></p>
-      </div>
-    </div>
-  </section>
-</div>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-content">
-    <div class="footer-links">
-      <a href="/trust.html">Trust & Governance</a>
-      <a href="/privacy.html">Privacy</a>
-      <a href="/terms.html">Terms</a>
-      <span style="color:var(--footer-muted)">© 2026 AnyABEX (Pty) Ltd</span>
-    </div>
-    <div class="footer-note">Billi · Business Associate Intelligence · billsource.ai</div>
+    <div class="hero-scene-tint" style="z-index:4"></div>
   </div>
+
+  <!-- Hero content: Billi left, text right -->
+  <div class="hero-inner" style="position:relative;z-index:5">
+    <div class="hero-logo-col">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="-200 -260 400 440" width="320" height="320"
+           style="filter:drop-shadow(0 8px 32px rgba(245,158,11,0.3));overflow:visible" aria-hidden="true">
+        <defs>
+          <radialGradient id="hbody" cx="36%" cy="28%" r="68%">
+            <stop offset="0%"  stop-color="#FFD060"/>
+            <stop offset="40%" stop-color="#F59E0B"/>
+            <stop offset="100%" stop-color="#7A4200"/>
+          </radialGradient>
+          <radialGradient id="hface" cx="40%" cy="35%" r="62%">
+            <stop offset="0%"  stop-color="#FFF8E8"/>
+            <stop offset="100%" stop-color="#EDD080"/>
+          </radialGradient>
+          <radialGradient id="hear" cx="38%" cy="28%" r="65%">
+            <stop offset="0%"  stop-color="#FFF0C8"/>
+            <stop offset="100%" stop-color="#D4A830"/>
+          </radialGradient>
+          <radialGradient id="heye" cx="30%" cy="28%" r="65%">
+            <stop offset="0%"  stop-color="#6B3010"/>
+            <stop offset="100%" stop-color="#3A1800"/>
+          </radialGradient>
+          <style>
+            @keyframes hbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+            .hbob{animation:hbob 3.5s ease-in-out infinite}
+          </style>
+        </defs>
+        <g class="hbob">
+          <circle cx="0" cy="0" r="170" fill="url(#hbody)" stroke="#92400E" stroke-width="22"/>
+          <rect x="-110" y="-214" width="46" height="108" rx="23" fill="url(#hear)" stroke="#92400E" stroke-width="11" transform="rotate(-18,-87,-160)"/>
+          <rect x="-16"  y="-230" width="52" height="124" rx="26" fill="url(#hear)" stroke="#92400E" stroke-width="11" transform="rotate(5,10,-168)"/>
+          <rect x="72"   y="-208" width="42" height="96"  rx="21" fill="url(#hear)" stroke="#92400E" stroke-width="11" transform="rotate(22,93,-160)"/>
+          <ellipse cx="0" cy="50" rx="144" ry="96" fill="url(#hface)" stroke="#92400E" stroke-width="14"/>
+          <ellipse cx="-55" cy="-40" rx="52" ry="34" fill="#FFE090" opacity="0.22"/>
+          <rect x="-118" y="32" width="96" height="22" rx="11" fill="#92400E"/>
+          <rect x="-108" y="14" width="72" height="10" rx="5"  fill="#92400E" opacity="0.2"/>
+          <circle cx="72" cy="46" r="46" fill="url(#heye)"/>
+          <circle cx="88" cy="28" r="15" fill="#FEF3C7"/>
+          <circle cx="66" cy="58" r="5"  fill="#FEF3C7" opacity="0.55"/>
+        </g>
+      </svg>
+    </div>
+    <div class="hero-text-col">
+      <div class="hero-card">
+        <div class="badge"><span class="badge-dot"></span>Live now &mdash; free to try, no card required</div>
+        <h1>Does your business keep you <span>awake at night?</span></h1>
+        <p style="font-family:Helvetica,Arial,sans-serif;font-size:2.4rem;font-weight:700;line-height:1.1;color:#F0EDE8;margin-top:.4rem;text-shadow:0 2px 6px rgba(0,0,0,0.3)">Ask Billi 24/7</p>
+      </div>
+      <div class="hero-card">
+        <p class="hero-sub">Is your business running like it could? Don&rsquo;t know where to start? <img src="billi-avatar.svg" alt="Billi" width="18" height="18" style="vertical-align:middle;border-radius:50%;display:inline-block;margin:0 2px 2px" onerror="this.style.display='none'"/> <strong style="color:#F0EDE8">Talk to Billi first.</strong></p>
+        <!-- Four outcome promises -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.25rem">
+          <div style="display:flex;align-items:flex-start;gap:8px;background:rgba(232,98,26,0.10);border:0.5px solid rgba(232,98,26,0.30);border-radius:8px;padding:9px 11px">
+            <span style="font-size:15px;flex-shrink:0">💸</span>
+            <span style="font-size:12px;color:#FFAA60;font-weight:600;line-height:1.4">Get your customers to pay</span>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px;background:rgba(232,98,26,0.10);border:0.5px solid rgba(232,98,26,0.30);border-radius:8px;padding:9px 11px">
+            <span style="font-size:15px;flex-shrink:0">📈</span>
+            <span style="font-size:12px;color:#FFAA60;font-weight:600;line-height:1.4">Get those sales back up</span>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px;background:rgba(232,98,26,0.10);border:0.5px solid rgba(232,98,26,0.30);border-radius:8px;padding:9px 11px">
+            <span style="font-size:15px;flex-shrink:0">⚖️</span>
+            <span style="font-size:12px;color:#FFAA60;font-weight:600;line-height:1.4">Remain tax compliant</span>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px;background:rgba(232,98,26,0.10);border:0.5px solid rgba(232,98,26,0.30);border-radius:8px;padding:9px 11px">
+            <span style="font-size:15px;flex-shrink:0">🏡</span>
+            <span style="font-size:12px;color:#FFAA60;font-weight:600;line-height:1.4">Grow your business for your kids</span>
+          </div>
+        </div>
+        <div class="hero-cta">
+          <button class="btn-lg primary" onclick="showPage('demo')">&#8593; Talk to Billi free</button>
+          <button class="btn-lg secondary" onclick="showPage('cost')">See what it costs you &#8595;</button>
+        </div>
+        <a class="google-btn" href="/auth/google">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
+            <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
+            <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+            <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+          </svg>
+          Sign in with Google
+        </a>
+        <a class="google-btn" href="/auth/facebook" style="margin-top:8px;background:#1877F2;border-color:#1877F2;color:#fff">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.413c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.265h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z" fill="#fff"/>
+          </svg>
+          Sign in with Facebook
+        </a>
+        <p class="hero-trust-line" style="margin-top:.75rem;font-size:11px;font-family:Helvetica,Arial,sans-serif"><strong>23,000+</strong> businesses registered interest &middot; Bean Counter basics always free &middot; Top-up packs R50 = 200 messages</p>
+        <div style="margin-top:1.25rem">
+          <img src="logo2.png" alt="Billsource" height="28" style="display:block;filter:var(--logo-filter,none);opacity:0.9;"/>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GAUGE SUMMARY STRIP: 3 before (red) + 3 after (colour) -->
+<div class="gauge-strip">
+  <!-- ACT 1 HEADER — matches cost page section hierarchy -->
+  <div style="max-width:1000px;margin:0 auto 1.25rem">
+    <div style="background:rgba(231,76,60,.07);border:0.5px solid rgba(231,76,60,.25);border-radius:10px;padding:.875rem 1.1rem">
+      <p style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#e74c3c;margin-bottom:.3rem">Act 1 &mdash; the hidden cost</p>
+      <p style="font-family:Helvetica,Arial,sans-serif;font-size:1rem;font-weight:700;color:var(--text);margin-bottom:.2rem">Running without advisors costs more than you think</p>
+      <p style="font-size:12px;color:var(--muted)">Typical SA SMME leaks &mdash; <button onclick="showPage('cost')" style="background:none;border:none;color:var(--orange);font-size:12px;font-weight:700;cursor:pointer;text-decoration:underline;font-family:Helvetica,Arial,sans-serif">run your real numbers &rarr;</button></p>
+    </div>
+  </div>
+  <!-- Before: 3 red problem gauges -->
+  <div class="gs-grid" style="margin-bottom:.75rem">
+    <div class="gs-card g-red">
+      <div class="gs-lbl">Cash bleeding</div>
+      <svg width="100" height="56" viewBox="0 0 100 56" style="display:block;margin:0 auto 4px">
+        <path d="M8,51 A42,42 0 0,1 92,51" fill="none" stroke="rgba(231,76,60,.18)" stroke-width="9" stroke-linecap="round"/>
+        <path id="gsB1" d="M8,51 A42,42 0 0,1 92,51" fill="none" stroke="#e74c3c" stroke-width="9" stroke-linecap="round" stroke-dasharray="132" stroke-dashoffset="107"/>
+        <text id="gsB1v" x="50" y="38" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#e74c3c">4%</text>
+      </svg>
+      <div class="gs-sub">of revenue lost to unseen waste</div>
+      <div class="gs-delta" style="background:rgba(231,76,60,.12);color:#e74c3c" id="gsB1d">R 4,800/mo</div>
+    </div>
+    <div class="gs-card g-red">
+      <div class="gs-lbl">Stuck in debtors</div>
+      <svg width="100" height="56" viewBox="0 0 100 56" style="display:block;margin:0 auto 4px">
+        <path d="M8,51 A42,42 0 0,1 92,51" fill="none" stroke="rgba(231,76,60,.18)" stroke-width="9" stroke-linecap="round"/>
+        <path id="gsB2" d="M8,51 A42,42 0 0,1 92,51" fill="none" stroke="#e74c3c" stroke-width="9" stroke-linecap="round" stroke-dasharray="132" stroke-dashoffset="53"/>
+        <text id="gsB2v" x="50" y="38" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#e74c3c">60%</text>
+      </svg>
+      <div class="gs-sub">collection rate &mdash; rest waits in their account</div>
+      <div class="gs-delta" style="background:rgba(231,76,60,.12);color:#e74c3c" id="gsB2d">R 38,400 overdue</div>
+    </div>
+    <div class="gs-card g-red">
+      <div class="gs-lbl">Health score</div>
+      <svg width="100" height="56" viewBox="0 0 100 56" style="display:block;margin:0 auto 4px">
+        <path d="M8,51 A42,42 0 0,1 92,51" fill="none" stroke="rgba(231,76,60,.18)" stroke-width="9" stroke-linecap="round"/>
+        <path id="gsB3" d="M8,51 A42,42 0 0,1 92,51" fill="none" stroke="#e74c3c" stroke-width="9" stroke-linecap="round" stroke-dasharray="132" stroke-dashoffset="85"/>
+        <text id="gsB3v" x="50" y="38" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#e74c3c">36</text>
+      </svg>
+      <div class="gs-sub">out of 100 &mdash; sector peers average 65</div>
+      <div class="gs-delta" style="background:rgba(231,76,60,.12);color:#e74c3c">Go-Go stage</div>
+    </div>
+  </div>
+  <!-- Pivot separator — matches cost page pivot bar -->
+  <div style="background:var(--bg2);border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border);margin:1.25rem -1.5rem;padding:1.25rem 2.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div>
+      <p style="font-family:Helvetica,Arial,sans-serif;font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:3px">Six advisors. Different opinions. Your call.</p>
+      <p style="font-size:11px;color:var(--muted)">Bean Counter &middot; Brand Guru &middot; Deal Maker &middot; The Rule Book &middot; The Fixer &middot; The IT Guy &mdash; no salary, no invoice, no judgement</p>
+    </div>
+    <button class="btn-primary" onclick="showPage('cost')" style="white-space:nowrap;font-size:12px;padding:8px 16px">See the numbers &rarr;</button>
+  </div>
+  <!-- ACT 2 HEADER — matches cost page section hierarchy -->
+  <div style="max-width:1000px;margin:0 auto 1.25rem">
+    <div style="background:rgba(29,158,117,.07);border:0.5px solid rgba(29,158,117,.25);border-radius:10px;padding:.875rem 1.1rem">
+      <p style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:.3rem">Act 2 &mdash; not just surviving. Thriving.</p>
+      <p style="font-family:Helvetica,Arial,sans-serif;font-size:1rem;font-weight:700;color:var(--text);margin-bottom:.2rem">What Billi&rsquo;s advisors change &mdash; in your language</p>
+      <p style="font-size:12px;color:var(--muted)">Your actual data. Six advisors with specific briefs. Working every day so you don&rsquo;t have to.</p>
+    </div>
+  </div>
+  <!-- After: 3 colour benefit gauges -->
+  <div class="gs-grid">
+    <div class="gs-card g-teal">
+      <div class="gs-lbl">Cash runway recovered</div>
+      <svg width="100" height="56" viewBox="0 0 100 56" style="display:block;margin:0 auto 4px">
+        <path d="M8,51 A42,42 0 0,1 92,51" fill="none" stroke="rgba(29,158,117,.18)" stroke-width="9" stroke-linecap="round"/>
+        <path id="gsA1" d="M8,51 A42,42 0 0,1 92,51" fill="none" stroke="#1D9E75" stroke-width="9" stroke-linecap="round" stroke-dasharray="132" stroke-dashoffset="66"/>
+        <text id="gsA1v" x="50" y="38" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#1D9E75">40d</text>
+      </svg>
+      <div class="gs-sub">positive runway visible and protected</div>
+      <div class="gs-delta" style="background:var(--teal-light);color:var(--teal)" id="gsA1d">R 3,840 saved/mo</div>
+    </div>
+    <div class="gs-card g-purp">
+      <div class="gs-lbl">Debtor collection</div>
+      <svg width="100" height="56" viewBox="0 0 100 56" style="display:block;margin:0 auto 4px">
+        <path d="M8,51 A42,42 0 0,1 92,51" fill="none" stroke="rgba(60,52,137,.18)" stroke-width="9" stroke-linecap="round"/>
+        <path id="gsA2" d="M8,51 A42,42 0 0,1 92,51" fill="none" stroke="#3c3489" stroke-width="9" stroke-linecap="round" stroke-dasharray="132" stroke-dashoffset="24"/>
+        <text id="gsA2v" x="50" y="38" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#3c3489">82%</text>
+      </svg>
+      <div class="gs-sub">collected on time &mdash; Billi follows up automatically</div>
+      <div class="gs-delta" style="background:var(--purp-light);color:var(--purp)" id="gsA2d">R 14,080 unlocked</div>
+    </div>
+    <div class="gs-card g-amb">
+      <div class="gs-lbl">Business health score</div>
+      <svg width="100" height="56" viewBox="0 0 100 56" style="display:block;margin:0 auto 4px">
+        <path d="M8,51 A42,42 0 0,1 92,51" fill="none" stroke="rgba(186,117,23,.18)" stroke-width="9" stroke-linecap="round"/>
+        <path id="gsA3" d="M8,51 A42,42 0 0,1 92,51" fill="none" stroke="#ba7517" stroke-width="9" stroke-linecap="round" stroke-dasharray="132" stroke-dashoffset="26"/>
+        <text id="gsA3v" x="50" y="33" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="13" font-weight="700" fill="#ba7517">68</text>
+        <text id="gsA3s" x="50" y="46" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="7.5" font-weight="700" fill="#854F0B">Adolescence</text>
+      </svg>
+      <div class="gs-sub">toward Prime &mdash; fundable, inheritable</div>
+      <div class="gs-delta" style="background:var(--amb-light);color:var(--amb)" id="gsA3d">+R 21.6k potential</div>
+    </div>
+  </div>
+</div>
+
+<!-- SIX ADVISORS -->
+<section class="advisors-section">
+  <div class="wrap">
+    <div class="section-label">The team</div>
+    <div class="section-title">Six associates. One conversation.</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:1.5rem;line-height:1.7;max-width:580px">You don&rsquo;t need to understand AI. You just need to know if you&rsquo;re making money or losing it &mdash; and what to do about it. Pick a problem. Billi&rsquo;s got the right advisor for it.</p>
+    <div class="adv-grid">
+      <div class="adv-card"><div class="adv-card-avatar"><img src="billi-bean-counter.png" alt="" width="54" height="54" style="display:block"/></div><div class="adv-icon">&#128176;</div><div class="adv-name" style="color:#1A5FA8">Bean Counter</div><p class="adv-desc">Is your cash running out? Who owes you money? Are you actually making a profit? Bean Counter tells you straight &mdash; and helps you chase debtors too.</p><span class="adv-plan" style="background:#E6F1FB;color:#0C447C">Free + all plans</span></div>
+      <div class="adv-card"><div class="adv-card-avatar"><img src="billi-rule-book.png" alt="" width="54" height="54" style="display:block"/></div><div class="adv-icon">&#128203;</div><div class="adv-name" style="color:#7C3AED">The Rule Book</div><p class="adv-desc">Am I breaking any rules I don&rsquo;t know about? POPIA, CIPC, B-BBEE, labour law &mdash; The Rule Book keeps you out of trouble. Always says: talk to a professional for the serious stuff.</p><span class="adv-plan" style="background:#F3E8FF;color:#6D28D9">Professional+</span></div>
+      <div class="adv-card"><div class="adv-card-avatar"><img src="billi-brand-guru.png" alt="" width="54" height="54" style="display:block"/></div><div class="adv-icon">&#128227;</div><div class="adv-name" style="color:#EA580C">Brand Guru</div><p class="adv-desc">Nobody knows about you. How do you get more customers? What should you post on social media? Brand Guru helps you get noticed in the SA market without blowing your budget.</p><span class="adv-plan" style="background:var(--orange-dim);color:var(--orange)">Business+</span></div>
+      <div class="adv-card"><div class="adv-card-avatar"><img src="billi-deal-maker.png" alt="" width="54" height="54" style="display:block"/></div><div class="adv-icon">&#127919;</div><div class="adv-name" style="color:#16A34A">Deal Maker</div><p class="adv-desc">How do you close more deals? What do you say when the client says you&rsquo;re too expensive? Deal Maker helps you write proposals, handle objections and keep clients coming back.</p><span class="adv-plan" style="background:#DCFCE7;color:#166534">Enterprise</span></div>
+      <div class="adv-card"><div class="adv-card-avatar"><img src="billi-the-fixer.png" alt="" width="54" height="54" style="display:block"/></div><div class="adv-icon">&#9881;&#65039;</div><div class="adv-name" style="color:#DC2626">The Fixer</div><p class="adv-desc">Your business feels chaotic &mdash; where do you start fixing it? The Fixer helps you sort out your processes, deal with dodgy suppliers, and keep things running when load shedding hits.</p><span class="adv-plan" style="background:#FEE2E2;color:#991B1B">Enterprise</span></div>
+      <div class="adv-card"><div class="adv-card-avatar"><img src="billi-it-guy.png" alt="" width="54" height="54" style="display:block"/></div><div class="adv-icon">&#128187;</div><div class="adv-name" style="color:#0891B2">The IT Guy</div><p class="adv-desc">Printer not working? Can&rsquo;t get into your email? Need to know which laptop to buy? The IT Guy fixes your tech problems and tells you what to buy &mdash; without the technical rubbish. Recommends via <a href="https://martugo.com" target="_blank" rel="noopener" style="color:#0891B2;text-decoration:none;font-weight:600">Martugo.com</a>.</p><span class="adv-plan" style="background:#E0F2FE;color:#075985">Free + all plans</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PERSONAS -->
+<section class="personas-section">
+  <div class="wrap">
+    <div class="section-label">Who it&rsquo;s for</div>
+    <div class="section-title">Every size. Every stage. Every ambition.</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:1.25rem;line-height:1.6">From a sole-proprietor caterer in Soweto to a 45-person healthcare group in Pretoria &mdash; and every ambition in between.</p>
+    <div class="pc-grid">
+      <div class="pc"><span class="pc-tier" style="background:var(--teal-light);color:var(--teal)">SMME</span><div class="pc-avatar" style="background:var(--teal-light);color:var(--teal)">N</div><p class="pc-name">Nomsa</p><p class="pc-role">Caterer &middot; Soweto &middot; Sole proprietor</p><p class="pc-pain">Quotes on WhatsApp. No cash visibility until the account is empty. Borrowing from family to cover suppliers.</p><p class="pc-aspire">Stop the bleeding. Keep every rand she earns.</p><div class="pc-tags"><span class="pc-tag-billi" style="background:var(--teal-light);color:var(--teal)"><img src="billi-bean-counter.png" width="20" height="20" alt="Bean Counter"/>Bean Counter</span></div></div>
+      <div class="pc"><span class="pc-tier" style="background:var(--teal-light);color:var(--teal)">SMME</span><div class="pc-avatar" style="background:var(--purp-light);color:var(--purp)">S</div><p class="pc-name">Sipho</p><p class="pc-role">Electrical contractor &middot; Pretoria &middot; 8 staff</p><p class="pc-pain">Debtors pay at 75 days. Suppliers demand 30. The gap is compounding silently.</p><p class="pc-aspire">Win government tenders with confidence and a clean book.</p><div class="pc-tags"><span class="pc-tag-billi" style="background:#FEE2E2;color:#991B1B"><img src="billi-the-fixer.png" width="20" height="20" alt="The Fixer"/>The Fixer</span><span class="pc-tag-billi" style="background:var(--teal-light);color:var(--teal)"><img src="billi-bean-counter.png" width="20" height="20" alt="Bean Counter"/>Bean Counter</span></div></div>
+      <div class="pc"><span class="pc-tier" style="background:var(--amb-light);color:var(--amb)">Medium</span><div class="pc-avatar" style="background:#E1F5EE;color:#085041">T</div><p class="pc-name">Thabo</p><p class="pc-role">Civil engineering &middot; Joburg &middot; 38 staff</p><p class="pc-pain">Three debtors = 80% of revenue. One default is existential. No consolidated project cost view.</p><p class="pc-aspire">Build a business his children can inherit. Eligible for infrastructure bonds.</p><div class="pc-tags"><span class="pc-tag-billi" style="background:var(--teal-light);color:var(--teal)"><img src="billi-bean-counter.png" width="20" height="20" alt="Bean Counter"/>Bean Counter</span><span class="pc-tag-billi" style="background:#FEE2E2;color:#991B1B"><img src="billi-the-fixer.png" width="20" height="20" alt="The Fixer"/>The Fixer</span><span class="pc-tag-billi" style="background:#F3E8FF;color:#6D28D9"><img src="billi-rule-book.png" width="20" height="20" alt="Rule Book"/>Rule Book</span></div></div>
+      <div class="pc"><span class="pc-tier" style="background:var(--amb-light);color:var(--amb)">Medium</span><div class="pc-avatar" style="background:#FBEAF0;color:#72243E">L</div><p class="pc-name">Lerato</p><p class="pc-role">Healthcare group &middot; Pretoria &middot; 3 clinics &middot; 45 staff</p><p class="pc-pain">Medical aids pay at 75 days. Suppliers at 30. No single financial view across 3 entities.</p><p class="pc-aspire">Investor-grade reporting. Franchise the model nationally.</p><div class="pc-tags"><span class="pc-tag-billi" style="background:var(--teal-light);color:var(--teal)"><img src="billi-bean-counter.png" width="20" height="20" alt="Bean Counter"/>Bean Counter</span><span class="pc-tag-billi" style="background:var(--orange-dim);color:var(--orange)"><img src="billi-brand-guru.png" width="20" height="20" alt="Brand Guru"/>Brand Guru</span><span class="pc-tag-billi" style="background:#F3E8FF;color:#6D28D9"><img src="billi-rule-book.png" width="20" height="20" alt="Rule Book"/>Rule Book</span></div></div>
+      <!-- Persona 5: Photography mum -->
+      <div class="pc"><span class="pc-tier" style="background:#FEF3C7;color:#92400E">Home business</span><div class="pc-avatar" style="background:#FEF9ED;color:#92400E">T</div><p class="pc-name">Trudie</p><p class="pc-role">Photographer &middot; Cape Town &middot; Solo, home-based</p><p class="pc-pain">Runs shoots on weekends around school drop-offs. Invoicing on her phone between edits. No idea if she&rsquo;s actually making money once data and petrol are stripped out.</p><p class="pc-aspire">Turn her passion into something that pays school fees — predictably.</p><div class="pc-tags"><span class="pc-tag-billi" style="background:var(--teal-light);color:var(--teal)"><img src="billi-bean-counter.png" width="20" height="20" alt="Bean Counter"/>Bean Counter</span><span class="pc-tag-billi" style="background:var(--orange-dim);color:var(--orange)"><img src="billi-brand-guru.png" width="20" height="20" alt="Brand Guru"/>Brand Guru</span><span class="pc-tag-billi" style="background:#E0F2FE;color:#075985"><img src="billi-it-guy.png" width="20" height="20" alt="The IT Guy"/>The IT Guy</span></div></div>
+      <!-- Persona 6: Student -->
+      <div class="pc"><span class="pc-tier" style="background:#F0F4FF;color:#3730A3">Student</span><div class="pc-avatar" style="background:#F0F4FF;color:#3730A3">X</div><p class="pc-name">Xavier</p><p class="pc-role">Commerce student &middot; Potchefstroom &middot; Side hustle, R0 capital</p><p class="pc-pain">R180k in student loans. Starts a tutoring side hustle to chip away at them. No clue what to charge, how to register, or whether SARS will come for him one day.</p><p class="pc-aspire">Graduate debt-free. Build something real before the degree is even framed.</p><div class="pc-tags"><span class="pc-tag-billi" style="background:var(--teal-light);color:var(--teal)"><img src="billi-bean-counter.png" width="20" height="20" alt="Bean Counter"/>Bean Counter</span><span class="pc-tag-billi" style="background:#F3E8FF;color:#6D28D9"><img src="billi-rule-book.png" width="20" height="20" alt="Rule Book"/>Rule Book</span><span class="pc-tag-billi" style="background:#E0F2FE;color:#075985"><img src="billi-it-guy.png" width="20" height="20" alt="The IT Guy"/>The IT Guy</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- LOGO SLIDER -->
+<div class="logo-slider-section">
+  <div class="logo-slider-label">Trusted by businesses on the Billsource platform</div>
+  <div class="logo-track-wrap">
+    <div class="logo-track">
+      <div class="logo-item"><svg class="logo-svg" viewBox="0 0 52 52" style="color:var(--text)"><circle cx="26" cy="20" r="10" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M26 30L26 44" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M18 44L34 44" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg><span class="logo-name">WinesRUs</span></div>
+      <div class="logo-item"><svg class="logo-svg" viewBox="0 0 52 52" style="color:var(--text)"><circle cx="26" cy="26" r="12" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="26" cy="26" r="4" fill="currentColor"/><path d="M26 8L26 14M26 38L26 44M8 26L14 26M38 26L44 26" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg><span class="logo-name">JB Spares</span></div>
+      <div class="logo-item"><svg class="logo-svg" viewBox="0 0 52 52" style="color:var(--text)"><rect x="10" y="20" width="32" height="24" rx="2" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M17 20V16Q17 8 26 8Q35 8 35 16V20" fill="none" stroke="currentColor" stroke-width="2.5"/></svg><span class="logo-name">CMart</span></div>
+      <div class="logo-item"><svg class="logo-svg" viewBox="0 0 52 52" style="color:var(--text)"><rect x="6" y="14" width="40" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="2.5"/><polygon points="20,20 36,28 20,36" fill="currentColor"/></svg><span class="logo-name">Freshmedia</span></div>
+      <div class="logo-item"><svg class="logo-svg" viewBox="0 0 52 52" style="color:var(--text)"><rect x="10" y="10" width="32" height="32" rx="4" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M18 26L22 22L26 28L30 20L34 26" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="logo-name">Nano Tech</span></div>
+      <div class="logo-item"><svg class="logo-svg" viewBox="0 0 52 52" style="color:var(--text)"><circle cx="26" cy="28" r="10" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="26" cy="28" r="4" fill="currentColor"/><path d="M10 20L16 20L19 14L33 14L36 20L42 20L42 40L10 40Z" fill="none" stroke="currentColor" stroke-width="2.5"/></svg><span class="logo-name">Jill Photo</span></div>
+      <!-- duplicate for loop -->
+      <div class="logo-item"><svg class="logo-svg" viewBox="0 0 52 52" style="color:var(--text)"><circle cx="26" cy="20" r="10" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M26 30L26 44" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M18 44L34 44" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg><span class="logo-name">WinesRUs</span></div>
+      <div class="logo-item"><svg class="logo-svg" viewBox="0 0 52 52" style="color:var(--text)"><circle cx="26" cy="26" r="12" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="26" cy="26" r="4" fill="currentColor"/><path d="M26 8L26 14M26 38L26 44M8 26L14 26M38 26L44 26" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg><span class="logo-name">JB Spares</span></div>
+      <div class="logo-item"><svg class="logo-svg" viewBox="0 0 52 52" style="color:var(--text)"><rect x="10" y="20" width="32" height="24" rx="2" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M17 20V16Q17 8 26 8Q35 8 35 16V20" fill="none" stroke="currentColor" stroke-width="2.5"/></svg><span class="logo-name">CMart</span></div>
+      <div class="logo-item"><svg class="logo-svg" viewBox="0 0 52 52" style="color:var(--text)"><rect x="6" y="14" width="40" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="2.5"/><polygon points="20,20 36,28 20,36" fill="currentColor"/></svg><span class="logo-name">Freshmedia</span></div>
+      <div class="logo-item"><svg class="logo-svg" viewBox="0 0 52 52" style="color:var(--text)"><rect x="10" y="10" width="32" height="32" rx="4" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M18 26L22 22L26 28L30 20L34 26" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="logo-name">Nano Tech</span></div>
+      <div class="logo-item"><svg class="logo-svg" viewBox="0 0 52 52" style="color:var(--text)"><circle cx="26" cy="28" r="10" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="26" cy="28" r="4" fill="currentColor"/><path d="M10 20L16 20L19 14L33 14L36 20L42 20L42 40L10 40Z" fill="none" stroke="currentColor" stroke-width="2.5"/></svg><span class="logo-name">Jill Photo</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- BILLSOURCE BANNER -->
+<div class="embed-banner" style="margin:0 1.5rem 0">
+  <div class="embed-banner-text"><strong>Already a Billsource customer?</strong> Your debtors, creditors, and invoice data loads automatically &mdash; no upload needed. Access Billi inside your billing dashboard with no separate login.</div>
+  <a href="https://billsource.com" target="_blank" rel="noopener"><button class="btn-primary" style="white-space:nowrap">Go to billsource.com &#8599;</button></a>
+</div>
+
+<!-- PRICING -->
+<section class="plans">
+  <div class="wrap">
+    <div class="section-label">Pricing</div>
+    <div class="section-title">Simple, transparent plans &mdash; one named user</div>
+    <!-- Price comparison anchor — makes the value visceral before the plans -->
+    <div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:.875rem 1.25rem;margin-bottom:1.25rem;max-width:1000px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div style="font-size:13px;color:var(--muted);line-height:1.6"><span style="font-size:1rem;font-weight:700;color:var(--text)">Your accountant charges more per hour than Billi costs per month.</span><br>A 30-minute consultation: <strong style="color:#dc2626">R750&ndash;R1,500</strong> &nbsp;&#8226;&nbsp; Billi Professional: <strong style="color:var(--green)">R149/month</strong></div>
+      <button class="btn-primary" style="font-size:12px;padding:8px 18px;white-space:nowrap" onclick="openLogin()">Start for free &rarr;</button>
+    </div>
+    <div class="roi-anchor">
+      <div>
+        <p>Your estimated monthly Billi impact</p>
+        <small>Based on R120k/mo business &mdash; <button onclick="showPage('cost')" style="background:none;border:none;color:var(--orange);font-size:12px;cursor:pointer;text-decoration:underline;font-family:Helvetica,Arial,sans-serif">calculate yours</button></small>
+      </div>
+      <div>
+        <div class="roi-big" id="home-roi-total">R 25,152</div>
+        <div class="roi-lbl"><span id="home-roi-ratio">168</span>x return on Professional (R149/mo)</div>
+      </div>
+    </div>
+    <div class="plans-grid">
+      <div class="plan-card">
+        <div class="plan-name">Starter</div><div class="plan-price">R0 <span>/mo</span></div>
+        <div class="plan-msgs">Bean Counter &middot; The IT Guy (1st line) &middot; 10 messages</div>
+        <div class="plan-feature"><span class="check">&#10003;</span>Bean Counter &mdash; cash flow &amp; financial basics</div>
+        <div class="plan-feature"><span class="check">&#10003;</span>The IT Guy &mdash; 1st line IT support + Tech Guide</div>
+        <div class="plan-feature"><span class="check">&#10003;</span>Top-up: R50 = 200 messages</div>
+        <button class="plan-btn outlined" onclick="openLogin()">Try free now</button>
+      </div>
+      <div class="plan-card">
+        <div class="plan-name" style="color:#3b82f6">Student</div><div class="plan-price" style="color:#3b82f6">R39 <span>/mo</span></div>
+        <div class="plan-msgs">Bean Counter &middot; The IT Guy &middot; 100 messages</div>
+        <div class="plan-feature"><span class="check" style="color:#3b82f6">&#10003;</span>Requires .ac.za university email</div>
+        <div class="plan-feature"><span class="check" style="color:#3b82f6">&#10003;</span>Bean Counter &mdash; full cash flow &amp; debt collection</div>
+        <div class="plan-feature"><span class="check" style="color:#3b82f6">&#10003;</span>The IT Guy &mdash; 1st line + Tech Selection Guide</div>
+        <button class="plan-btn outlined" style="border-color:#3b82f6;color:#3b82f6" onclick="openLogin()">Student sign up</button>
+      </div>
+      <div class="plan-card featured">
+        <div class="plan-badge-tag">Most popular</div>
+        <div class="plan-name">Professional</div><div class="plan-price">R149 <span>/mo</span></div>
+        <span class="roi-chip" id="pro-chip">Typical return: R25,152/mo &rarr; 168x ROI</span>
+        <div class="plan-msgs">Bean Counter &middot; Rule Book &middot; The IT Guy &middot; 300 messages</div>
+        <div class="plan-feature"><span class="check">&#10003;</span>Bean Counter &mdash; full suite incl. dunning letters</div>
+        <div class="plan-feature"><span class="check">&#10003;</span>The Rule Book &mdash; POPIA, NCA, B-BBEE, CIPC</div>
+        <div class="plan-feature"><span class="check">&#10003;</span>The IT Guy &mdash; 1st &amp; 2nd line + Tech Guide</div>
+        <div class="plan-feature"><span class="check">&#10003;</span>Prompt book &mdash; all unlocked roles</div>
+        <button class="plan-btn filled" onclick="openLogin()">Get started</button>
+      </div>
+      <div class="plan-card">
+        <div class="plan-name">Business</div><div class="plan-price">R299 <span>/mo</span></div>
+        <div class="plan-msgs">4 advisors &middot; 1,000 messages &middot; upload your own financials</div>
+        <span class="roi-chip">Upload any statement &rarr; get your Digital Index score</span>
+        <div class="plan-feature"><span class="check">&#10003;</span>Everything in Professional</div>
+        <div class="plan-feature"><span class="check">&#10003;</span>Brand Guru &mdash; marketing, positioning &amp; social strategy</div>
+        <div class="plan-feature"><span class="check">&#10003;</span>Digital Index (DI) score &mdash; your business rated 0&ndash;100</div>
+        <div class="plan-feature"><span class="check">&#10003;</span>Upload XLSX, CSV or PDF &mdash; Billi reads your numbers directly</div>
+        <div class="plan-feature"><span class="check">&#10003;</span>1,000 messages &middot; Top-up R50 = 200 msgs</div>
+        <div class="plan-feature" style="opacity:.65"><span style="color:var(--muted);font-weight:700;flex-shrink:0">&#8680;</span>Billsource auto-sync coming &mdash; upload manually in the meantime</div>
+        <button class="plan-btn outlined" onclick="openLogin()">Choose Business</button>
+      </div>
+      <div class="plan-card" style="border-color:var(--orange)">
+        <div class="plan-badge-tag" style="background:var(--orange)">Full team</div>
+        <div class="plan-name" style="color:var(--orange)">Enterprise</div><div class="plan-price">R599 <span>/mo</span></div>
+        <div class="plan-msgs">All 6 advisors &middot; The IT Guy (all 3 lines) &middot; 5,000 messages</div>
+        <div class="plan-sso">Billsource Medium Business Plan (R150/mo value) &mdash; SSO</div>
+        <div class="plan-feature"><span class="check">&#10003;</span>All 6 advisors &mdash; Deal Maker + The Fixer unlocked</div>
+        <div class="plan-feature"><span class="check">&#10003;</span>Deliverable packs &mdash; R19/advisor</div>
+        <div class="plan-feature"><span class="check">&#10003;</span>Enterprise SSO &rarr; billsource.com/business/upgrade</div>
+        <button class="plan-btn filled" onclick="openLogin()">Go Enterprise</button>
+      </div>
+    </div>
+    <div style="border:0.5px solid var(--border);border-radius:10px;padding:.875rem 1.25rem;margin-top:1.25rem;max-width:1000px;margin-left:auto;margin-right:auto;background:var(--bg2)">
+      <p style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:.4rem">All plans billed via Paystack &middot; No setup fees &middot; Cancel anytime &middot; All pricing in ZAR</p>
+      <p style="font-size:11px;color:var(--muted);text-align:center"><strong style="color:var(--text)">Deliverable packs &mdash; R19 per advisor role.</strong> After 3 exchanges on a topic, Billi offers to turn it into a downloadable plan. Personalised to your conversation. Paystack one-time charge.</p>
+    </div>
+  </div>
+</section>
+
+<div class="trademark-section">
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center">
+    <img src="logo2.png" alt="Billsource" height="22" style="display:block;filter:var(--logo-filter,none);opacity:0.8;"/>
+    <span class="tm-bai">Business Associate Intelligence &mdash; BAI&trade;</span>
+  </div>
+  <div class="tm-divider"></div>
+  <p class="tm-desc">Billi invented the construct. Six named associates. One category. Built on Billsource &mdash; the financial ecosystem for South African SMMEs. Your data stays private, never used for AI training. Powered by Claude AI. &copy; 2026 AnyABEX (Pty) Ltd &middot; POPIA compliant</p>
+</div>
+
+</div><!-- /page-home -->
+
+<!-- ══════════════════════════════ PAGE: COST ANALYSIS ══════════════════════════════ -->
+<div class="page" id="page-cost">
+<div class="cost-page">
+  <div class="wrap">
+    <div class="section-label">Cost analysis</div>
+    <div class="section-title">What running without Billi actually costs &mdash; and what it gives back</div>
+
+    <!-- Act 1 -->
+    <div style="background:rgba(231,76,60,.07);border:0.5px solid rgba(231,76,60,.25);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.5rem">
+      <p style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#e74c3c;margin-bottom:.3rem">Act 1 &mdash; the hidden cost</p>
+      <p style="font-family:Helvetica,Arial,sans-serif;font-size:1rem;font-weight:700;color:var(--text);margin-bottom:.25rem">Running without advisors costs more than you think</p>
+      <p style="font-size:13px;color:var(--muted);line-height:1.6">Adjust the sliders to your business size. These are real money leaks from SA businesses running without Billi.</p>
+    </div>
+    <div class="slider-strip">
+      <div class="sl-group"><label>Monthly revenue (R) <span id="lbl-rev">120,000</span></label><input type="range" min="20000" max="2000000" step="5000" value="120000" id="sl-rev" oninput="compute()"></div>
+      <div class="sl-group"><label>Debtor book (R) <span id="lbl-book">64,000</span></label><input type="range" min="5000" max="1000000" step="1000" value="64000" id="sl-book" oninput="compute()"></div>
+      <div class="sl-group"><label>Active debtors <span id="lbl-nd">8</span></label><input type="range" min="1" max="80" step="1" value="8" id="sl-nd" oninput="compute()"></div>
+      <div class="sl-group"><label>Staff count <span id="lbl-staff">12</span></label><input type="range" min="1" max="50" step="1" value="12" id="sl-staff" oninput="compute()"></div>
+    </div>
+    <p style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#e74c3c;margin-bottom:.75rem">Without Billi &mdash; the bleeding</p>
+    <div class="bleed-grid">
+      <div class="bleed-card">
+        <p class="bleed-quote">I don&rsquo;t know where my money went</p>
+        <div class="bleed-total" id="b1">R 4,800</div><p class="bleed-lbl">estimated monthly loss &mdash; untracked</p>
+        <div class="w-list">
+          <div class="w-item"><span class="w-l">Overpaying suppliers (no benchmark)</span><span class="w-v" id="w1a">R 1,200</span></div>
+          <div class="w-item"><span class="w-l">Paying twice &mdash; no duplicate check</span><span class="w-v" id="w1b">R 900</span></div>
+          <div class="w-item"><span class="w-l">Late payment penalties on your bills</span><span class="w-v" id="w1c">R 600</span></div>
+          <div class="w-item"><span class="w-l">Buying stock before you needed it</span><span class="w-v" id="w1d">R 2,100</span></div>
+        </div>
+        <div class="bstats"><div class="bs"><div class="bs-n" id="s1h">14h</div><div class="bs-l">lost chasing figures</div></div><div class="bs"><div class="bs-n" id="s1p">4.0%</div><div class="bs-l">of revenue bleeding</div></div><div class="bs"><div class="bs-n" id="s1y">R57.6k</div><div class="bs-l">per year unseen</div></div></div>
+      </div>
+      <div class="bleed-card">
+        <p class="bleed-quote">My customers owe me but I can&rsquo;t chase them all</p>
+        <div class="bleed-total" id="b2">R 38,400</div><p class="bleed-lbl">stuck in overdue invoices right now</p>
+        <div class="w-list">
+          <div class="w-item"><span class="w-l">Hours/week manually following up</span><span class="w-v" id="w2a">6 hrs</span></div>
+          <div class="w-item"><span class="w-l">Invoices never followed up at all</span><span class="w-v" id="w2b">3 invoices</span></div>
+          <div class="w-item"><span class="w-l">Average days overdue on your book</span><span class="w-v" id="w2c">38 days</span></div>
+          <div class="w-item"><span class="w-l">Overdraft cost bridging the gap</span><span class="w-v" id="w2d">R 512</span></div>
+        </div>
+        <div class="bstats"><div class="bs"><div class="bs-n" id="s2h">6h/wk</div><div class="bs-l">wasted chasing</div></div><div class="bs"><div class="bs-n" id="s2p">60%</div><div class="bs-l">collection rate</div></div><div class="bs"><div class="bs-n" id="s2d">R 512</div><div class="bs-l">overdraft/month</div></div></div>
+      </div>
+      <div class="bleed-card">
+        <p class="bleed-quote">Am I growing &mdash; or just surviving?</p>
+        <div class="bleed-total" id="b3">R 8,400</div><p class="bleed-lbl">monthly opportunity cost of no strategy</p>
+        <div class="w-list">
+          <div class="w-item"><span class="w-l">Hours/week on admin instead of growth</span><span class="w-v" id="w3a">11 hrs</span></div>
+          <div class="w-item"><span class="w-l">Revenue below sector peers</span><span class="w-v" id="w3b">18% behind</span></div>
+          <div class="w-item"><span class="w-l">Decisions made on gut, not data</span><span class="w-v">Daily</span></div>
+          <div class="w-item"><span class="w-l">Cost of one bad supplier decision</span><span class="w-v" id="w3c">R 3,600</span></div>
+        </div>
+        <div class="bstats"><div class="bs"><div class="bs-n" id="s3h">11h/wk</div><div class="bs-l">wasted on admin</div></div><div class="bs"><div class="bs-n" id="s3g">18%</div><div class="bs-l">behind sector peers</div></div><div class="bs"><div class="bs-n" id="s3y">R100.8k</div><div class="bs-l">opp. cost/year</div></div></div>
+      </div>
+    </div>
+
+    <div class="pivot-bar" style="margin:1.5rem -1.5rem;border-radius:0">
+      <div><p class="pivot-msg">Billi&rsquo;s six advisors take over here</p><p class="pivot-sub">Bean Counter &middot; Brand Guru &middot; Deal Maker &middot; The Rule Book &middot; The Fixer &middot; The IT Guy &mdash; 24/7, no salary</p></div>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <div><div class="pivot-total" id="pivot-total">R 25,152</div><div class="pivot-lbl">monthly impact for your business</div></div>
+        <button class="btn-primary" onclick="showPage('home');setTimeout(()=>{document.querySelector('.plans').scrollIntoView({behavior:'smooth'})},150)">See pricing &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Act 2 -->
+    <div style="background:rgba(29,158,117,.07);border:0.5px solid rgba(29,158,117,.25);border-radius:10px;padding:1rem 1.25rem;margin-bottom:.75rem;margin-top:1.5rem">
+      <p style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:.3rem">Act 2 &mdash; not just surviving. Thriving.</p>
+      <p style="font-family:Helvetica,Arial,sans-serif;font-size:1rem;font-weight:700;color:var(--text);margin-bottom:.25rem">What Billi&rsquo;s advisors change &mdash; in your language</p>
+      <p style="font-size:13px;color:var(--muted);line-height:1.6">Your actual data. Six advisors with specific briefs. Working every day so you don&rsquo;t have to.</p>
+    </div>
+    <div class="thrive-grid">
+      <div class="thrive-card tc-teal">
+        <span class="agent-chip ac-teal">Bean Counter &mdash; CFO</span>
+        <div class="g-wrap">
+          <svg width="140" height="76" viewBox="0 0 140 76">
+            <path d="M12,70 A58,58 0 0,1 128,70" fill="none" stroke="rgba(29,158,117,.18)" stroke-width="10" stroke-linecap="round"/>
+            <path id="arc-cf" d="M12,70 A58,58 0 0,1 128,70" fill="none" stroke="#1D9E75" stroke-width="10" stroke-linecap="round" stroke-dasharray="182" stroke-dashoffset="109"/>
+            <text id="gv-cf" x="70" y="53" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="19" font-weight="700" fill="#1D9E75">40d</text>
+            <text x="70" y="64" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="8" fill="#0F6E56">positive runway visible</text>
+          </svg>
+        </div>
+        <p class="t-title">Cash flow &mdash; days of runway recovered</p><p class="t-sub">Bean Counter watches every rand so you don&rsquo;t have to</p>
+        <div class="gain-list">
+          <div class="gi gi-teal"><span class="gl">Waste stopped per month</span><span class="gv" id="a1s">R 3,840</span></div>
+          <div class="gi gi-teal"><span class="gl">Hours given back per week</span><span class="gv" id="a1h">11 hrs</span></div>
+          <div class="gi gi-teal"><span class="gl">Early warning before cash runs out</span><span class="gv" id="a1w">14 days</span></div>
+        </div>
+        <div class="tstats"><div class="ts"><div class="ts-n" id="a1r" style="color:#1D9E75">40d</div><div class="ts-l">runway visible</div></div><div class="ts"><div class="ts-n" id="a1y" style="color:#1D9E75">R46k</div><div class="ts-l">saved/year</div></div><div class="ts"><div class="ts-n" style="color:#1D9E75">24/7</div><div class="ts-l">no salary</div></div></div>
+      </div>
+      <div class="thrive-card tc-purp">
+        <span class="agent-chip ac-purp">The Fixer &mdash; COO</span>
+        <div class="g-wrap">
+          <svg width="140" height="76" viewBox="0 0 140 76">
+            <path d="M12,70 A58,58 0 0,1 128,70" fill="none" stroke="rgba(60,52,137,.18)" stroke-width="10" stroke-linecap="round"/>
+            <path id="arc-col" d="M12,70 A58,58 0 0,1 128,70" fill="none" stroke="#3c3489" stroke-width="10" stroke-linecap="round" stroke-dasharray="182" stroke-dashoffset="33"/>
+            <text id="gv-col" x="70" y="53" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="19" font-weight="700" fill="#3c3489">82%</text>
+            <text x="70" y="64" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="8" fill="#534AB7">collected on time</text>
+          </svg>
+        </div>
+        <p class="t-title">Your money &mdash; collected, automatically</p><p class="t-sub">The Fixer follows up so you focus on the business</p>
+        <div class="gain-list">
+          <div class="gi gi-purp"><span class="gl">Cash unlocked from overdue book</span><span class="gv" id="a2u">R 14,080</span></div>
+          <div class="gi gi-purp"><span class="gl">Hours freed from chasing debtors</span><span class="gv" id="a2h">5 hrs/wk</span></div>
+          <div class="gi gi-purp"><span class="gl">Overdraft cost eliminated</span><span class="gv" id="a2o">R 512</span></div>
+        </div>
+        <div class="tstats"><div class="ts"><div class="ts-n" id="a2r" style="color:#3c3489">82%</div><div class="ts-l">collection rate</div></div><div class="ts"><div class="ts-n" id="a2d" style="color:#3c3489">-22d</div><div class="ts-l">avg overdue</div></div><div class="ts"><div class="ts-n" id="a2y" style="color:#3c3489">R169k</div><div class="ts-l">unlocked/year</div></div></div>
+      </div>
+      <div class="thrive-card tc-amb">
+        <span class="agent-chip ac-amb">Deal Maker + Rule Book</span>
+        <div class="g-wrap">
+          <svg width="140" height="76" viewBox="0 0 140 76">
+            <path d="M12,70 A58,58 0 0,1 128,70" fill="none" stroke="rgba(186,117,23,.18)" stroke-width="10" stroke-linecap="round"/>
+            <path id="arc-gro" d="M12,70 A58,58 0 0,1 128,70" fill="none" stroke="#ba7517" stroke-width="10" stroke-linecap="round" stroke-dasharray="182" stroke-dashoffset="73"/>
+            <text id="gv-gro" x="70" y="46" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="19" font-weight="700" fill="#ba7517">68</text>
+            <text id="gv-stage" x="70" y="58" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="9" font-weight="700" fill="#854F0B">Adolescence</text>
+            <text x="70" y="67" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="7" fill="#854F0B">&#8594; Prime</text>
+          </svg>
+        </div>
+        <p class="t-title">From surviving to building something that lasts</p><p class="t-sub">A score your bank, partners, and family can act on</p>
+        <div class="gain-list">
+          <div class="gi gi-amb"><span class="gl">Admin hours returned to growth</span><span class="gv" id="a3h">9 hrs/wk</span></div>
+          <div class="gi gi-amb"><span class="gl">Sector gap closed toward peers</span><span class="gv" id="a3g">-12% gap</span></div>
+          <div class="gi gi-amb"><span class="gl">What this score unlocks</span><span class="gv" id="a3u">Funding access</span></div>
+        </div>
+        <div class="tstats"><div class="ts"><div class="ts-n" id="a3s" style="color:#ba7517">40&#8594;68</div><div class="ts-l">growth score</div></div><div class="ts"><div class="ts-n" id="a3v" style="color:#ba7517">+R21.6k</div><div class="ts-l">revenue potential</div></div><div class="ts"><div class="ts-n" style="color:#ba7517">6</div><div class="ts-l">advisors working</div></div></div>
+      </div>
+    </div>
+
+    <div style="margin-top:1.5rem;background:var(--orange-dim);border:0.5px solid var(--orange-border);border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+      <div>
+        <p style="font-weight:700;font-size:.95rem;color:var(--text);margin-bottom:3px">Total monthly impact across all three areas</p>
+        <p style="font-size:12px;color:var(--muted)">Waste stopped + cash unlocked + opportunity recovered &mdash; R<span id="tot-rev">120k</span>/month business</p>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:2rem;font-weight:700;color:var(--orange);font-family:Helvetica,Arial,sans-serif" id="tot-impact">R 25,152</div>
+        <div style="font-size:11px;color:var(--muted)"><span id="tot-ratio">168</span>x return on Professional plan (R149/mo)</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div><!-- /page-cost -->
+
+<!-- ══════════════════════════════ PAGE: DEMO & REPORT ══════════════════════════════ -->
+<div class="page" id="page-demo">
+<div class="demo-page">
+  <div class="wrap">
+    <div class="section-label">Demo &amp; financial report</div>
+    <div class="section-title">Ask Billi anything &mdash; money, marketing, sales, compliance, IT, operations</div>
+    <div class="demo-layout">
+      <!-- LEFT: Chat -->
+      <div>
+        <div class="chat-container">
+          <div class="chat-header">
+            <img src="billi-avatar.svg" alt="Billi" width="36" height="36" style="object-fit:contain;flex-shrink:0" onerror="this.style.display='none'"/>
+            <div><div class="billi-name-text">Billi</div><div class="billi-status"><span class="status-dot"></span>Online &middot; Billi BAI</div></div>
+          </div>
+          <div class="chat-messages" id="chat-messages">
+            <div class="msg">
+              <img src="billi-avatar.svg" alt="Billi" width="28" height="28" style="object-fit:contain;flex-shrink:0" onerror="this.style.display='none'"/>
+              <div class="msg-bubble ai">Hi, I&rsquo;m Billi &mdash; your Bean Counter, Brand Guru, Deal Maker, The Rule Book, The Fixer and The IT Guy. Six business advisors in one conversation, built for SA business owners. Ask me about money, marketing, sales, compliance, operations or IT &mdash; or upload a statement for your free financial health score.</div>
+            </div>
+          </div>
+          <div class="chat-suggestions" id="suggestions">
+            <button class="suggestion" onclick="sendSuggestion(this)">My biggest client hasn&rsquo;t paid in 60 days</button>
+            <button class="suggestion" onclick="sendSuggestion(this)">How do I get more customers this month?</button>
+            <button class="suggestion" onclick="sendSuggestion(this)">Am I breaking any rules I don&rsquo;t know about?</button>
+            <button class="suggestion" onclick="sendSuggestion(this)">What options do I have if I can&rsquo;t pay a supplier?</button>
+          </div>
+          <div class="chat-input-area" id="chat-input-area">
+            <input class="chat-input" id="chat-input" placeholder="Ask Billi about finance, marketing, sales, governance or operations..." onkeydown="if(event.key==='Enter')sendMessage()"/>
+            <button class="send-btn" onclick="sendMessage()"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><polygon points="2,1 14,7.5 2,14" fill="#fff"/></svg></button>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-top:10px;text-align:center">Demo limited to 3 messages &middot; <a style="color:var(--orange);cursor:pointer;text-decoration:none" onclick="openLogin()">Sign up free</a> to meet all six advisors &middot; No card required</p>
+      </div>
+      <!-- RIGHT: Upload + Score -->
+      <div>
+        <div class="section-label" style="margin-bottom:.75rem">Financial health check</div>
+        <!-- 3-step process — compact, fits right column -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem">
+          <div style="background:var(--bg2);border-radius:8px;padding:10px 8px;text-align:center;position:relative">
+            <div style="width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 6px">1</div>
+            <div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:2px">Upload</div>
+            <div style="font-size:10px;color:var(--muted);line-height:1.4">Drop your statement &mdash; PDF, CSV, XLSX or image</div>
+          </div>
+          <div style="background:var(--bg2);border-radius:8px;padding:10px 8px;text-align:center;position:relative">
+            <div style="width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 6px">2</div>
+            <div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:2px">Billi reads it</div>
+            <div style="font-size:10px;color:var(--muted);line-height:1.4">12 ratios calculated. Risk score, debtor days, margins</div>
+          </div>
+          <div style="background:var(--bg2);border-radius:8px;padding:10px 8px;text-align:center">
+            <div style="width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 6px">3</div>
+            <div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:2px">You get a plan</div>
+            <div style="font-size:10px;color:var(--muted);line-height:1.4">Billi&rsquo;s top action. Sign up for the full report</div>
+          </div>
+        </div>
+        <div class="upload-zone" id="upload-zone" onclick="triggerUpload()" ondragover="event.preventDefault();this.style.borderColor='var(--orange)'" ondragleave="this.style.borderColor=''" ondrop="handleDrop(event)">
+          <span class="upload-icon">&#128196;</span>
+          <div class="upload-title">Drop your income statement or balance sheet here</div>
+          <div class="upload-sub">XLSX &amp; CSV read automatically &mdash; figures pre-filled for you</div>
+          <div class="upload-types"><span class="upload-type">XLSX</span><span class="upload-type">CSV</span><span class="upload-type">PDF</span><span class="upload-type">JPG / PNG</span></div>
+        </div>
+        <input type="file" id="file-input" accept=".pdf,.csv,.xlsx,.jpg,.jpeg,.png" style="display:none" onchange="handleFileSelect(this)"/>
+        <div class="score-preview" id="score-preview" style="display:block;opacity:0.45;pointer-events:none;transition:opacity .4s">
+          <div class="score-header">
+            <div><div style="font-size:13px;font-weight:700;font-family:Helvetica,Arial,sans-serif;color:var(--text)" id="sp-title">Your Business &mdash; Live Analysis</div><div style="font-size:11px;color:var(--muted);margin-top:2px" id="sp-sub">Fill in your numbers to calculate</div></div>
+            <span class="score-badge amber" style="opacity:0.4" id="sp-badge">&#127993; WATCH</span>
+          </div>
+          <div class="risk-meter">
+            <div class="risk-meter-label"><span>Risk Score</span><span id="risk-score-label">—</span></div>
+            <div class="risk-bar"><div class="risk-fill" id="risk-fill" style="width:0%;transition:width 0.8s ease,background 0.4s"></div></div>
+          </div>
+          <div class="ratio-grid" id="ratio-grid">
+            <div class="ratio-item"><div class="ratio-label">Gross Margin</div><div class="ratio-value">—</div><div class="ratio-warn">Enter your numbers above</div></div>
+            <div class="ratio-item"><div class="ratio-label">Current Ratio</div><div class="ratio-value">—</div><div class="ratio-warn"></div></div>
+            <div class="ratio-item"><div class="ratio-label">Debtor Days</div><div class="ratio-value">—</div><div class="ratio-warn"></div></div>
+            <div class="ratio-item"><div class="ratio-label">Net Margin</div><div class="ratio-value">—</div><div class="ratio-warn"></div></div>
+            <div class="ratio-item"><div class="ratio-label">Debt-to-Equity</div><div class="ratio-value">—</div><div class="ratio-warn"></div></div>
+            <div class="ratio-item"><div class="ratio-label">Cash Conv. Cycle</div><div class="ratio-value">—</div><div class="ratio-warn"></div></div>
+          </div>
+          <div style="margin-top:1rem;padding:.875rem;background:var(--orange-dim);border-radius:8px;border:0.5px solid var(--orange-border)">
+            <div style="font-size:12px;font-weight:700;font-family:Helvetica,Arial,sans-serif;color:var(--orange);margin-bottom:4px">Billi&rsquo;s top recommendation</div>
+            <div class="health-rec-text" style="font-size:12.5px;color:var(--text);line-height:1.6">Fill in your numbers and click calculate to get your personalised insight.</div>
+          </div>
+          <button class="btn-lg primary" style="width:100%;margin-top:1rem;border-radius:8px;font-size:14px" onclick="downloadHealthReport()">&#11015; Download my health report &rarr;</button>
+          <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px">Free snapshot report &nbsp;&middot;&nbsp; <a style="color:var(--orange);cursor:pointer;text-decoration:none" onclick="openLogin()">Sign up</a> to save, share &amp; get Billi&rsquo;s full action plan</p>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-top:10px;text-align:center">Free analysis &middot; No account needed to upload &middot; <a style="color:var(--orange);cursor:pointer;text-decoration:none" onclick="openLogin()">Sign up</a> to save your report</p>
+      </div>
+    </div>
+  </div>
+</div>
+</div><!-- /page-demo -->
+
+<!-- ══════════════════════════════ PAGE: MERCH ══════════════════════════════ -->
+<div class="page" id="page-merch">
+<div class="merch-page">
+  <div class="section-label">Billi Merch</div>
+  <div class="section-title">Wear the team that has your back</div>
+  <p style="color:var(--muted);font-size:.95rem;max-width:480px;margin:.75rem auto 0;line-height:1.7">Limited run. Real quality. Secure Paystack checkout.</p>
+  <div class="merch-grid">
+    <div class="merch-card">
+      <span class="merch-badge">LIMITED</span>
+      <div class="merch-product-img"><img src="merch-hoodie.png" alt="Billi hoodie" onerror="this.parentNode.innerHTML='&#129399;'"/></div>
+      <div class="merch-name">Billi Hoodie</div>
+      <p class="merch-desc">Premium 320gsm cotton fleece. Billi wink on the chest, &ldquo;The AI that has your back&rdquo; on the back. Unisex fit.</p>
+      <div class="merch-sizes"><div class="merch-size-row"><span class="merch-size-label">S / M / L</span><span class="merch-size-price">R549</span></div><div class="merch-size-row"><span class="merch-size-label">XL / XXL</span><span class="merch-size-price">R599</span></div><div class="merch-size-row"><span class="merch-size-label">3XL</span><span class="merch-size-price">R649</span></div></div>
+      <button class="merch-btn" onclick="openCart('Billi Hoodie','hoodie',{'sml':'S/M/L \u2014 R549','xl':'XL/XXL \u2014 R599','3xl':'3XL \u2014 R649'})">Add to cart</button>
+    </div>
+    <div class="merch-card">
+      <div class="merch-product-img"><img src="merch-cap-black.png" alt="Billi cap" onerror="this.parentNode.innerHTML='&#129510;'"/></div>
+      <div class="merch-name">Billi Cap</div>
+      <p class="merch-desc">Structured 6-panel cap. Billi wink embroidered on front. Adjustable snapback. Black or white.</p>
+      <div class="merch-sizes"><div class="merch-size-row"><span class="merch-size-label">Black &mdash; one size</span><span class="merch-size-price">R299</span></div><div class="merch-size-row"><span class="merch-size-label">White &mdash; one size</span><span class="merch-size-price">R299</span></div></div>
+      <button class="merch-btn" onclick="openCart('Billi Cap','cap',{'black':'Black \u2014 R299','white':'White \u2014 R299'})">Add to cart</button>
+    </div>
+    <div class="merch-card">
+      <span class="merch-badge">BESTSELLER</span>
+      <div class="merch-product-img" style="background:#111"><img src="merch-mug.png" alt="Billi mug" onerror="this.parentNode.innerHTML='&#9749;'"/></div>
+      <div class="merch-name">Billi Mug</div>
+      <p class="merch-desc">Enamel camp mug. Billi winks at you every morning. Dishwasher safe. Your Bean Counter deserves a good coffee.</p>
+      <div class="merch-sizes"><div class="merch-size-row"><span class="merch-size-label">330ml standard</span><span class="merch-size-price">R199</span></div><div class="merch-size-row"><span class="merch-size-label">470ml jumbo</span><span class="merch-size-price">R249</span></div></div>
+      <button class="merch-btn" onclick="openCart('Billi Mug','mug',{'330':'330ml \u2014 R199','470':'470ml \u2014 R249'})">Add to cart</button>
+    </div>
+    <div class="merch-card">
+      <div class="merch-product-img"><img src="merch-tee.png" alt="Billi tee" onerror="this.parentNode.innerHTML='&#128085;'"/></div>
+      <div class="merch-name">Billi Tee</div>
+      <p class="merch-desc">180gsm cotton. Billi wink centre chest, billsource.ai below. Unisex fit, runs true to size.</p>
+      <div class="merch-sizes"><div class="merch-size-row"><span class="merch-size-label">S / M / L</span><span class="merch-size-price">R299</span></div><div class="merch-size-row"><span class="merch-size-label">XL / XXL</span><span class="merch-size-price">R349</span></div><div class="merch-size-row"><span class="merch-size-label">3XL</span><span class="merch-size-price">R379</span></div></div>
+      <button class="merch-btn" onclick="openCart('Billi Tee','tee',{'sml':'S/M/L \u2014 R299','xl':'XL/XXL \u2014 R349','3xl':'3XL \u2014 R379'})">Add to cart</button>
+    </div>
+  </div>
+</div>
+</div><!-- /page-merch -->
+
+<!-- ══════════════════════════════ FOOTER (always visible) ══════════════════════════════ -->
+<footer>
+  <div class="footer-brand">
+    <img src="billi-avatar.svg" alt="Billi" width="28" height="28" style="border-radius:50%;object-fit:cover" onerror="this.style.display='none'"/>
+    <div class="footer-brand-text">
+      <div class="footer-brand-name">billsource<sup style="font-size:8px">&#174;</sup> &middot; Billi AI</div>
+      <div>&copy; 2026 AnyABEX (Pty) Ltd &middot; All rights reserved &middot; POPIA compliant</div>
+    </div>
+  </div>
+  <div class="footer-links">
+    <a href="/privacy">Privacy</a>
+    <a href="/terms">Terms</a>
+    <a href="/trust">Trust Centre</a>
+    <a href="mailto:support@billsource.ai">Support</a>
+    <a href="https://billsource.com" target="_blank" rel="noopener">billsource.com</a>
+    <a href="https://dbtor.ai" target="_blank" rel="noopener">Dbtor.ai</a>
+    <a href="https://martugo.com" target="_blank" rel="noopener">Martugo.com</a>
+    <a href="https://billi.expert" target="_blank" rel="noopener">billi.expert</a>
+    <a href="https://talos.expert" target="_blank" rel="noopener">Talos</a>
+  </div>
+  <img src="logo2.png" alt="Billsource" height="26" style="display:block;filter:var(--logo-filter,none);opacity:0.7;"/>
 </footer>
 
+<!-- CART MODAL -->
+<div class="cart-overlay" id="cart-modal" onclick="if(event.target===this)closeCart()">
+  <div class="cart-box">
+    <button class="cart-close" onclick="closeCart()">&#x2715;</button>
+    <div class="cart-title" id="cart-product-name">Billi Hoodie</div>
+    <div class="cart-sub">Secure checkout via Paystack</div>
+    <div class="cart-error" id="cart-error"></div>
+    <input class="cart-field" id="cart-email" type="email" placeholder="Your email address" autocomplete="email"/>
+    <select class="cart-select" id="cart-size-select"></select>
+    <button class="cart-btn" id="cart-pay-btn" onclick="checkoutMerch()">Pay with Paystack &#8594;</button>
+  </div>
+</div>
+
 <!-- LOGIN MODAL -->
-<div id="login-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;
-     background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);z-index:300;
-     display:flex;align-items:center;justify-content:center;padding:1.5rem">
-  <div style="background:var(--card);border:0.5px solid var(--border);border-radius:12px;
-              padding:2rem;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.5)">
-    <div style="text-align:center;margin-bottom:2rem">
-      <img src="billiheroavatar.png" alt="Billi" style="width:80px;height:80px;border-radius:50%;margin-bottom:1rem"/>
-      <h2 style="font-size:1.3rem;font-weight:700;margin-bottom:0.5rem">Sign in to Billi</h2>
-      <p style="font-size:0.9rem;color:var(--muted)">Your six advisors are waiting</p>
-    </div>
-    
-    <button onclick="googleSignIn()" style="width:100%;background:white;color:#333;border:0.5px solid #ddd;
-             padding:12px;border-radius:8px;font-weight:600;cursor:pointer;margin-bottom:1rem;
-             display:flex;align-items:center;justify-content:center;gap:10px">
-      <span style="font-size:1.2rem">🔵</span> Sign in with Google
+<div class="modal-overlay" id="login-modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="login-box" id="login-box">
+    <img src="billi-avatar.svg" alt="Billi" width="72" height="72" style="border-radius:50%;border:2.5px solid #F59E0B;object-fit:cover;display:block;margin:0 auto;background:#F59E0B;padding:2px" onerror="this.style.display='none'"/>
+    <div class="login-title">Sign in to Billi</div>
+    <div class="login-sub">Sign in to save your reports, track your business health over time, and get Billi's full 6-advisor action plan — built on your actual numbers.</div>
+    <button class="login-google" onclick="window.location.href='/auth/google'">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/><path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
+      Continue with Google
     </button>
-    
-    <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:0.5px solid var(--border);text-align:center">
-      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:0.8rem">Or use email</p>
-      <input type="email" id="email-input" placeholder="your@email.com" style="width:100%;padding:10px;
-             background:var(--input-bg);border:0.5px solid var(--border);border-radius:6px;
-             color:var(--text);font-family:inherit;margin-bottom:1rem"/>
-      <button onclick="emailSignIn()" class="btn-primary" style="width:100%">Send magic link</button>
-      <div id="email-error" style="font-size:11px;color:#c0392b;margin-top:6px;text-align:center;display:none"></div>
-    </div>
+    <div class="divider-or">or</div>
+    <input class="email-input" id="email-input" type="email" placeholder="Enter your email address"/>
+    <button class="btn-primary" style="width:100%;padding:11px;border-radius:8px;font-size:14px" onclick="emailSignIn()">Send magic link</button>
   </div>
 </div>
 
 <script>
-function switchPage(page){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById(page).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  event.target.classList.add('active');
+// ── THEME ──
+var body=document.body;
+var themeBtn=document.getElementById('themeBtn');
+themeBtn.textContent='☽';
+themeBtn.addEventListener('click',function(){
+  var d=body.classList.contains('dark');
+  body.classList.toggle('dark',!d);
+  body.classList.toggle('light',d);
+  themeBtn.textContent=d?'\u263D':'\u2600';
+});
+
+// ── PAGE ROUTER ──
+var PAGES = ['home','cost','demo','merch'];
+
+function showPage(id, pushState){
+  if(PAGES.indexOf(id) === -1) id = 'home';
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active')});
+  var ni=document.getElementById('nav-'+id);
+  if(ni) ni.classList.add('active');
+  if(pushState !== false){
+    try{
+      var hash = id === 'home' ? '' : '#'+id;
+      history.pushState({page:id}, '', location.pathname + hash);
+    }catch(e){}  // silently ignore SecurityError in restricted contexts
+  }
+  window.scrollTo({top:0,behavior:'instant'});
 }
 
-function toggleTheme(){
-  document.body.classList.toggle('light');
-  document.body.classList.toggle('dark');
+// Handle browser back/forward
+window.addEventListener('popstate', function(e){
+  var id = (e.state && e.state.page) ? e.state.page : getHashPage();
+  showPage(id, false);
+});
+
+// Read hash on load
+function getHashPage(){
+  var hash = location.hash.replace('#','').trim();
+  return (hash && PAGES.indexOf(hash) !== -1) ? hash : 'home';
 }
 
+// On load: honour any hash in the URL
+(function(){
+  var startPage = getHashPage();
+  showPage(startPage, false);
+  try{
+    history.replaceState({page:startPage}, '', location.pathname + (startPage==='home' ? '' : '#'+startPage));
+  }catch(e){}  // silently ignore SecurityError (file://, cross-origin iframe, etc.)
+})();
+
+// ── MATHS ──
+var ARC=182,ARC_GS=132;
+function pOff(p,t){return t-Math.min(Math.max(p,0),1)*t}
+function fR(n){return 'R '+Math.round(n).toLocaleString('en-ZA')}
+function fK(n){return 'R'+Math.round(n/1000)+'k'}
+
+function compute(){
+  var rev=parseInt(document.getElementById('sl-rev').value)||120000;
+  var book=parseInt(document.getElementById('sl-book').value)||64000;
+  var nd=parseInt(document.getElementById('sl-nd').value)||8;
+  var staff=parseInt(document.getElementById('sl-staff').value)||12;
+  document.getElementById('lbl-rev').textContent=rev.toLocaleString('en-ZA');
+  document.getElementById('lbl-book').textContent=book.toLocaleString('en-ZA');
+  document.getElementById('lbl-nd').textContent=nd;
+  document.getElementById('lbl-staff').textContent=staff;
+
+  // bleed 1
+  var w1a=Math.round(rev*.01),w1b=Math.round(rev*.0075),w1c=Math.round(rev*.005),w1d=Math.round(rev*.0175);
+  var bl1=w1a+w1b+w1c+w1d;
+  document.getElementById('w1a').textContent=fR(w1a);document.getElementById('w1b').textContent=fR(w1b);
+  document.getElementById('w1c').textContent=fR(w1c);document.getElementById('w1d').textContent=fR(w1d);
+  document.getElementById('b1').textContent=fR(bl1);
+  var hrs1=Math.max(8,Math.round(staff*.3+10));
+  document.getElementById('s1h').textContent=hrs1+'h';
+  document.getElementById('s1p').textContent=((bl1/rev)*100).toFixed(1)+'%';
+  document.getElementById('s1y').textContent=fK(bl1*12);
+
+  // bleed 2
+  var oddDays=Math.max(20,Math.round(60-nd*1.5));
+  var stuck=Math.round(book*.6);
+  var chH=Math.max(2,Math.min(20,Math.round(nd*.75)));
+  var missI=Math.max(1,Math.round(nd*.35));
+  var odC=Math.round(stuck*.008);
+  document.getElementById('b2').textContent=fR(stuck);
+  document.getElementById('w2a').textContent=chH+' hrs';
+  document.getElementById('w2b').textContent=missI+' invoices';
+  document.getElementById('w2c').textContent=oddDays+' days';
+  document.getElementById('w2d').textContent=fR(odC);
+  document.getElementById('s2h').textContent=chH+'h/wk';
+  document.getElementById('s2d').textContent=fR(odC);
+
+  // bleed 3
+  var adminH=Math.max(6,Math.round(staff*.22+8));
+  var sGap=Math.max(8,Math.min(35,Math.round(22-staff*.2)));
+  var bl3=Math.round(rev*.07);
+  document.getElementById('b3').textContent=fR(bl3);
+  document.getElementById('w3a').textContent=adminH+' hrs';
+  document.getElementById('w3b').textContent=sGap+'% behind';
+  document.getElementById('w3c').textContent=fR(Math.round(rev*.03));
+  document.getElementById('s3h').textContent=adminH+'h/wk';
+  document.getElementById('s3g').textContent=sGap+'%';
+  document.getElementById('s3y').textContent=fK(bl3*12);
+
+  // thrive 1
+  var saved1=Math.round(bl1*.8);
+  var runD=Math.max(14,Math.round(30+(saved1/rev)*60));
+  document.getElementById('arc-cf').style.strokeDashoffset=pOff(runD/90,ARC);
+  document.getElementById('gv-cf').textContent=runD+'d';
+  document.getElementById('a1s').textContent=fR(saved1);
+  document.getElementById('a1h').textContent=Math.max(6,Math.round(hrs1*.75))+' hrs';
+  document.getElementById('a1w').textContent=Math.max(7,Math.round(runD*.35))+' days';
+  document.getElementById('a1r').textContent=runD+'d';
+  document.getElementById('a1y').textContent=fK(saved1*12);
+
+  // thrive 2
+  var unlocked=Math.round(book*.22);
+  var hrsF=Math.max(1,Math.round(chH*.83));
+  document.getElementById('arc-col').style.strokeDashoffset=pOff(.82,ARC);
+  document.getElementById('a2u').textContent=fR(unlocked);
+  document.getElementById('a2h').textContent=hrsF+' hrs/wk';
+  document.getElementById('a2o').textContent=fR(odC);
+  document.getElementById('a2d').textContent='-'+Math.round(oddDays*.58)+'d';
+  document.getElementById('a2y').textContent=fK(unlocked*12);
+
+  // thrive 3
+  var govBase=Math.min(70,45+Math.round(staff*.5));
+  var scoreNow=Math.max(20,Math.round(govBase*.6-sGap*.3));
+  var scoreAfter=Math.min(95,scoreNow+Math.round(scoreNow*.7));
+  document.getElementById('arc-gro').style.strokeDashoffset=pOff(scoreAfter/100,ARC);
+  document.getElementById('gv-gro').textContent=scoreAfter;
+  var stage=scoreAfter<40?'Infancy':scoreAfter<55?'Go-Go':scoreAfter<70?'Adolescence':scoreAfter<85?'Prime':'Stable';
+  document.getElementById('gv-stage').textContent=stage;
+  document.getElementById('a3h').textContent=Math.round(adminH*.82)+' hrs/wk';
+  document.getElementById('a3g').textContent='-'+Math.round(sGap*.65)+'% gap';
+  var unlock=scoreAfter>=70?'Bond eligible':scoreAfter>=55?'Funding access':scoreAfter>=40?'Bank-ready':'Building base';
+  document.getElementById('a3u').textContent=unlock;
+  document.getElementById('a3s').textContent=scoreNow+'\u2192'+scoreAfter;
+  var revLift=Math.round(rev*(sGap/100)*.65);
+  document.getElementById('a3v').textContent='+'+fR(revLift);
+
+  // totals
+  var total=saved1+unlocked+revLift;
+  document.getElementById('pivot-total').textContent=fR(total);
+  document.getElementById('tot-impact').textContent=fR(total);
+  document.getElementById('tot-rev').textContent=Math.round(rev/1000)+'k';
+  document.getElementById('tot-ratio').textContent=Math.round(total/149);
+  document.getElementById('home-roi-total').textContent=fR(total);
+  document.getElementById('home-roi-ratio').textContent=Math.round(total/149);
+  document.getElementById('pro-chip').textContent='Typical return: '+fR(total)+'/mo \u2192 '+Math.round(total/149)+'x ROI';
+
+  // gauge strip — before (home page)
+  var blPct=Math.min(bl1/rev,0.15);
+  document.getElementById('gsB1').style.strokeDashoffset=pOff(blPct/0.15,ARC_GS);
+  document.getElementById('gsB1v').textContent=((bl1/rev)*100).toFixed(1)+'%';
+  document.getElementById('gsB1d').textContent=fR(bl1)+'/mo';
+  document.getElementById('gsB2').style.strokeDashoffset=pOff(0.60,ARC_GS);
+  document.getElementById('gsB2d').textContent=fR(stuck)+' overdue';
+  document.getElementById('gsB3').style.strokeDashoffset=pOff(scoreNow/100,ARC_GS);
+  document.getElementById('gsB3v').textContent=scoreNow;
+  // gauge strip — after (home page)
+  document.getElementById('gsA1').style.strokeDashoffset=pOff(runD/90,ARC_GS);
+  document.getElementById('gsA1v').textContent=runD+'d';
+  document.getElementById('gsA1d').textContent=fR(saved1)+' saved/mo';
+  document.getElementById('gsA2').style.strokeDashoffset=pOff(.82,ARC_GS);
+  document.getElementById('gsA2d').textContent=fR(unlocked)+' unlocked';
+  document.getElementById('gsA3').style.strokeDashoffset=pOff(scoreAfter/100,ARC_GS);
+  document.getElementById('gsA3v').textContent=scoreAfter;
+  document.getElementById('gsA3s').textContent=stage;
+  document.getElementById('gsA3d').textContent='+'+fR(revLift)+' potential';
+}
+compute();
+
+// ── DEMO CHAT ──
+// ── DEMO CHAT — real Flowise via /api/demo-chat ──
+var demoCount=0,maxDemo=3,isTyping=false;
+
+function billiAv(){
+  return '<img src="billi-avatar.svg" alt="Billi" width="28" height="28" style="object-fit:contain;flex-shrink:0" onerror="this.style.display=\'none\'"/>';
+}
+function addMsg(text,role){
+  var ms=document.getElementById('chat-messages');
+  var d=document.createElement('div');
+  d.className='msg'+(role==='user'?' user':'');
+  if(role==='ai'){
+    // Render basic markdown: **bold**, *italic*, line breaks, bullet dashes
+    var html=text
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g,'<em>$1</em>')
+      .replace(/^---$/gm,'<hr style="border:none;border-top:1px solid var(--border);margin:.5rem 0">')
+      .replace(/^[\-\*] (.+)/gm,'<li style="margin-left:1rem;margin-bottom:.2rem">$1</li>')
+      .replace(/\n/g,'<br>');
+    d.innerHTML=billiAv()+'<div class="msg-bubble ai">'+html+'</div>';
+  } else {
+    d.innerHTML='<div class="msg-avatar-user">U</div><div class="msg-bubble user">'+text+'</div>';
+  }
+  ms.appendChild(d);ms.scrollTop=ms.scrollHeight;
+}
+function showTyping(){
+  var ms=document.getElementById('chat-messages');
+  var d=document.createElement('div');d.className='msg';d.id='typing-indicator';
+  d.innerHTML=billiAv()+'<div class="msg-bubble ai"><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>';
+  ms.appendChild(d);ms.scrollTop=ms.scrollHeight;
+}
+function removeTyping(){var t=document.getElementById('typing-indicator');if(t)t.remove();}
+
+async function sendMessage(){
+  if(isTyping)return;
+  var inp=document.getElementById('chat-input');
+  var msg=inp.value.trim();if(!msg)return;
+  if(demoCount>=maxDemo){openLogin();return;}
+  inp.value='';
+  document.getElementById('suggestions').style.display='none';
+  addMsg(msg,'user');isTyping=true;showTyping();
+  try{
+    var res=await fetch('/api/demo-chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({question:msg})
+    });
+    var data=await res.json();
+    removeTyping();isTyping=false;
+    if(res.status===429||data.error==='demo_limit'){
+      addMsg(data.answer||"You've used all 3 demo messages. Sign up free to continue.",'ai');
+      showLock();return;
+    }
+    if(!res.ok||data.error){
+      addMsg(data.error||'Billi is briefly unavailable — please try again.','ai');return;
+    }
+    demoCount++;
+    addMsg(data.answer,'ai');
+    if(demoCount>=maxDemo) showLock();
+  }catch(err){
+    removeTyping();isTyping=false;
+    addMsg('Connection issue — please check your internet and try again.','ai');
+  }
+}
+function sendSuggestion(el){document.getElementById('chat-input').value=el.textContent;sendMessage();}
+function showLock(){
+  document.getElementById('chat-input-area').innerHTML='<div style="width:100%;text-align:center;padding:1rem 0"><div style="font-size:13px;color:var(--muted);margin-bottom:12px"><strong style="color:var(--text)">You\'ve used all 3 demo messages.</strong><br>Sign up free to meet all six advisors — no card needed.</div><button class="btn-primary" style="padding:10px 28px;border-radius:7px;font-size:13px" onclick="openLogin()">Create free account</button></div>';
+}
+
+// ── CLIENT-SIDE RATIO ENGINE — mirrors server.js runAnalysisEngine exactly ──
+function runAnalysisEngine(data){
+  var revenue=data.revenue,costOfSales=data.costOfSales,
+      operatingExpenses=data.operatingExpenses,
+      currentAssets=data.currentAssets,currentLiabilities=data.currentLiabilities,
+      totalDebt=data.totalDebt,equity=data.equity,
+      accountsReceivable=data.accountsReceivable,accountsPayable=data.accountsPayable,
+      inventory=data.inventory,netProfit=data.netProfit,annualRevenue=data.annualRevenue;
+  var r={};
+  r.currentRatio  = currentAssets/currentLiabilities;
+  r.quickRatio    = (currentAssets-inventory)/currentLiabilities;
+  r.cashRatio     = (currentAssets-inventory-accountsReceivable)/currentLiabilities;
+  var gp = revenue-costOfSales;
+  r.grossMargin     = (gp/revenue)*100;
+  r.netMargin       = (netProfit/revenue)*100;
+  r.operatingMargin = ((gp-operatingExpenses)/revenue)*100;
+  r.returnOnEquity  = (netProfit/equity)*100;
+  r.dso = (accountsReceivable/annualRevenue)*365;
+  r.dpo = (accountsPayable/costOfSales)*365;
+  r.cashConversionCycle = r.dso-r.dpo;
+  r.debtToEquity = totalDebt/equity;
+  r.debtToAssets = totalDebt/(totalDebt+equity);
+  var w={liquidity:0.30,profitability:0.25,efficiency:0.25,leverage:0.20};
+  var liq  = Math.min(100,Math.max(0,r.currentRatio>=2?100:r.currentRatio>=1.5?80:r.currentRatio>=1?60:r.currentRatio>=0.75?40:20));
+  var prof = Math.min(100,Math.max(0,r.netMargin>=20?100:r.netMargin>=10?80:r.netMargin>=5?60:r.netMargin>=0?40:20));
+  var eff  = Math.min(100,Math.max(0,r.dso<=30?100:r.dso<=45?80:r.dso<=60?60:r.dso<=90?40:20));
+  var lev  = Math.min(100,Math.max(0,r.debtToEquity<=0.5?100:r.debtToEquity<=1?80:r.debtToEquity<=1.5?60:r.debtToEquity<=2?40:20));
+  r.nationalHealthScore = Math.round(liq*w.liquidity+prof*w.profitability+eff*w.efficiency+lev*w.leverage);
+  r.riskRating = r.nationalHealthScore>=80?'GREEN — Low Risk':r.nationalHealthScore>=60?'AMBER — Moderate Risk':r.nationalHealthScore>=40?'ORANGE — Elevated Risk':'RED — Critical Risk';
+  r.riskColour = r.nationalHealthScore>=80?'green':r.nationalHealthScore>=60?'amber':r.nationalHealthScore>=40?'orange':'red';
+  Object.keys(r).forEach(function(k){if(typeof r[k]==='number')r[k]=Math.round(r[k]*100)/100;});
+  return {score:r.nationalHealthScore,rating:r.riskRating,colour:r.riskColour,ratios:r,generatedAt:new Date().toISOString(),version:'1.0.0'};
+}
+
+function runDemoAnalyse(){
+  var data={
+    revenue:numVal('nf-rev'), costOfSales:numVal('nf-cos'),
+    operatingExpenses:numVal('nf-opex'), netProfit:numVal('nf-np'),
+    currentAssets:numVal('nf-ca'), currentLiabilities:numVal('nf-cl'),
+    accountsReceivable:numVal('nf-ar'), accountsPayable:numVal('nf-ap'),
+    inventory:numVal('nf-inv'), totalDebt:numVal('nf-debt'),
+    equity:numVal('nf-eq'), annualRevenue:numVal('nf-annrev')
+  };
+  var errEl=document.getElementById('nf-error');
+  if(!data.revenue||!data.currentLiabilities||!data.equity||!data.annualRevenue){
+    errEl.textContent='Please fill in Revenue, Current Liabilities, Equity, and Annual Revenue at minimum.';
+    errEl.style.display='block'; return;
+  }
+  if(data.costOfSales<=0){ errEl.textContent='Cost of Sales must be greater than zero.'; errEl.style.display='block'; return; }
+  errEl.style.display='none';
+  var btn=document.querySelector('#upload-zone button');
+  if(btn){btn.disabled=true;btn.textContent='Calculating\u2026';}
+  try{
+    var result=runAnalysisEngine(data);
+    renderDemoScore(result, _lastFileName);
+    if(btn){btn.disabled=false;btn.textContent='Recalculate \u2192';}
+  }catch(e){
+    errEl.textContent='Calculation error — please check your numbers (no zeros in required fields).';
+    errEl.style.display='block';
+    if(btn){btn.disabled=false;btn.textContent='Calculate my financial health score \u2192';}
+  }
+}
+
+function handleFileSelect(inp){
+  if(inp.files && inp.files[0]) parseAndPopulate(inp.files[0]);
+}
+function handleDrop(e){
+  e.preventDefault();
+  document.getElementById('upload-zone').style.borderColor='';
+  var f=e.dataTransfer.files[0];
+  if(f) parseAndPopulate(f);
+}
+
+// ── XLSX/CSV file parser — reads workbook, maps to form fields ──
+function parseAndPopulate(file){
+  var name = file.name;
+  var ext  = name.split('.').pop().toLowerCase();
+  if(['xlsx','xls','csv'].includes(ext) && typeof XLSX !== 'undefined'){
+    var reader = new FileReader();
+    reader.onload = function(e){
+      try{
+        var wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+        var extracted = extractFromWorkbook(wb);
+        _lastFileName = name;
+        showNumberForm(name, extracted.values, extracted.notes, extracted.missing);
+      }catch(err){
+        showNumberForm(name, {}, ['Could not parse file — please enter numbers manually.'], []);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    showNumberForm(name, {}, ['PDF and image files cannot be read automatically — please enter your figures below.'], []);
+  }
+}
+
+function extractFromWorkbook(wb){
+  var values={}, notes=[], missing=[];
+  var lookup={};
+
+  wb.SheetNames.forEach(function(sname){
+    var rows=XLSX.utils.sheet_to_json(wb.Sheets[sname],{header:1,defval:null});
+    if(!rows.length) return;
+    var hdr=rows[0]||[];
+    // find numeric year columns
+    var numCols=[];
+    hdr.forEach(function(v,i){ if(v && String(v).match(/^20\d{2}$/)) numCols.push(i); });
+    var useLastCol = numCols.length===0;
+    rows.slice(1).forEach(function(row){
+      var label=String(row[0]||'').trim().toLowerCase();
+      if(!label) return;
+      var vals=[];
+      if(useLastCol){
+        for(var i=row.length-1;i>=1;i--){
+          if(row[i]!==null && row[i]!=='' && !isNaN(Number(row[i]))){vals=[Number(row[i])];break;}
+        }
+      } else {
+        numCols.forEach(function(ci){if(row[ci]!==null)vals.push(Number(row[ci]));});
+      }
+      if(vals.length) lookup[label]=vals;
+    });
+  });
+
+  function get(label){
+    if(!lookup[label]) return null;
+    var arr=lookup[label];
+    for(var i=arr.length-1;i>=0;i--){
+      if(arr[i]!==null && !isNaN(arr[i])) return arr[i];
+    }
+    return null;
+  }
+  function find(){
+    for(var pi=0;pi<arguments.length;pi++){
+      var pat=arguments[pi].toLowerCase();
+      var keys=Object.keys(lookup);
+      for(var ki=0;ki<keys.length;ki++){
+        if(keys[ki].includes(pat)){var v=get(keys[ki]);if(v!==null)return v;}
+      }
+    }
+    return null;
+  }
+
+  var rawRev    = find('revenue','turnover','total income','total revenue','sales');
+  var rawCos    = find('cost of goods','cost of sales','cogs','direct cost');
+  var rawOpex   = find('operating expense','operating cost','opex');
+  var rawNp     = find('net income','net profit','profit after','profit/(loss)','net loss');
+  var rawGp     = find('gross profit','gross income');
+  var rawCa     = find('total current assets','current assets');
+  var rawCl     = find('total current liab','current liab');
+  var rawAr     = find('accounts receivable','trade receivable','debtors');
+  var rawAp     = find('accounts payable','trade payable','creditors');
+  var rawInv    = find('inventory','stock');
+  var rawEq     = find('equity','shareholders','net assets');
+  var rawStDebt = find('short-term debt','short term debt','current portion','overdraft');
+  var rawLtDebt = find('long-term debt','long term debt','non-current liab','term loan');
+  var rawDebt   = find('total debt') ||
+                  (rawStDebt!==null && rawLtDebt!==null ? rawStDebt+rawLtDebt : rawStDebt||rawLtDebt);
+
+  // Derive net profit from gross profit - opex if not found directly
+  if(rawNp===null && rawGp!==null && rawOpex!==null) rawNp = rawGp - rawOpex;
+
+  var isAnnual = rawRev!==null && rawRev > 500000;
+  var div = isAnnual ? 12 : 1;
+  if(isAnnual) notes.push('Annual figures detected — Revenue, Cost of Sales, Operating Expenses and Net Profit divided by 12 to give monthly averages. Annual Revenue kept as-is for Debtor/Creditor Days.');
+
+  if(rawRev  !==null){values['nf-rev']   =Math.round(rawRev  /div);}
+  if(rawCos  !==null){values['nf-cos']   =Math.round(rawCos  /div);}
+  if(rawOpex !==null){values['nf-opex']  =Math.round(rawOpex /div);}
+  if(rawNp   !==null){values['nf-np']    =Math.round(rawNp   /div);}
+  if(rawCa   !==null){values['nf-ca']    =rawCa;}
+  if(rawCl   !==null){values['nf-cl']    =rawCl;}
+  if(rawAr   !==null){values['nf-ar']    =rawAr;}
+  if(rawAp   !==null){values['nf-ap']    =rawAp;}
+  if(rawInv  !==null){values['nf-inv']   =rawInv;}
+  if(rawEq   !==null){values['nf-eq']    =rawEq;}
+  if(rawDebt !==null){values['nf-debt']  =rawDebt;}
+  if(rawRev  !==null){values['nf-annrev']=rawRev;}
+
+  var fieldNames={'nf-rev':'Monthly Revenue','nf-cos':'Cost of Sales',
+    'nf-opex':'Operating Expenses','nf-np':'Net Profit',
+    'nf-ca':'Current Assets','nf-cl':'Current Liabilities',
+    'nf-ar':'Accounts Receivable','nf-ap':'Accounts Payable',
+    'nf-inv':'Inventory','nf-eq':'Total Equity',
+    'nf-debt':'Total Debt','nf-annrev':'Annual Revenue'};
+  Object.keys(fieldNames).forEach(function(id){
+    if(values[id]===undefined) missing.push(fieldNames[id]);
+  });
+  return {values:values, notes:notes, missing:missing};
+}
+
+function showNumberForm(fileName, prefill, notes, missing){
+  prefill  = prefill  || {};
+  notes    = notes    || [];
+  missing  = missing  || [];
+  var z = document.getElementById('upload-zone');
+
+  // ── Data quality banners ──
+  var banners = '';
+  if(fileName){
+    var populated = Object.keys(prefill).length;
+    if(populated > 0){
+      banners += '<div style="display:flex;align-items:flex-start;gap:8px;background:#d1fae5;border:1px solid #6ee7b7;border-radius:7px;padding:10px 12px;margin-bottom:10px">'+
+        '<span style="font-size:16px;flex-shrink:0">✅</span>'+
+        '<div style="font-size:11px;color:#065f46;line-height:1.5">'+
+        '<strong>'+populated+'/12 fields read from '+fileName+'</strong><br>'+
+        'Values below are auto-populated from your most recent year. Review and adjust if needed.'+
+        '</div></div>';
+    }
+    notes.forEach(function(n){
+      banners += '<div style="display:flex;align-items:flex-start;gap:8px;background:#fef3c7;border:1px solid #fcd34d;border-radius:7px;padding:10px 12px;margin-bottom:8px">'+
+        '<span style="font-size:14px;flex-shrink:0">ℹ️</span>'+
+        '<div style="font-size:11px;color:#78350f;line-height:1.5">'+n+'</div></div>';
+    });
+    if(missing.length){
+      banners += '<div style="display:flex;align-items:flex-start;gap:8px;background:#fee2e2;border:1px solid #fca5a5;border-radius:7px;padding:10px 12px;margin-bottom:8px">'+
+        '<span style="font-size:14px;flex-shrink:0">⚠️</span>'+
+        '<div style="font-size:11px;color:#991b1b;line-height:1.5">'+
+        '<strong>Missing from file — please enter manually:</strong><br>'+
+        missing.join(' · ')+
+        '</div></div>';
+    }
+  }
+
+  var fileNote = fileName
+    ? '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">📎 <strong>'+fileName+'</strong></div>'
+    : '';
+
+  z.innerHTML =
+    fileNote + banners +
+    '<div style="text-align:left;width:100%">'+
+    '<div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:.75rem">'+
+    (Object.keys(prefill).length > 0 ? 'Review and confirm your figures (R)' : "Enter your last month's figures (R)")+
+    '</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px">'+
+    numField('nf-rev',   'Monthly Revenue',      'e.g. 250000',  prefill['nf-rev'],   missing.includes('Monthly Revenue'))+
+    numField('nf-cos',   'Cost of Sales',        'e.g. 160000',  prefill['nf-cos'],   missing.includes('Cost of Sales'))+
+    numField('nf-opex',  'Operating Expenses',   'e.g. 45000',   prefill['nf-opex'],  missing.includes('Operating Expenses'))+
+    numField('nf-np',    'Net Profit',           'e.g. 20000',   prefill['nf-np'],    missing.includes('Net Profit'))+
+    numField('nf-ca',    'Current Assets',       'e.g. 180000',  prefill['nf-ca'],    missing.includes('Current Assets'))+
+    numField('nf-cl',    'Current Liabilities',  'e.g. 120000',  prefill['nf-cl'],    missing.includes('Current Liabilities'))+
+    numField('nf-ar',    'Accounts Receivable',  'e.g. 95000',   prefill['nf-ar'],    missing.includes('Accounts Receivable'))+
+    numField('nf-ap',    'Accounts Payable',     'e.g. 60000',   prefill['nf-ap'],    missing.includes('Accounts Payable'))+
+    numField('nf-inv',   'Inventory',            'e.g. 30000',   prefill['nf-inv'],   missing.includes('Inventory'))+
+    numField('nf-debt',  'Total Debt',           'e.g. 80000',   prefill['nf-debt'],  missing.includes('Total Debt'))+
+    numField('nf-eq',    'Total Equity',         'e.g. 100000',  prefill['nf-eq'],    missing.includes('Total Equity'))+
+    numField('nf-annrev','Annual Revenue',       'e.g. 3000000', prefill['nf-annrev'],missing.includes('Annual Revenue'))+
+    '</div>'+
+    '<button onclick="runDemoAnalyse()" style="margin-top:12px;width:100%;padding:10px;background:var(--orange);color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;font-family:Helvetica,Arial,sans-serif">Calculate my financial health score &rarr;</button>'+
+    '<div id="nf-error" style="font-size:11px;color:#c0392b;margin-top:6px;display:none"></div>'+
+    '</div>';
+}
+
+function numField(id, label, placeholder, prefillVal, isMissing){
+  var hasPrefill = prefillVal !== undefined && prefillVal !== null;
+  var borderColor = isMissing  ? '1px solid #fca5a5' :
+                   hasPrefill  ? '1px solid #6ee7b7' : '1px solid var(--border)';
+  var bgColor     = isMissing  ? '#fff5f5' :
+                   hasPrefill  ? '#f0fdf4' : 'var(--bg)';
+  var valAttr     = hasPrefill ? ' value="'+prefillVal+'"' : '';
+  return '<div><label style="display:block;font-size:10px;color:var(--muted);margin-bottom:2px">'+
+    label+(isMissing?' <span style="color:#c0392b">*</span>':'')+'</label>'+
+    '<input id="'+id+'" type="number" placeholder="'+placeholder+'"'+valAttr+
+    ' style="width:100%;padding:5px 8px;border:'+borderColor+';border-radius:5px;font-size:12px;background:'+bgColor+';color:var(--text);font-family:Helvetica,Arial,sans-serif;box-sizing:border-box"></div>';
+}
+
+function numVal(id){return parseFloat(document.getElementById(id)?.value)||0;}
+
+
+
+
+function renderDemoScore(r, sourceFileName){
+  _lastAnalysisResult = r;
+  _lastFileName = sourceFileName || null;
+  var ratios=r.ratios;
+  var pct=r.score;
+  var colour=r.colour;
+  var colMap={green:'var(--green)',amber:'var(--amber-c)',orange:'#e67e22',red:'var(--red-c)'};
+  var badgeMap={green:'&#128994; HEALTHY',amber:'&#127993; WATCH',orange:'&#128992; ELEVATED',red:'&#128308; CRITICAL'};
+  var bgMap={green:'#d1fae5',amber:'#fef3c7',orange:'#fde8d0',red:'#fee2e2'};
+  var txtMap={green:'#065f46',amber:'#92400e',orange:'#9a3412',red:'#991b1b'};
+  var col=colMap[colour]||'var(--amber-c)';
+  var badge=badgeMap[colour]||'&#127993; WATCH';
+
+  // Activate the panel
+  var sp=document.getElementById('score-preview');
+  if(sp){sp.style.opacity='1';sp.style.pointerEvents='auto';}
+
+  // Header
+  var tEl=document.getElementById('sp-title');if(tEl)tEl.textContent='Your Business \u2014 Live Analysis';
+  var sEl=document.getElementById('sp-sub');if(sEl)sEl.textContent='Analysis complete \u00b7 '+r.score+'/100 health score';
+  var bEl=document.getElementById('sp-badge');
+  if(bEl){bEl.innerHTML=badge;bEl.style.opacity='1';bEl.style.background=bgMap[colour]||'#fef3c7';bEl.style.color=txtMap[colour]||'#92400e';}
+
+  // Risk bar
+  var fill=document.getElementById('risk-fill');
+  if(fill){fill.style.background=col;setTimeout(function(){fill.style.width=Math.round(pct)+'%';},50);}
+  var scoreLabel=document.getElementById('risk-score-label');
+  if(scoreLabel)scoreLabel.textContent=Math.round(pct)+' / 100';
+
+  // Ratio grid
+  var grid=document.getElementById('ratio-grid');
+  if(grid){
+    grid.innerHTML=
+      ratioCard('Gross Margin',Math.round(ratios.grossMargin)+'%',
+        ratios.grossMargin>=40?'ok':'warn',ratios.grossMargin>=40?'Healthy':'Below 40% target')+
+      ratioCard('Current Ratio',ratios.currentRatio.toFixed(1),
+        ratios.currentRatio>=1.5?'ok':ratios.currentRatio>=1?'warn':'bad',
+        ratios.currentRatio>=1.5?'Healthy':ratios.currentRatio>=1?'Watch \u2014 below 1.5':'Critical \u2014 below 1.0')+
+      ratioCard('Debtor Days',Math.round(ratios.dso)+'d',
+        ratios.dso<=30?'ok':ratios.dso<=45?'warn':'bad',
+        ratios.dso<=30?'Healthy':ratios.dso<=45?'Watch':'Critical \u2014 above 30d')+
+      ratioCard('Net Margin',Math.round(ratios.netMargin)+'%',
+        ratios.netMargin>=10?'ok':ratios.netMargin>=5?'warn':'bad',
+        ratios.netMargin>=10?'Healthy':ratios.netMargin>=5?'Watch \u2014 below 10%':'Low margin risk')+
+      ratioCard('Debt-to-Equity',ratios.debtToEquity.toFixed(1),
+        ratios.debtToEquity<=1?'ok':ratios.debtToEquity<=1.5?'warn':'bad',
+        ratios.debtToEquity<=1?'Healthy':ratios.debtToEquity<=1.5?'Watch':'High leverage')+
+      ratioCard('Cash Conv. Cycle',Math.round(ratios.cashConversionCycle)+'d',
+        ratios.cashConversionCycle<=20?'ok':ratios.cashConversionCycle<=40?'warn':'bad',
+        ratios.cashConversionCycle<=20?'Healthy':ratios.cashConversionCycle<=40?'Cash gap risk':'Critical cash gap');
+  }
+
+  // Recommendation
+  var rec=sp?sp.querySelector('.health-rec-text'):null;
+  if(rec)rec.textContent=buildRec(ratios);
+
+  // Reset upload zone
+  var z=document.getElementById('upload-zone');
+  if(z)z.innerHTML='<span class="upload-icon" style="color:'+col+'">&#10003;</span>'+
+    '<div class="upload-title" style="color:'+col+'">Analysis complete \u2014 '+r.rating+'</div>'+
+    '<div class="upload-sub">Your report downloads to your device — sign in to save it automatically and get Billi’s full action plan.</div>';
+
+  if(sp)sp.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function ratioCard(label,val,status,note){
+  return '<div class="ratio-item"><div class="ratio-label">'+label+'</div><div class="ratio-value">'+val+'</div><div class="ratio-'+status+'">&#9679; '+note+'</div></div>';
+}
+
+function buildRec(r){
+  var issues=[];
+  if(r.dso>30)issues.push('collecting in '+Math.round(r.dso)+' days — above the 30-day target');
+  if(r.dpo<r.dso)issues.push('paying suppliers in '+Math.round(r.dpo)+' days but collecting in '+Math.round(r.dso)+' — a '+Math.round(r.cashConversionCycle)+'-day cash gap');
+  if(r.currentRatio<1.5)issues.push('current ratio of '+r.currentRatio.toFixed(1)+' — short-term liquidity needs attention');
+  if(r.grossMargin<40)issues.push('gross margin of '+Math.round(r.grossMargin)+'% — below the 40% benchmark');
+  if(issues.length===0)return 'Your ratios are in good shape. Sign up to get Billi\'s 90-day growth plan.';
+  return 'Your biggest risks: '+issues.slice(0,2).join('; ')+'. Sign up to get Billi\'s full action plan.';
+}
+
+// ── HEALTH REPORT DOWNLOAD ──
+// Stores last analysis result so download works after renderDemoScore
+var _lastAnalysisResult = null;
+var _lastFileName = null;
+
+function downloadHealthReport(){
+  if(!_lastAnalysisResult){
+    // No analysis run yet — prompt them to calculate first
+    var errEl = document.getElementById('nf-error');
+    if(errEl){ errEl.textContent = 'Run your calculation first, then download the report.'; errEl.style.display='block'; }
+    return;
+  }
+  var r = _lastAnalysisResult;
+  var rat = r.ratios;
+
+  // ── Filename: "Fin Report YYYY-MM-DD HH-MM" ──
+  var now  = new Date();
+  var pad  = function(n){ return String(n).padStart(2,'0'); };
+  var dateStr = now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
+  var timeStr = pad(now.getHours())+'-'+pad(now.getMinutes());
+  var srcName = _lastFileName ? _lastFileName.replace(/\.[^.]+$/,'') : 'Manual Entry';
+  var fname   = 'Fin Report '+dateStr+' '+timeStr+'.html';
+
+  // ── Colour map ──
+  var colMap  = {green:'#16a34a',amber:'#d97706',orange:'#ea580c',red:'#dc2626'};
+  var bgMap   = {green:'#dcfce7',amber:'#fef3c7',orange:'#ffedd5',red:'#fee2e2'};
+  var lblMap  = {green:'LOW RISK',amber:'MODERATE RISK',orange:'ELEVATED RISK',red:'CRITICAL RISK'};
+  var col = colMap[r.colour]||'#d97706';
+  var bg  = bgMap[r.colour]||'#fef3c7';
+  var lbl = lblMap[r.colour]||'ELEVATED RISK';
+
+  function rCard(label, val, status, note){
+    var sc = status==='ok'?'#16a34a':status==='warn'?'#d97706':'#dc2626';
+    var sb = status==='ok'?'#dcfce7':status==='warn'?'#fef3c7':'#fee2e2';
+    return '<div style="background:'+sb+';border:1px solid '+sc+';border-radius:8px;padding:12px 14px">'+
+      '<div style="font-size:11px;color:#555;margin-bottom:2px">'+label+'</div>'+
+      '<div style="font-size:20px;font-weight:800;color:'+sc+'">'+val+'</div>'+
+      '<div style="font-size:10px;color:'+sc+';margin-top:2px">&#9679; '+note+'</div>'+
+      '</div>';
+  }
+
+  var gm  = Math.round(rat.grossMargin);
+  var nm  = Math.round(rat.netMargin);
+  var dso = Math.round(rat.dso);
+  var ccc = Math.round(rat.cashConversionCycle);
+  var dte = rat.debtToEquity.toFixed(1);
+  var cr  = rat.currentRatio.toFixed(1);
+
+  var html = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">'+
+    '<meta name="viewport" content="width=device-width,initial-scale=1">'+
+    '<title>'+fname.replace('.html','')+'</title>'+
+    '<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Helvetica,Arial,sans-serif;background:#f5f0eb;color:#1a1614;padding:0}'+
+    '.wrap{max-width:700px;margin:0 auto;background:#fff;min-height:100vh}'+
+    '.hdr{background:#c45200;padding:28px 32px}'+
+    '.hdr h1{color:#fff;font-size:22px;font-weight:800;letter-spacing:.02em}'+
+    '.hdr p{color:#ffd5bb;font-size:12px;margin-top:4px}'+
+    '.body{padding:28px 32px}'+
+    '.score-box{background:'+bg+';border:2px solid '+col+';border-radius:12px;padding:20px 24px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between}'+
+    '.score-num{font-size:52px;font-weight:900;color:'+col+';line-height:1}'+
+    '.score-lbl{font-size:13px;font-weight:700;color:'+col+'}'+
+    '.score-sub{font-size:11px;color:#555;margin-top:4px}'+
+    '.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px}'+
+    '.sec{font-size:11px;font-weight:700;color:#888;letter-spacing:.08em;margin:20px 0 10px;text-transform:uppercase}'+
+    '.rec{background:#fff7ed;border:1px solid #fb923c;border-radius:10px;padding:16px 18px;margin-bottom:24px}'+
+    '.rec-title{font-size:12px;font-weight:700;color:#c45200;margin-bottom:6px}'+
+    '.rec-body{font-size:13px;color:#333;line-height:1.7}'+
+    '.cta{background:#c45200;color:#fff;border-radius:10px;padding:20px 24px;text-align:center;margin-bottom:24px}'+
+    '.cta h2{font-size:16px;font-weight:800;margin-bottom:6px}'+
+    '.cta p{font-size:12px;color:#ffd5bb;margin-bottom:14px}'+
+    '.cta a{background:#fff;color:#c45200;font-weight:800;font-size:13px;padding:10px 28px;border-radius:7px;text-decoration:none;display:inline-block}'+
+    '.bar-wrap{background:#e5e7eb;border-radius:4px;height:10px;margin:10px 0 4px;overflow:hidden}'+
+    '.bar-fill{height:100%;border-radius:4px;background:'+col+';width:'+Math.round(r.score)+'%;transition:width .6s}'+
+    '.note{background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:12px 14px;font-size:11px;color:#555;line-height:1.6;margin-bottom:16px}'+
+    '.ftr{padding:16px 32px;border-top:1px solid #eee;font-size:10px;color:#999;text-align:center}'+
+    '@media(max-width:500px){.grid{grid-template-columns:1fr 1fr}.score-num{font-size:36px}}</style></head><body>'+
+    '<div class="wrap">'+
+    '<div class="hdr">'+
+      '<h1>Financial Health Report</h1>'+
+      '<p>Source: '+srcName+' &nbsp;&middot;&nbsp; Generated: '+dateStr+' '+pad(now.getHours())+':'+pad(now.getMinutes())+' &nbsp;&middot;&nbsp; Powered by Billi &middot; billsource.ai</p>'+
+    '</div>'+
+    '<div class="body">'+
+      '<div class="score-box">'+
+        '<div><div class="score-lbl">'+lbl+'</div><div class="score-num">'+Math.round(r.score)+'</div><div class="score-sub">out of 100 &nbsp;&middot;&nbsp; '+r.rating+'</div></div>'+
+        '<div style="text-align:right"><div class="bar-wrap" style="width:180px"><div class="bar-fill"></div></div><div style="font-size:10px;color:#777;margin-top:2px">Risk Score '+Math.round(r.score)+' / 100</div></div>'+
+      '</div>'+
+      '<div class="sec">Income statement ratios</div>'+
+      '<div class="grid">'+
+        rCard('Gross Margin', gm+'%',  gm>=40?'ok':'warn',  gm>=40?'Healthy':'Below 40% target')+
+        rCard('Net Margin',   nm+'%',  nm>=10?'ok':nm>=0?'warn':'bad', nm>=10?'Healthy':nm>=0?'Watch':'Loss-making')+
+        rCard('Operating Margin', Math.round(rat.operatingMargin)+'%', rat.operatingMargin>=10?'ok':rat.operatingMargin>=0?'warn':'bad', rat.operatingMargin>=10?'Healthy':rat.operatingMargin>=0?'Watch':'Negative')+
+      '</div>'+
+      '<div class="sec">Balance sheet ratios</div>'+
+      '<div class="grid">'+
+        rCard('Current Ratio',  cr,    cr>=1.5?'ok':cr>=1?'warn':'bad',  cr>=1.5?'Healthy':cr>=1?'Watch \u2014 below 1.5':'Critical \u2014 below 1.0')+
+        rCard('Debt-to-Equity', dte,   dte<=1?'ok':dte<=1.5?'warn':'bad', dte<=1?'Healthy':dte<=1.5?'Watch':'High leverage')+
+        rCard('Return on Equity', Math.round(rat.returnOnEquity)+'%', rat.returnOnEquity>=15?'ok':rat.returnOnEquity>=5?'warn':'bad', rat.returnOnEquity>=15?'Healthy':rat.returnOnEquity>=5?'Watch':'Low returns')+
+      '</div>'+
+      '<div class="sec">Cash &amp; efficiency ratios</div>'+
+      '<div class="grid">'+
+        rCard('Debtor Days',      dso+'d', dso<=30?'ok':dso<=45?'warn':'bad',  dso<=30?'Healthy':dso<=45?'Watch':'Critical \u2014 above 30d')+
+        rCard('Creditor Days',    Math.round(rat.dpo)+'d', rat.dpo>=30?'ok':'warn',  rat.dpo>=30?'Healthy':'Paying faster than collecting')+
+        rCard('Cash Conv. Cycle', ccc+'d', ccc<=20?'ok':ccc<=40?'warn':'bad',  ccc<=20?'Healthy':ccc<=40?'Cash gap risk':'Critical cash gap')+
+      '</div>'+
+      '<div class="rec">'+
+        '<div class="rec-title">Billi\u2019s top recommendation</div>'+
+        '<div class="rec-body">'+buildRec(rat)+'</div>'+
+      '</div>'+
+      '<div class="note">'+
+        '<strong>About this report:</strong> Figures sourced from '+srcName+'. '+
+        'Ratios calculated using the Billi financial engine (ISO 25010 aligned). '+
+        'This snapshot is for internal use only — sign up at billsource.ai to save your full history, track changes over time, and get a complete Billi action plan.'+
+      '</div>'+
+      '<div class="cta">'+
+        '<h2>Get your full action plan</h2>'+
+        '<p>Sign up free &mdash; Billi builds a 90-day plan from your actual numbers. No card required.</p>'+
+        '<a href="https://billsource.ai">Start free at billsource.ai &rarr;</a>'+
+      '</div>'+
+    '</div>'+
+    '<div class="ftr">Billi \u00b7 Business Associate Intelligence \u00b7 billsource.ai \u00b7 &copy; 2026 AnyABEX (Pty) Ltd \u00b7 POPIA compliant</div>'+
+    '</div>
 function toggleMobileMenu(){
-  document.getElementById('mobile-nav').classList.toggle('open');
+document.getElementById('mobile-nav').classList.toggle('open');
 }
-
 function closeMobileMenu(){
-  document.getElementById('mobile-nav').classList.remove('open');
+document.getElementById('mobile-nav').classList.remove('open');
 }
+</body></html>';
 
-function openLogin(){
-  document.getElementById('login-modal').style.display='flex';
+  // ── Trigger download ──
+  var blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  a.href   = url;
+  a.download = fname;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+
+  // After download — nudge sign-up with context
+  setTimeout(function(){ openLogin('report_downloaded'); }, 1200);
 }
-
-function closeLogin(){
-  document.getElementById('login-modal').style.display='none';
-}
-
-function googleSignIn(){
-  // Redirect to Google OAuth
-  window.location.href='/api/auth/google';
+function openLogin(ctx){
+  var modal = document.getElementById('login-modal');
+  var notice = document.getElementById('login-report-notice');
+  if(ctx === 'report_downloaded'){
+    if(!notice){
+      notice = document.createElement('div');
+      notice.id = 'login-report-notice';
+      notice.style.cssText = 'background:#fff7ed;border:0.5px solid #fb923c;border-radius:10px;padding:10px 13px;margin-bottom:14px;font-size:12px;color:#9a3412;line-height:1.55;text-align:left';
+      notice.innerHTML = '<strong>&#11015; Your report has been downloaded</strong><br>The file is saved to your device as <em>"Fin Report …"</em>. Once you sign in, open <strong>My Reports → ⬆ Upload</strong> in the sidebar to save it to your account — or simply re-run the analysis from the chat to generate a new report that saves automatically.';
+      var loginBox = document.getElementById('login-box');
+      // Insert before the avatar image (first child)
+      loginBox.insertBefore(notice, loginBox.firstChild);
+    } else {
+      notice.style.display = '';
+    }
+  } else {
+    // Hide the notice if modal opened without download context
+    if(notice) notice.style.display = 'none';
+  }
+  modal.classList.add('open');
 }
 
 async function emailSignIn(){
-  var email=document.getElementById('email-input').value.trim();
+  var email=(document.getElementById('email-input').value||'').trim();
   var errEl=document.getElementById('email-error');
-  if(!email||!email.includes('@')){
-    errEl.textContent='Please enter a valid email address.';
-    errEl.style.display='block';
-    return;
+  if(!errEl){
+    errEl=document.createElement('div');
+    errEl.id='email-error';
+    errEl.style.cssText='font-size:11px;color:#c0392b;margin-top:6px;text-align:center;display:none';
+    document.getElementById('email-input').parentNode.appendChild(errEl);
   }
+  if(!email||!email.includes('@')){errEl.textContent='Please enter a valid email address.';errEl.style.display='block';return;}
   errEl.style.display='none';
+  var btn=document.querySelector('#login-box .btn-primary');
+  if(btn){btn.disabled=true;btn.textContent='Sending\u2026';}
   try{
     var res=await fetch('/api/magic-link',{
       method:'POST',
@@ -459,30 +2273,47 @@ async function emailSignIn(){
     if(!res.ok||data.error){
       errEl.textContent=data.error||'Could not send link. Try Google sign-in instead.';
       errEl.style.display='block';
+      if(btn){btn.disabled=false;btn.textContent='Send magic link';}
       return;
     }
-    document.querySelector('div[style*="Sign in to Billi"]').parentElement.innerHTML=
-      '<div style="text-align:center"><div style="font-size:3rem;margin-bottom:1rem">📧</div>'+
-      '<div style="font-size:1.3rem;font-weight:700;margin-bottom:0.5rem">Check your inbox</div>'+
-      '<div style="font-size:0.9rem;color:var(--muted)">Magic link sent to <strong>'+email+'</strong><br>'+
-      'Click it to access Billi — no password needed.<br>'+
-      '<span style="font-size:11px">Link expires in 30 minutes.</span></div></div>';
+    document.getElementById('login-box').innerHTML=
+      '<div style="font-size:3rem;margin-bottom:1rem">&#9993;</div>'+
+      '<div class="login-title">Check your inbox</div>'+
+      '<div class="login-sub" style="margin-top:.5rem">Magic link sent to <strong>'+email+'</strong><br>Click it to access Billi — no password needed.<br><span style="font-size:11px;color:var(--muted)">Link expires in 30 minutes.</span></div>';
   }catch(e){
-    errEl.textContent='Network error — please try again or use Google sign-in.';
-    errEl.style.display='block';
+    errEl.textContent='Network error — please try again or use Google sign-in.';errEl.style.display='block';
+    if(btn){btn.disabled=false;btn.textContent='Send magic link';}
   }
 }
 
-// Close modal when clicking outside
-document.getElementById('login-modal').addEventListener('click',function(e){
-  if(e.target===this) closeLogin();
-});
-
-// Dark mode on preference
-if(window.matchMedia('(prefers-color-scheme:dark)').matches){
-  document.body.classList.remove('light');
-  document.body.classList.add('dark');
+// ── MERCH ──
+var cartItem='',cartSizes={};
+function openCart(name,item,sizes){
+  cartItem=item;cartSizes=sizes;
+  document.getElementById('cart-product-name').textContent=name;
+  document.getElementById('cart-error').style.display='none';
+  var btn=document.getElementById('cart-pay-btn');btn.disabled=false;btn.textContent='Pay with Paystack \u2192';
+  var sel=document.getElementById('cart-size-select');sel.innerHTML='';
+  Object.entries(sizes).forEach(function(e){var o=document.createElement('option');o.value=e[0];o.textContent=e[1];sel.appendChild(o);});
+  document.getElementById('cart-modal').classList.add('open');
+  document.getElementById('cart-email').focus();
+}
+function closeCart(){document.getElementById('cart-modal').classList.remove('open');}
+async function checkoutMerch(){
+  var email=document.getElementById('cart-email').value.trim();
+  var size=document.getElementById('cart-size-select').value;
+  var errEl=document.getElementById('cart-error');
+  var btn=document.getElementById('cart-pay-btn');
+  if(!email||!email.includes('@')){errEl.textContent='Please enter a valid email address.';errEl.style.display='block';return;}
+  btn.disabled=true;btn.textContent='Redirecting to Paystack\u2026';errEl.style.display='none';
+  try{
+    var res=await fetch('/api/merch-checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({item:cartItem,size:size,email:email})});
+    var data=await res.json();
+    if(data.url){window.location.href=data.url;}
+    else{errEl.textContent=data.error||'Checkout failed. Please try again.';errEl.style.display='block';btn.disabled=false;btn.textContent='Pay with Paystack \u2192';}
+  }catch(e){errEl.textContent='Network error. Please try again.';errEl.style.display='block';btn.disabled=false;btn.textContent='Pay with Paystack \u2192';}
 }
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </body>
 </html>
