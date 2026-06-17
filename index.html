@@ -1517,9 +1517,18 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
+// ── ENSURE FUNCTIONS ARE GLOBAL ──
+window.showPage = window.showPage || null;
+window.openLogin = window.openLogin || null;
+window.toggleMobileMenu = window.toggleMobileMenu || null;
+window.closeMobileMenu = window.closeMobileMenu || null;
+
 // ── THEME ──
+console.log('=== BILLI SCRIPT LOADING ===');
 var body=document.body;
 var themeBtn=document.getElementById('themeBtn');
+console.log('showPage function will be defined at line 1538+');
+console.log('openLogin function will be defined at line 2287+');
 // Start with light mode (day/sun)
 if(!body.classList.contains('light') && !body.classList.contains('dark')){
   body.classList.add('light');
@@ -2383,6 +2392,15 @@ function toggleTheme(){
   document.body.classList.toggle('light');
   document.body.classList.toggle('dark');
 }
+
+// ── VERIFY FUNCTIONS ARE DEFINED ──
+console.log('showPage defined?', typeof showPage !== 'undefined');
+console.log('openLogin defined?', typeof openLogin !== 'undefined');
+console.log('toggleMobileMenu defined?', typeof toggleMobileMenu !== 'undefined');
+console.log('closeMobileMenu defined?', typeof closeMobileMenu !== 'undefined');
+console.log('window.showPage:', typeof window.showPage);
+console.log('window.openLogin:', typeof window.openLogin);
+console.log('=== BILLI SCRIPT LOADED SUCCESSFULLY ===');
 </script>
 </body>
 </html>
