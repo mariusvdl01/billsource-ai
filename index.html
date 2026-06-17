@@ -73,7 +73,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:0 2.5r
 .nav-menu.mobile{display:none;position:absolute;top:60px;left:0;right:0;flex-direction:column;background:var(--nav-bg);border-bottom:0.5px solid var(--border);backdrop-filter:blur(10px);z-index:199;max-height:calc(100vh - 60px);overflow-y:auto;padding:0}
 .nav-menu.mobile.open{display:flex}
 .nav-menu.mobile .nav-item{width:100%;text-align:left;padding:12px 20px;border-radius:0;border-bottom:0.5px solid var(--border)}
-@media(max-width:780px){.nav-menu:not(.mobile){display:none}.menu-toggle{display:flex}nav{padding:0 1.25rem}}
+@media(max-width:780px){.nav-menu:not(.mobile){display:none}.menu-toggle{display:flex!important;order:2}.theme-toggle{display:none}.btn-ghost{display:none}.btn-primary{display:none}nav{padding:0 1.25rem;justify-content:space-between}.nav-right{order:1}}
 
 /* ── PAGES ── */
 .page{display:none}.page.active{display:block}
