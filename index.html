@@ -2270,14 +2270,15 @@ function downloadHealthReport(){
     '</div>'+
     '<div class="ftr">Billi \u00b7 Business Associate Intelligence \u00b7 billsource.ai \u00b7 &copy; 2026 AnyABEX (Pty) Ltd \u00b7 POPIA compliant</div>'+
     '</div>'+
-    '</div>';
+    '</div>'+
+    '</body></html>';
+
 function toggleMobileMenu(){
 document.getElementById('mobile-nav').classList.toggle('open');
 }
 function closeMobileMenu(){
 document.getElementById('mobile-nav').classList.remove('open');
 }
-</body></html>';
 
   // ── Trigger download ──
   var blob = new Blob([html], {type:'text/html;charset=utf-8'});
