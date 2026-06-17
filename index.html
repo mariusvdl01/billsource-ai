@@ -1,10 +1,4 @@
-<!DOC
-  <div class="nav-menu mobile" id="mobile-nav">
-    <button class="nav-item" onclick="switchPage('home');closeMobileMenu()">Home</button>
-    <button class="nav-item" onclick="switchPage('about');closeMobileMenu()">About</button>
-    <button class="nav-item" onclick="window.location.href='/vision-billi-symbiotic-future.html'">Vision</button>
-    <button class="nav-item" onclick="switchPage('faqs');closeMobileMenu()">FAQs</button>
-  </div>TYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -551,16 +545,23 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
   </div>
   <div class="nav-menu">
     <button class="nav-item active" id="nav-home"  onclick="showPage('home')">Home</button>
-<button class="menu-toggle" id="menu-toggle" onclick="toggleMobileMenu()" title="Menu">☰</button>
     <button class="nav-item"        id="nav-cost"  onclick="showPage('cost')">Cost analysis</button>
     <button class="nav-item"        id="nav-demo"  onclick="showPage('demo')">Demo &amp; report</button>
     <button class="nav-item"        id="nav-merch" onclick="showPage('merch')">Merch</button>
+    <a class="nav-item" href="/vision-billi-symbiotic-future.html" style="text-decoration:none;display:flex;align-items:center">The Symbiotic Future</a>
+  </div>
+  <div class="nav-menu mobile" id="mobile-nav">
+    <button class="nav-item" id="nav-home-m"  onclick="showPage('home');closeMobileMenu()">Home</button>
+    <button class="nav-item" id="nav-cost-m"  onclick="showPage('cost');closeMobileMenu()">Cost analysis</button>
+    <button class="nav-item" id="nav-demo-m"  onclick="showPage('demo');closeMobileMenu()">Demo &amp; report</button>
+    <button class="nav-item" id="nav-merch-m" onclick="showPage('merch');closeMobileMenu()">Merch</button>
     <a class="nav-item" href="/vision-billi-symbiotic-future.html" style="text-decoration:none;display:flex;align-items:center">The Symbiotic Future</a>
   </div>
   <div class="nav-right">
     <button class="theme-toggle" id="themeBtn">&#9788;</button>
     <button class="btn-ghost" onclick="openLogin()">Sign in</button>
     <button class="btn-primary" onclick="openLogin()">Start free</button>
+    <button class="menu-toggle" id="menu-toggle" onclick="toggleMobileMenu()" title="Menu">☰</button>
   </div>
 </nav>
 
