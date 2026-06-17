@@ -1121,6 +1121,7 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
         <div class="plan-name">Professional</div><div class="plan-price">R149 <span>/mo</span></div>
         <span class="roi-chip" id="pro-chip">Typical return: R25,152/mo &rarr; 168x ROI</span>
         <div class="plan-msgs">Bean Counter &middot; Rule Book &middot; The IT Guy &middot; 300 messages</div>
+        <div class="plan-feature"><span class="check">&#10003;</span>Everything in Student</div>
         <div class="plan-feature"><span class="check">&#10003;</span>Bean Counter &mdash; full suite incl. dunning letters</div>
         <div class="plan-feature"><span class="check">&#10003;</span>The Rule Book &mdash; POPIA, NCA, B-BBEE, CIPC</div>
         <div class="plan-feature"><span class="check">&#10003;</span>The IT Guy &mdash; 1st &amp; 2nd line + Tech Guide</div>
@@ -1131,6 +1132,7 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
         <div class="plan-name">Business</div><div class="plan-price">R299 <span>/mo</span></div>
         <div class="plan-msgs">4 advisors &middot; 1,000 messages &middot; upload your own financials</div>
         <span class="roi-chip">Upload any statement &rarr; get your Digital Index score</span>
+        <div class="plan-feature"><span class="check">&#10003;</span>Everything in Professional</div>
         <div class="plan-feature"><span class="check">&#10003;</span>Everything in Professional</div>
         <div class="plan-feature"><span class="check">&#10003;</span>Brand Guru &mdash; marketing, positioning &amp; social strategy</div>
         <div class="plan-feature"><span class="check">&#10003;</span>Digital Index (DI) score &mdash; your business rated 0&ndash;100</div>
@@ -1144,10 +1146,27 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
         <div class="plan-name" style="color:var(--orange)">Enterprise</div><div class="plan-price">R599 <span>/mo</span></div>
         <div class="plan-msgs">All 6 advisors &middot; The IT Guy (all 3 lines) &middot; 5,000 messages</div>
         <div class="plan-sso">Billsource Medium Business Plan (R150/mo value) &mdash; SSO</div>
+        <div class="plan-feature"><span class="check">&#10003;</span>Everything in Business</div>
         <div class="plan-feature"><span class="check">&#10003;</span>All 6 advisors &mdash; Deal Maker + The Fixer unlocked</div>
         <div class="plan-feature"><span class="check">&#10003;</span>Deliverable packs &mdash; R19/advisor</div>
         <div class="plan-feature"><span class="check">&#10003;</span>Enterprise SSO &rarr; billsource.com/business/upgrade</div>
         <button class="plan-btn filled" onclick="openLogin()">Go Enterprise</button>
+      </div>
+      <div class="plan-card" style="border-color:var(--orange);background:rgba(232,98,26,0.05)">
+        <div class="plan-badge-tag" style="background:var(--orange)">Superintelligence</div>
+        <div class="plan-name" style="color:var(--orange)">Cognitive Super Intelligence</div><div class="plan-price" style="color:var(--orange)">R899 <span>/mo</span></div>
+        <div class="plan-msgs">All 6 Billi Agents + Cognitive Architecture</div>
+        <div style="background:rgba(232,98,26,0.1);border-radius:8px;padding:0.75rem;margin:1rem 0;text-align:center">
+          <div style="font-size:0.9rem;color:var(--orange);font-weight:700">92.7% Conviction</div>
+          <div style="font-size:0.75rem;color:var(--muted);margin-top:0.25rem">HIGH Confidence • LOW Uncertainty</div>
+        </div>
+        <div class="plan-feature"><span class="check" style="color:var(--orange)">✓</span>Everything in Enterprise</div>
+        <div class="plan-feature"><span class="check" style="color:var(--orange)">✓</span>Cognitive Architecture with pattern recognition</div>
+        <div class="plan-feature"><span class="check" style="color:var(--orange)">✓</span>All 6 agents with lifecycle intelligence</div>
+        <div class="plan-feature"><span class="check" style="color:var(--orange)">✓</span>Transparent reasoning &mdash; see why</div>
+        <div class="plan-feature"><span class="check" style="color:var(--orange)">✓</span>Everything in Enterprise +</div>
+        <div class="plan-feature"><span class="check" style="color:var(--orange)">✓</span>Priority support &amp; custom training</div>
+        <button class="plan-btn filled" style="background:var(--orange)" onclick="window.location.href='/vision-billi-symbiotic-future.html#pricing-section'">See full plan</button>
       </div>
     </div>
     <div style="border:0.5px solid var(--border);border-radius:10px;padding:.875rem 1.25rem;margin-top:1.25rem;max-width:1000px;margin-left:auto;margin-right:auto;background:var(--bg2)">
@@ -2161,7 +2180,13 @@ function downloadHealthReport(){
     '.bar-fill{height:100%;border-radius:4px;background:'+col+';width:'+Math.round(r.score)+'%;transition:width .6s}'+
     '.note{background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:12px 14px;font-size:11px;color:#555;line-height:1.6;margin-bottom:16px}'+
     '.ftr{padding:16px 32px;border-top:1px solid #eee;font-size:10px;color:#999;text-align:center}'+
-    '@media(max-width:500px){.grid{grid-template-columns:1fr 1fr}.score-num{font-size:36px}}</style></head><body>'+
+    '@media(max-width:500px){.grid{grid-template-columns:1fr 1fr}.score-num{font-size:36px}}
+/* Price card text containment */
+.pricing-card-container { max-width: 160px; margin: 0 auto; word-wrap: break-word; overflow-wrap: break-word; }
+.pricing-price { font-size: 2rem; font-weight: 700; line-height: 1.2; }
+.pricing-label { font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem; word-break: break-word; }
+.pricing-features { font-size: 0.85rem; line-height: 1.5; text-align: left; }
+</style></head><body>'+
     '<div class="wrap">'+
     '<div class="hdr">'+
       '<h1>Financial Health Report</h1>'+
