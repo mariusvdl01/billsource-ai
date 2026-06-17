@@ -1519,7 +1519,11 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
 // ── THEME ──
 var body=document.body;
 var themeBtn=document.getElementById('themeBtn');
-themeBtn.textContent='☽';
+// Start with light mode (day/sun)
+if(!body.classList.contains('light') && !body.classList.contains('dark')){
+  body.classList.add('light');
+}
+themeBtn.textContent=body.classList.contains('dark')?'\u263D':'\u2600';
 themeBtn.addEventListener('click',function(){
   var d=body.classList.contains('dark');
   body.classList.toggle('dark',!d);
@@ -2341,5 +2345,19 @@ async function checkoutMerch(){
 }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+function toggleMobileMenu(){
+  var nav = document.getElementById('mobile-nav');
+  nav.classList.toggle('open');
+}
+function closeMobileMenu(){
+  var nav = document.getElementById('mobile-nav');
+  nav.classList.remove('open');
+}
+function toggleTheme(){
+  document.body.classList.toggle('light');
+  document.body.classList.toggle('dark');
+}
+</script>
 </body>
 </html>
