@@ -1535,17 +1535,42 @@ themeBtn.addEventListener('click',function(){
 var PAGES = ['home','cost','demo','merch'];
 
 function showPage(id, pushState){
+  console.log('showPage called with:', id);
   if(PAGES.indexOf(id) === -1) id = 'home';
-  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
-  document.getElementById('page-'+id).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active')});
-  var ni=document.getElementById('nav-'+id);
-  if(ni) ni.classList.add('active');
+  
+  // Hide all pages
+  var allPages = document.querySelectorAll('.page');
+  allPages.forEach(function(p){
+    p.classList.remove('active');
+  });
+  
+  // Show target page
+  var targetPage = document.getElementById('page-'+id);
+  if(targetPage){
+    targetPage.classList.add('active');
+    console.log('Showing page:', 'page-'+id);
+  } else {
+    console.error('Page not found:', 'page-'+id);
+  }
+  
+  // Update nav active state
+  document.querySelectorAll('.nav-item').forEach(function(n){
+    n.classList.remove('active');
+  });
+  var navItem = document.getElementById('nav-'+id);
+  if(navItem) navItem.classList.add('active');
+  
+  // Also update mobile nav items
+  var navItemMobile = document.getElementById('nav-'+id+'-m');
+  if(navItemMobile) navItemMobile.classList.add('active');
+  
   if(pushState !== false){
     try{
       var hash = id === 'home' ? '' : '#'+id;
       history.pushState({page:id}, '', location.pathname + hash);
-    }catch(e){}  // silently ignore SecurityError in restricted contexts
+    }catch(e){
+      console.warn('pushState error:', e);
+    }
   }
   window.scrollTo({top:0,behavior:'instant'});
 }
