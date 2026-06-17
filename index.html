@@ -2368,21 +2368,21 @@ async function checkoutMerch(){
     else{errEl.textContent=data.error||'Checkout failed. Please try again.';errEl.style.display='block';btn.disabled=false;btn.textContent='Pay with Paystack \u2192';}
   }catch(e){errEl.textContent='Network error. Please try again.';errEl.style.display='block';btn.disabled=false;btn.textContent='Pay with Paystack \u2192';}
 }
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script>
+
+// ── MOBILE MENU ──
 function toggleMobileMenu(){
   var nav = document.getElementById('mobile-nav');
-  nav.classList.toggle('open');
+  if(nav) nav.classList.toggle('open');
 }
 function closeMobileMenu(){
   var nav = document.getElementById('mobile-nav');
-  nav.classList.remove('open');
+  if(nav) nav.classList.remove('open');
 }
 function toggleTheme(){
   document.body.classList.toggle('light');
   document.body.classList.toggle('dark');
 }
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </body>
 </html>
