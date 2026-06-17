@@ -71,7 +71,56 @@
             display: flex;
             gap: 15px;
             align-items: center;
+        
+
+        /* ──────── MOBILE HAMBURGER MENU ──────── */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #FF6B35;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 101;
         }
+
+        .nav-links.mobile {
+            display: none;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            flex-direction: column;
+            background: linear-gradient(180deg, rgba(10, 14, 39, 0.98) 0%, rgba(10, 14, 39, 0.95) 100%);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 107, 53, 0.1);
+            max-height: calc(100vh - 60px);
+            overflow-y: auto;
+        }
+
+        .nav-links.mobile.open {
+            display: flex;
+        }
+
+        .nav-links.mobile a {
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(255, 107, 53, 0.1);
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links:not(.mobile) {
+                display: none;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+
+            nav {
+                padding: 12px 15px;
+            }
+        }}
 
         .hero-content {
             position: absolute;
@@ -560,16 +609,26 @@
     <!-- Navigation -->
     <nav>
         <div class="logo">
-            <img src="billi-ai-core-sm.png" alt="Billi" style="width: 32px; height: 32px; display: inline-block; margin-right: 10px; vertical-align: middle;">
+            <img src="billi-ai-core-sm.png" alt="Billi" style="width:28px;height:28px;margin-right:4px;"/>
             Billi
         </div>
         <div class="nav-links">
+            <a href="/">Home</a>
             <a href="#problem">Problem</a>
             <a href="#solution">Solution</a>
-            <a href="#vision">Future</a>
-            <a href="#advanced">Advanced</a>
-            <a href="/" style="margin-left: 5px;">Back</a>
+            <a href="#future">Future</a>
+            <a href="#pricing-section">Pricing</a>
+            <a href="/terms.html">Terms</a>
         </div>
+        <div class="nav-links mobile" id="mobile-nav">
+            <a href="/" onclick="closeMobileMenu()">Home</a>
+            <a href="#problem" onclick="closeMobileMenu()">Problem</a>
+            <a href="#solution" onclick="closeMobileMenu()">Solution</a>
+            <a href="#future" onclick="closeMobileMenu()">Future</a>
+            <a href="#pricing-section" onclick="closeMobileMenu()">Pricing</a>
+            <a href="/terms.html" onclick="closeMobileMenu()">Terms</a>
+        </div>
+        <button class="menu-toggle" onclick="toggleMobileMenu()" id="menu-toggle">☰</button>
     </nav>
 
     <!-- ==================== HERO ==================== -->
@@ -889,5 +948,16 @@
             <a href="/trust.html">Trust & Governance</a>
         </p>
     </footer>
+
+
+    <script>
+        function toggleMobileMenu() {
+            document.getElementById('mobile-nav').classList.toggle('open');
+        }
+        
+        function closeMobileMenu() {
+            document.getElementById('mobile-nav').classList.remove('open');
+        }
+    </script>
 </body>
 </html>
