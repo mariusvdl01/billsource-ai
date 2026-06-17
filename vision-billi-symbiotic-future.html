@@ -71,7 +71,7 @@
             display: flex;
             gap: 15px;
             align-items: center;
-        
+        }
 
         /* ──────── MOBILE HAMBURGER MENU ──────── */
         .menu-toggle {
@@ -121,7 +121,7 @@
             nav {
                 padding: 12px 15px;
             }
-        }}
+        }
 
         .hero-content {
             position: absolute;
@@ -620,7 +620,7 @@
             <a href="#future">Future</a>
             <a href="#pricing-section">Pricing</a>
         </div>
-        <button class="theme-toggle" onclick="toggleTheme()" style="background:transparent;border:0.5px solid rgba(255,107,53,0.3);color:#FF6B35;width:34px;height:34px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;margin-right:8px" title="Toggle theme">🌙</button>
+        <button class="theme-toggle" onclick="toggleTheme()" style="background:transparent;border:0.5px solid rgba(255,107,53,0.3);color:#FF6B35;width:34px;height:34px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;margin-right:8px" title="Toggle theme">☀️</button>
         <button class="menu-toggle" onclick="toggleMobileMenu()" id="menu-toggle">☰</button>
     </nav>
 
@@ -944,22 +944,47 @@
 
 
     <script>
+        console.log('=== VISION PAGE SCRIPT LOADING ===');
+        
+        // Ensure light mode is set on body
+        document.body.classList.remove('dark');
+        document.body.classList.add('light');
+        
         function toggleTheme() {
+            console.log('toggleTheme called');
             document.body.classList.toggle('dark');
             document.body.classList.toggle('light');
+            var isDark = document.body.classList.contains('dark');
+            var themeBtn = document.querySelector('.theme-toggle');
+            if(themeBtn) {
+                themeBtn.textContent = isDark ? '🌙' : '☀️';
+            }
         }
         
         function toggleMobileMenu() {
+            console.log('toggleMobileMenu called');
             var nav = document.getElementById('mobile-nav');
-            nav.classList.toggle('open');
-            nav.classList.toggle('mobile');
+            if(nav) {
+                nav.classList.toggle('open');
+                nav.classList.toggle('mobile');
+            }
         }
         
         function closeMobileMenu() {
+            console.log('closeMobileMenu called');
             var nav = document.getElementById('mobile-nav');
-            nav.classList.remove('open');
-            nav.classList.remove('mobile');
+            if(nav) {
+                nav.classList.remove('open');
+                nav.classList.remove('mobile');
+            }
         }
+        
+        // Close mobile menu when clicking links
+        document.querySelectorAll('.nav-links.mobile a').forEach(function(link) {
+            link.addEventListener('click', closeMobileMenu);
+        });
+        
+        console.log('=== VISION PAGE SCRIPT LOADED SUCCESSFULLY ===');
     </script>
 </body>
 </html>
