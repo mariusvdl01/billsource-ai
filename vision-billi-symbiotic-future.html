@@ -67,7 +67,7 @@
         }
 
         body.light .hero {
-            background: linear-gradient(135deg, #f5f0eb 0%, #ede8e2 50%, #e8ddd6 100%) !important;
+            background: url('billi-hero-web.png') no-repeat center / contain, linear-gradient(135deg, #f5f0eb 0%, #ede8e2 50%, #e8ddd6 100%) !important;
         }
 
         body.light .hero-content h1,
@@ -91,6 +91,14 @@
 
         body.light a {
             color: #FF6B35;
+        }
+
+        body.light .nav-links a {
+            color: #FF6B35;
+        }
+
+        body.light .nav-links a:hover {
+            color: #FF8C5A;
         }
 
         .logo {
@@ -134,8 +142,9 @@
             z-index: 101;
         }
 
+        /* Desktop: nav-links visible, hamburger hidden */
         .nav-links.mobile {
-            display: none;
+            display: flex;
         }
 
         .nav-links.mobile.open {
@@ -160,8 +169,8 @@
         }
 
         @media (max-width: 768px) {
-            .nav-links:not(.mobile) {
-                display: none;
+            .nav-links {
+                display: none !important;
             }
             
             .menu-toggle {
