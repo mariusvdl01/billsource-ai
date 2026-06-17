@@ -1025,7 +1025,7 @@
             var nav = document.getElementById('mobile-nav');
             if(nav) {
                 nav.classList.toggle('open');
-                nav.classList.toggle('mobile');
+                console.log('mobile-nav open class toggled. Classes:', nav.className);
             }
         }
         
@@ -1034,7 +1034,6 @@
             var nav = document.getElementById('mobile-nav');
             if(nav) {
                 nav.classList.remove('open');
-                nav.classList.remove('mobile');
             }
         }
         
