@@ -902,6 +902,48 @@ const server = http.createServer(async (req, res) => {
     })); return;
   }
 
+  // ── /api/demo-chat — unauthenticated demo (max 3 per IP per hour) ───
+  if (pathname === '/api/demo-chat' && method === 'POST') {
+    const ip = getClientIp(req);
+    const demoKey = 'demo:' + ip;
+    if (!global._demoCount) global._demoCount = {};
+    if (!global._demoCount[demoKey]) global._demoCount[demoKey] = { count: 0, reset: Date.now() + 3600000 };
+    if (Date.now() > global._demoCount[demoKey].reset) {
+      global._demoCount[demoKey] = { count: 0, reset: Date.now() + 3600000 };
+    }
+    const MAX_DEMO = 3;
+    if (global._demoCount[demoKey].count >= MAX_DEMO) {
+      res.writeHead(429, {'Content-Type':'application/json'});
+      res.end(JSON.stringify({
+        error: 'demo_limit',
+        answer: "You\'ve used all 3 demo messages. Sign up free to keep the conversation going — it only takes a moment."
+      })); return;
+    }
+    try {
+      const body = await readBody(req);
+      const { question } = JSON.parse(body);
+      if (!question?.trim()) {
+        res.writeHead(400, {'Content-Type':'application/json'});
+        res.end(JSON.stringify({error:'No question provided'})); return;
+      }
+      global._demoCount[demoKey].count++;
+      const remaining = MAX_DEMO - global._demoCount[demoKey].count;
+      const flowRes = await httpsPost(
+        `${FLOWISE_URL}/api/v1/prediction/${FLOWISE_CHATFLOW_ID}`,
+        JSON.stringify({ question: question.trim() }),
+        {'Content-Type':'application/json'}
+      );
+      const answer = flowRes?.text || flowRes?.answer || "I\'m Billi — your AI business advisor. Sign in to unlock the full experience.";
+      res.writeHead(200, {'Content-Type':'application/json'});
+      res.end(JSON.stringify({ answer, demoMessagesRemaining: remaining }));
+    } catch(e) {
+      console.error('demo-chat error:', e.message);
+      res.writeHead(500, {'Content-Type':'application/json'});
+      res.end(JSON.stringify({answer:'Billi is briefly unavailable — please try again in a moment.'}));
+    }
+    return;
+  }
+
   // ── /api/debug-me — detailed session diagnostic (no auth required to read) ──
   // Shows exactly what /api/me sees: cookie, session lookup result, user object
   if (pathname === '/api/debug-me' && method === 'GET') {
