@@ -1243,6 +1243,10 @@ window.showPage = window.showPage || null;
 window.openLogin = window.openLogin || null;
 window.toggleMobileMenu = window.toggleMobileMenu || null;
 window.closeMobileMenu = window.closeMobileMenu || null;
+window.sendMessage = window.sendMessage || null;
+window.sendSuggestion = window.sendSuggestion || null;
+window.triggerUpload = window.triggerUpload || null;
+window.downloadHealthReport = window.downloadHealthReport || null;
 
 // ── THEME ──
 console.log('=== BILLI SCRIPT LOADING ===');
@@ -1516,6 +1520,8 @@ async function sendMessage(){
   }
 }
 function sendSuggestion(el){document.getElementById('chat-input').value=el.textContent;sendMessage();}
+window.sendMessage = sendMessage;
+window.sendSuggestion = sendSuggestion;
 function showLock(){
   document.getElementById('chat-input-area').innerHTML='<div style="width:100%;text-align:center;padding:1rem 0"><div style="font-size:13px;color:var(--muted);margin-bottom:12px"><strong style="color:var(--text)">You\'ve used all 3 demo messages.</strong><br>Sign up free to meet all six advisors — no card needed.</div><button class="btn-primary" style="padding:10px 28px;border-radius:7px;font-size:13px" onclick="openLogin()">Create free account</button></div>';
 }
@@ -2119,6 +2125,8 @@ console.log('toggleMobileMenu defined?', typeof toggleMobileMenu !== 'undefined'
 console.log('closeMobileMenu defined?', typeof closeMobileMenu !== 'undefined');
 console.log('window.showPage:', typeof window.showPage);
 console.log('window.openLogin:', typeof window.openLogin);
+console.log('sendMessage type:', typeof sendMessage);
+console.log('window.sendMessage type:', typeof window.sendMessage);
 console.log('=== BILLI SCRIPT LOADED SUCCESSFULLY ===');
 
 } catch(e) {
