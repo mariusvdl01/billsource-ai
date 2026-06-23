@@ -368,7 +368,7 @@ body.light .chat-container{box-shadow:0 2px 14px var(--shadow)}
 .chat-input-area{padding:1rem 1.25rem;border-top:0.5px solid var(--border);display:flex;gap:10px;align-items:center}
 .chat-input{flex:1;background:var(--input-bg);border:0.5px solid var(--border);border-radius:8px;
             padding:10px 14px;color:var(--text);font-size:14px;font-family:Helvetica,Arial,sans-serif;
-            outline:none;transition:border-color .2s}
+            outline:none;transition:border-color .2s;resize:none;overflow-y:hidden;max-height:120px;line-height:1.4;touch-action:manipulation}
 .chat-input:focus{border-color:var(--orange)}
 .chat-input::placeholder{color:var(--muted)}
 .send-btn{width:44px;height:44px;border-radius:8px;background:var(--orange);border:none;
@@ -1075,8 +1075,8 @@ body.light .hero-scene-tint{background:rgba(245,240,235,0.28)}
             <button class="suggestion" onclick="sendSuggestion(this)">What options do I have if I can&rsquo;t pay a supplier?</button>
           </div>
           <div class="chat-input-area" id="chat-input-area">
-            <input class="chat-input" id="chat-input" placeholder="Ask Billi about finance, marketing, sales, governance or operations..." inputmode="text" enterkeyhint="send" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();sendMessage();}"/>
-            <button class="send-btn" onclick="sendMessage()" ontouchend="event.preventDefault();sendMessage();" style="min-width:44px;min-height:44px;"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><polygon points="2,1 14,7.5 2,14" fill="#fff"/></svg></button>
+            <textarea class="chat-input" id="chat-input" placeholder="Ask Billi about finance, marketing, sales, governance or operations..." inputmode="text" enterkeyhint="send" autocomplete="off" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
+            <button class="send-btn" onclick="sendMessage()" style="min-width:44px;min-height:44px;"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><polygon points="2,1 14,7.5 2,14" fill="#fff"/></svg></button>
           </div>
         </div>
         <p style="font-size:12px;color:var(--muted);margin-top:10px;text-align:center">Demo limited to 3 messages &middot; <a style="color:var(--orange);cursor:pointer;text-decoration:none" onclick="openLogin()">Sign up free</a> to meet all six advisors &middot; No card required</p>
@@ -1488,7 +1488,7 @@ async function sendMessage(){
   var inp=document.getElementById('chat-input');
   var msg=inp.value.trim();if(!msg)return;
   if(demoCount>=maxDemo){openLogin();return;}
-  inp.value='';
+  inp.value='';inp.style.height='auto';
   document.getElementById('suggestions').style.display='none';
   addMsg(msg,'user');isTyping=true;showTyping();
   try{
@@ -1504,6 +1504,7 @@ async function sendMessage(){
       showLock();return;
     }
     if(!res.ok||data.error){
+      removeTyping();isTyping=false;
       addMsg(data.error||'Billi is briefly unavailable — please try again.','ai');return;
     }
     demoCount++;
