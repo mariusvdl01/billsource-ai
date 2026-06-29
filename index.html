@@ -2138,5 +2138,67 @@ console.log('=== BILLI SCRIPT LOADED SUCCESSFULLY ===');
   console.error('Full error:', e);
 }
 </script>
+
+<!-- ====================== Billi voice-to-voice — DEMO (added) ====================== -->
+<style>
+  #billi-mic{bottom:24px !important;right:18px !important;z-index:6000 !important}
+  .billi-lang{bottom:92px !important;right:24px !important;z-index:6000 !important}
+</style>
+<script>
+  /* Demo adapter: speaks to the capped /api/demo-chat and renders via the demo UI.
+     Written defensively because the demo helpers live inside a try/catch block. */
+  window.sendBilliMessage = async function (text) {
+    const msg = (text || '').trim();
+    if (!msg) return '';
+    if (typeof demoCount !== 'undefined' && typeof maxDemo !== 'undefined' && demoCount >= maxDemo) {
+      if (typeof openLogin === 'function') openLogin(); return '';
+    }
+    var sg = document.getElementById('suggestions'); if (sg) sg.style.display = 'none';
+    if (typeof addMsg === 'function') addMsg(msg, 'user');
+    if (typeof showTyping === 'function') showTyping();
+    let answer = '';
+    try {
+      const res = await fetch('/api/demo-chat', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: msg })
+      });
+      const data = await res.json();
+      if (typeof removeTyping === 'function') removeTyping();
+      if (res.status === 429 || data.error === 'demo_limit') {
+        answer = data.answer || "You've used all 3 demo messages. Sign up free to continue.";
+        if (typeof addMsg === 'function') addMsg(answer, 'ai');
+        if (typeof showLock === 'function') showLock(); return answer;
+      }
+      if (!res.ok || data.error) {
+        answer = data.error || 'Billi is briefly unavailable — please try again.';
+        if (typeof addMsg === 'function') addMsg(answer, 'ai'); return answer;
+      }
+      if (typeof demoCount !== 'undefined') demoCount++;
+      answer = data.answer || '';
+      if (typeof addMsg === 'function') addMsg(answer, 'ai');
+      if (typeof demoCount !== 'undefined' && demoCount >= maxDemo && typeof showLock === 'function') showLock();
+    } catch (e) {
+      if (typeof removeTyping === 'function') removeTyping();
+      answer = 'Connection issue — please check your internet and try again.';
+      if (typeof addMsg === 'function') addMsg(answer, 'ai');
+    }
+    return answer;
+  };
+
+  window.BILLI_VOICE_CONFIG = {
+    voice: "browser",
+    chatEndpoint: "/api/demo-chat",
+    sttEndpoint: "/api/voice/stt",
+    ttsEndpoint: "/api/voice/tts",
+    persona: "auto",
+    conversation: false,
+    lang: "en-ZA",
+    languages: [ { code: "en-ZA", label: "EN" }, { code: "af-ZA", label: "AF" }, { code: "zu-ZA", label: "ZU" } ],
+    sendMessage: (text) => window.sendBilliMessage(text)
+  };
+</script>
+<script src="/billi-voice.js"></script>
+<!-- ==================== /Billi voice-to-voice — DEMO ==================== -->
+
 </body>
 </html>

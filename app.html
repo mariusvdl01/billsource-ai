@@ -2651,5 +2651,69 @@
   // This is implemented by checking window._rawHtmlNext before the existing call
 
 </script>
+
+<!-- ====================== Billi voice-to-voice (added) ====================== -->
+<style>
+  /* keep the injected mic + language chip clear of the composer */
+  #billi-mic{bottom:96px !important;right:16px !important}
+  .billi-lang{bottom:166px !important;right:22px !important}
+</style>
+<script>
+  /* Adapter: the voice module reuses the EXISTING chat pipeline and hands the
+     reply back for text-to-speech. Reuses addBubble / saveHistory / etc. */
+  window.sendBilliMessage = async function (text) {
+    const msg = (text || '').trim();
+    if (!msg) return '';
+    if (typeof currentUser !== 'undefined' && currentUser && currentUser.messagesRemaining <= 0) { openUpgrade(true); return ''; }
+    addBubble(msg, 'user');
+    if (!activeChat) {
+      activeChat = { id: Date.now(), title: msg.slice(0, 45), messages: [], created: new Date().toISOString() };
+      chats.unshift(activeChat);
+      document.getElementById('chat-title').textContent = activeChat.title;
+    }
+    activeChat.messages.push({ role: 'user', text: msg });
+    saveHistory();
+    showTyping();
+    let answer = '';
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: msg })
+      });
+      const data = await res.json();
+      removeTyping();
+      if (res.status === 401) { window.location.href = '/auth/google'; return ''; }
+      if (res.status === 403) { openUpgrade(true); return ''; }
+      answer = data.answer || 'Sorry, Billi is temporarily unavailable.';
+      addBubble(answer, 'ai');
+      activeChat.messages.push({ role: 'ai', text: answer });
+      saveHistory();
+      if (data.messagesRemaining !== undefined && currentUser) {
+        currentUser.messagesUsed++; currentUser.messagesRemaining = data.messagesRemaining; updateUI();
+      }
+      renderHistory();
+    } catch (e) {
+      removeTyping();
+      answer = 'Billi is temporarily unavailable. Please try again in a moment.';
+      addBubble(answer, 'ai');
+    }
+    return answer;
+  };
+
+  window.BILLI_VOICE_CONFIG = {
+    voice: "browser",            // free browser voice now. After adding billi-voice-routes.js, switch to "auto" for the branded Billi voice + iOS.
+    chatEndpoint: "/api/chat",
+    sttEndpoint: "/api/voice/stt",
+    ttsEndpoint: "/api/voice/tts",
+    persona: "auto",
+    conversation: false,          // long-press the mic = hands-free session; set true to start one on a normal tap
+    lang: "en-ZA",
+    languages: [ { code: "en-ZA", label: "EN" }, { code: "af-ZA", label: "AF" }, { code: "zu-ZA", label: "ZU" } ],
+    sendMessage: (text) => window.sendBilliMessage(text)
+  };
+</script>
+<script src="/billi-voice.js"></script>
+<!-- ==================== /Billi voice-to-voice ==================== -->
+
 </body>
 </html>
