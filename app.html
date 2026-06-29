@@ -2654,59 +2654,93 @@
 
 <!-- ====================== Billi voice-to-voice (added) ====================== -->
 <style>
-  /* keep the injected mic + language chip clear of the composer */
-  #billi-mic{bottom:96px !important;right:16px !important}
-  .billi-lang{bottom:166px !important;right:22px !important}
+  /* fix the mobile viewport so the composer is never pushed below the fold */
+  @supports (height:100dvh){ body{height:100dvh !important} }
+  /* composer always sits above the floating mic */
+  .input-area{position:relative;z-index:10000;background:var(--bg)}
+  /* mic + language chip, clear of the composer */
+  #billi-mic{bottom:84px !important;right:14px !important;width:54px !important;height:54px !important}
+  .billi-lang{bottom:148px !important;right:20px !important}
+  /* tiny status chip so we can see what voice is doing */
+  #billi-status{position:fixed;left:50%;transform:translateX(-50%);bottom:152px;z-index:10001;
+    background:#15212a;color:#EAF6FF;font:600 12px/1 Helvetica,Arial,sans-serif;padding:8px 14px;
+    border-radius:14px;display:none;box-shadow:0 3px 12px rgba(0,0,0,.35);white-space:nowrap}
 </style>
+<div id="billi-status"></div>
 <script>
-  /* Adapter: the voice module reuses the EXISTING chat pipeline and hands the
-     reply back for text-to-speech. Reuses addBubble / saveHistory / etc. */
+  /* Defensive adapter: ALWAYS returns a string so Billi speaks, even if a UI
+     helper hiccups. Bookkeeping is wrapped so it can never block the reply. */
   window.sendBilliMessage = async function (text) {
     const msg = (text || '').trim();
     if (!msg) return '';
-    if (typeof currentUser !== 'undefined' && currentUser && currentUser.messagesRemaining <= 0) { openUpgrade(true); return ''; }
-    addBubble(msg, 'user');
-    if (!activeChat) {
-      activeChat = { id: Date.now(), title: msg.slice(0, 45), messages: [], created: new Date().toISOString() };
-      chats.unshift(activeChat);
-      document.getElementById('chat-title').textContent = activeChat.title;
-    }
-    activeChat.messages.push({ role: 'user', text: msg });
-    saveHistory();
-    showTyping();
-    let answer = '';
     try {
+      if (typeof currentUser !== 'undefined' && currentUser && currentUser.messagesRemaining <= 0) {
+        if (typeof openUpgrade === 'function') openUpgrade(true); return '';
+      }
+      if (typeof addBubble === 'function') addBubble(msg, 'user');
+      try {
+        if (typeof activeChat !== 'undefined') {
+          if (!activeChat) {
+            activeChat = { id: Date.now(), title: msg.slice(0, 45), messages: [], created: new Date().toISOString() };
+            if (typeof chats !== 'undefined' && chats.unshift) chats.unshift(activeChat);
+            var ct = document.getElementById('chat-title'); if (ct) ct.textContent = activeChat.title;
+          }
+          activeChat.messages.push({ role: 'user', text: msg });
+          if (typeof saveHistory === 'function') saveHistory();
+        }
+      } catch (_) {}
+      if (typeof showTyping === 'function') showTyping();
+
       const res = await fetch('/api/chat', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: msg })
       });
-      const data = await res.json();
-      removeTyping();
+      let data = {}; try { data = await res.json(); } catch (_) {}
+      if (typeof removeTyping === 'function') removeTyping();
       if (res.status === 401) { window.location.href = '/auth/google'; return ''; }
-      if (res.status === 403) { openUpgrade(true); return ''; }
-      answer = data.answer || 'Sorry, Billi is temporarily unavailable.';
-      addBubble(answer, 'ai');
-      activeChat.messages.push({ role: 'ai', text: answer });
-      saveHistory();
-      if (data.messagesRemaining !== undefined && currentUser) {
-        currentUser.messagesUsed++; currentUser.messagesRemaining = data.messagesRemaining; updateUI();
-      }
-      renderHistory();
+      if (res.status === 403) { if (typeof openUpgrade === 'function') openUpgrade(true); return ''; }
+
+      const answer = data.answer || 'Sorry, Billi is temporarily unavailable.';
+      if (typeof addBubble === 'function') addBubble(answer, 'ai');
+      else { var ms = document.getElementById('chat-messages'); if (ms) { var d = document.createElement('div'); d.className = 'msg'; d.textContent = answer; ms.appendChild(d); ms.scrollTop = ms.scrollHeight; } }
+      try {
+        if (typeof activeChat !== 'undefined' && activeChat) { activeChat.messages.push({ role: 'ai', text: answer }); if (typeof saveHistory === 'function') saveHistory(); }
+        if (data.messagesRemaining !== undefined && typeof currentUser !== 'undefined' && currentUser) { currentUser.messagesUsed++; currentUser.messagesRemaining = data.messagesRemaining; if (typeof updateUI === 'function') updateUI(); }
+        if (typeof renderHistory === 'function') renderHistory();
+      } catch (_) {}
+      return answer;
     } catch (e) {
-      removeTyping();
-      answer = 'Billi is temporarily unavailable. Please try again in a moment.';
-      addBubble(answer, 'ai');
+      if (typeof removeTyping === 'function') removeTyping();
+      console.error('[Billi voice] sendBilliMessage failed:', e);
+      var em = 'Billi is temporarily unavailable. Please try again in a moment.';
+      if (typeof addBubble === 'function') addBubble(em, 'ai');
+      return em;  // still return so Billi speaks the fallback
     }
-    return answer;
   };
 
+  /* on-screen status so we can see exactly where voice stalls */
+  (function () {
+    var s = document.getElementById('billi-status');
+    var L = { listening: '\uD83C\uDF99\uFE0F Listening\u2026', thinking: '\u2026 thinking', speaking: '\uD83D\uDD0A Billi' };
+    document.addEventListener('billi:state', function (e) {
+      if (!s) return;
+      if (L[e.detail.state]) { s.textContent = L[e.detail.state]; s.style.display = 'block'; }
+      else s.style.display = 'none';
+    });
+    document.addEventListener('billi:transcript', function (e) { console.log('[Billi heard]:', e.detail.text); });
+    document.addEventListener('billi:error', function (e) {
+      console.warn('[Billi voice error]:', e.detail.message);
+      if (s) { s.textContent = '\u26A0\uFE0F ' + e.detail.message; s.style.display = 'block'; setTimeout(function () { s.style.display = 'none'; }, 4500); }
+    });
+  })();
+
   window.BILLI_VOICE_CONFIG = {
-    voice: "browser",            // free browser voice now. After adding billi-voice-routes.js, switch to "auto" for the branded Billi voice + iOS.
+    voice: "browser",            // free browser voice. After adding billi-voice-routes.js, switch to "auto".
     chatEndpoint: "/api/chat",
     sttEndpoint: "/api/voice/stt",
     ttsEndpoint: "/api/voice/tts",
     persona: "auto",
-    conversation: false,          // long-press the mic = hands-free session; set true to start one on a normal tap
+    conversation: false,          // long-press the mic = hands-free session
     lang: "en-ZA",
     languages: [ { code: "en-ZA", label: "EN" }, { code: "af-ZA", label: "AF" }, { code: "zu-ZA", label: "ZU" } ],
     sendMessage: (text) => window.sendBilliMessage(text)
