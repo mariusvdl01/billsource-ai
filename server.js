@@ -655,6 +655,41 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // ── API: /api/voice/summarize (short spoken summary of long replies) ──
+  if (pathname === '/api/voice/summarize' && method === 'POST') {
+    const sSession = await getSessionUser(req);
+    if (!sSession) { res.writeHead(401, {'Content-Type':'application/json'}); res.end(JSON.stringify({error:'Please sign in.'})); return; }
+    try {
+      const sBody = await readBody(req);
+      const { text } = JSON.parse(sBody);
+      const srcText = (text || '').toString().trim();
+      if (!srcText) { res.writeHead(400, {'Content-Type':'application/json'}); res.end(JSON.stringify({error:'no text'})); return; }
+      const clipped = srcText.length > 4000 ? srcText.slice(0, 4000) : srcText;
+      const instruction =
+        'Summarise the following business answer in ONE or TWO short sentences that a ' +
+        'voice assistant can read aloud. Plain spoken English only — no markdown, no bullet ' +
+        'points, no lists, no asterisks. Keep the single most useful point.\n\n---\n' + clipped;
+      const sumRes = await httpsPost(
+        `${FLOWISE_URL}/api/v1/prediction/${FLOWISE_CHATFLOW_ID}`,
+        JSON.stringify({ question: instruction }),
+        {'Content-Type':'application/json'}
+      );
+      let summary =
+        (typeof sumRes === 'string' ? sumRes : null) ||
+        sumRes.text || sumRes.answer || sumRes.output ||
+        sumRes.message || sumRes.result || sumRes.response ||
+        (Array.isArray(sumRes.outputs) && sumRes.outputs[0]?.text) || '';
+      summary = summary.replace(/[*_#`~|>]/g, ' ').replace(/\s{2,}/g, ' ').trim();
+      res.writeHead(200, {'Content-Type':'application/json'});
+      res.end(JSON.stringify({ summary }));
+    } catch (e) {
+      console.error('summarize error', e.message);
+      res.writeHead(500, {'Content-Type':'application/json'});
+      res.end(JSON.stringify({ error: 'summarize failed' }));
+    }
+    return;
+  }
+
   // ── API: Subscribe (both endpoints) ──────
   if ((pathname === '/api/subscribe' || pathname === '/api/pay/initialize') && method === 'POST') {
     const session = await getSessionUser(req);

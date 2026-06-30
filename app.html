@@ -2734,16 +2734,47 @@
     });
   })();
 
+  // Voice "save" -> reuse your branded exporters for the LATEST Billi response
+  window.billiSaveConversation = function (format) {
+    var text = "", htmlContent = "";
+    if (typeof activeChat !== "undefined" && activeChat && activeChat.messages) {
+      for (var i = activeChat.messages.length - 1; i >= 0; i--) {
+        if (activeChat.messages[i].role === "ai") { text = activeChat.messages[i].text || ""; break; }
+      }
+    }
+    if (!text) {  // fallback: last AI bubble in the DOM
+      var bubbles = document.querySelectorAll("#chat-messages .msg:not(.user) .msg-bubble");
+      if (bubbles.length) {
+        var clone = bubbles[bubbles.length - 1].cloneNode(true);
+        var bar = clone.querySelector(".msg-copy-bar"); if (bar) bar.remove();
+        text = (clone.innerText || clone.textContent || "").trim();
+        htmlContent = clone.innerHTML;
+      }
+    }
+    if (!text) return;
+    var titleEl = document.getElementById("chat-title");
+    var title = (titleEl ? titleEl.textContent : "Billi").replace(/[^a-zA-Z0-9 ]/g, "").trim();
+    var filename = "Billi \u2014 " + (title.slice(0, 40) || "Response");
+    if (format === "pdf" && typeof downloadAsPDF === "function") {
+      if (!htmlContent) htmlContent = "<p>" + text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>") + "</p>";
+      downloadAsPDF(text, htmlContent, filename);
+    } else if (typeof downloadAsDocx === "function") {
+      downloadAsDocx(text, filename);
+    }
+  };
+
   window.BILLI_VOICE_CONFIG = {
     voice: "browser",            // free browser voice. After adding billi-voice-routes.js, switch to "auto".
     chatEndpoint: "/api/chat",
     sttEndpoint: "/api/voice/stt",
     ttsEndpoint: "/api/voice/tts",
+    summarizeEndpoint: "/api/voice/summarize",   // AI summary of long replies (route added to server.js)
     persona: "auto",
     conversation: false,          // long-press the mic = hands-free session
     lang: "en-ZA",
     languages: [ { code: "en-ZA", label: "EN" }, { code: "af-ZA", label: "AF" }, { code: "zu-ZA", label: "ZU" } ],
-    sendMessage: (text) => window.sendBilliMessage(text)
+    sendMessage: (text) => window.sendBilliMessage(text),
+    onSave: (format) => window.billiSaveConversation(format)   // "save this" -> branded PDF/Word of the whole chat
   };
 </script>
 <script src="/billi-voice.js"></script>
