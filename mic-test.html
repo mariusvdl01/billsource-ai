@@ -23,6 +23,23 @@
   <div class="mut" style="font-size:13px">Open this in Chrome, tap each button, speak a sentence, and read the result.</div>
 
   <div class="env" id="env">checking environment…</div>
+  <div class="env" id="policy">checking microphone policy…</div>
+
+<script>
+  (async function () {
+    var L = [];
+    try { var p = await navigator.permissions.query({ name: 'microphone' }); L.push('permissions.query state: <b>' + p.state + '</b>'); }
+    catch (e) { L.push('permissions.query: n/a (' + e.name + ')'); }
+    try { if (document.featurePolicy && document.featurePolicy.allowsFeature) L.push('document allows microphone: <b>' + document.featurePolicy.allowsFeature('microphone') + '</b>'); } catch (e) {}
+    try {
+      var r = await fetch(location.href, { method: 'HEAD' });
+      L.push('Permissions-Policy header: <b>' + (r.headers.get('permissions-policy') || '(none)') + '</b>');
+      var fp = r.headers.get('feature-policy'); if (fp) L.push('Feature-Policy header: <b>' + fp + '</b>');
+    } catch (e) { L.push('header read failed: ' + e.message); }
+    var el = document.getElementById('policy');
+    if (el) el.innerHTML = '<b style="color:#F69B2D">MIC POLICY:</b><br>' + L.join('<br>');
+  })();
+</script>
 
   <button class="b1" id="b1">1 — Test voice recognition</button>
   <div class="out" id="o1"><span class="mut">Result will show here.</span></div>
