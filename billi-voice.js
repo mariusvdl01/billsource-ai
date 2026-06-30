@@ -39,25 +39,35 @@
     conversationMaxSilence: 2,    // consecutive silent turns before the session auto-ends
 
     // ---- voice design ----
-    rate: 0.97, pitch: 1.06,      // warm + clear; tweak to taste
-    // preferred voice, tried in order (name or lang fragments). First match wins.
-    voicePreference: ["english (south africa)", "en-za", "google uk english female",
-                      "uk english female", "libby", "sonia", "hazel", "aria", "en-gb"],
+    profile: "warm",              // "warm" (Billi) | "machine" (Superintelligence). Switchable in the picker.
+    profiles: {
+      warm:    { rate: 0.95, pitch: 1.08 },   // warm, soothing
+      machine: { rate: 0.82, pitch: 0.72 }    // lower, slower, flatter — cold "Ultron" feel
+    },
+    rate: null, pitch: null,      // optional hard overrides; leave null to use the active profile
+    // default voice, tried in order (name/lang fragments). Warm US female first.
+    voicePreference: ["samantha", "google us english", "microsoft aria", "microsoft jenny online",
+                      "ava", "allison", "english (united states)", "en-us", "en-gb"],
+    showVoicePicker: true,        // ⚙ menu by the mic so users can choose + remember a voice
     // ---- long replies ----
     summarize: true,              // speak a short summary of long replies, then offer to read the rest
     summarizeEndpoint: null,      // set to "/api/voice/summarize" for a true AI summary; else first-sentences fallback
     longReplyChars: 320,          // a reply longer than this (or >longReplySentences) is summarised
-    longReplySentences: 3
+    longReplySentences: 3,
+    // ---- local commands (free — never sent to the model) ----
+    commands: true,               // recognise "stop" / "save" locally instead of sending to chat
+    onSave: null                  // async (format) => void   — called for "save", format is 'pdf' | 'word'
   };
 
   const BilliVoice = {
     cfg: null, state: "idle", lang: null, _rec: null, _mr: null, _chunks: [], _audio: null, _btn: null, _langBtn: null,
     _convo: false, _silence: 0, _gotResult: false,
-    _awaitContinue: false, _pendingFull: null, _voice: null,
+    _awaitContinue: false, _pendingFull: null, _voice: null, _picker: null, _awaitSaveFormat: false,
 
     init(userCfg) {
       this.cfg = Object.assign({}, DEFAULTS, userCfg || {});
       this.lang = this.cfg.lang;
+      try { const sp = localStorage.getItem("billi_voice_profile"); if (sp && this.cfg.profiles[sp]) this.cfg.profile = sp; } catch (e) {}
       if (window.speechSynthesis) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => { this._voice = null; }; } catch (e) {} }
       this._mountUI();
       this._emit("ready", { stt: this._sttEngine(), tts: this._ttsEngine() });
@@ -102,12 +112,12 @@
       this._stopListening(); this._stopSpeaking(); this._setState("idle");
     },
     _endTurn() {            // Billi finished speaking (or had nothing to say)
-      if (this._awaitContinue) { setTimeout(() => { if (this._awaitContinue) this._startListening(); }, this.cfg.conversationRestartMs); return; }
+      if (this._awaitContinue || this._awaitSaveFormat) { setTimeout(() => { if (this._awaitContinue || this._awaitSaveFormat) this._startListening(); }, this.cfg.conversationRestartMs); return; }
       if (this._convo) setTimeout(() => { if (this._convo) this._startListening(); }, this.cfg.conversationRestartMs);
       else this._setState("idle");
     },
     _noInput() {           // listening ended with no speech captured
-      if (this._awaitContinue) { this._awaitContinue = false; this._pendingFull = null; return this._convo ? this._endTurn() : this._setState("idle"); }
+      if (this._awaitContinue || this._awaitSaveFormat) { this._awaitContinue = false; this._awaitSaveFormat = false; this._pendingFull = null; return this._convo ? this._endTurn() : this._setState("idle"); }
       if (!this._convo) return this._setState("idle");
       if (++this._silence >= this.cfg.conversationMaxSilence) return this.stopConversation();
       this._endTurn();     // re-open the mic for another try
@@ -171,16 +181,42 @@
 
     // ---- chat ----------------------------------------------------------------
     async _handle(text) {
-      // If we just summarised a long reply and are waiting to hear "continue":
+      const t = (text || "").trim();
+
+      // 0) answering "PDF or Word?" after a save command
+      if (this._awaitSaveFormat) {
+        this._awaitSaveFormat = false;
+        if (this._isCancel(t)) return this._speak("Okay, cancelled.");
+        const fmt = /\b(word|doc|docx|microsoft)\b/i.test(t) ? "word" : (/\b(pdf)\b/i.test(t) ? "pdf" : null);
+        if (!fmt) { this._awaitSaveFormat = true; return this._speak("PDF or Word?"); }   // re-ask once
+        return this._doSave(fmt);
+      }
+
+      // 1) "continue" after a summarised long reply
       if (this._awaitContinue) {
         this._awaitContinue = false;
-        if (/\b(continue|carry on|go on|yes|yeah|ya|read|rest|more|full|please)\b/i.test(text)) {
+        if (/\b(continue|carry on|go on|yes|yeah|ya|read|rest|more|full|please)\b/i.test(t)) {
           const full = this._pendingFull; this._pendingFull = null;
-          this._emit("transcript", { text });
+          this._emit("transcript", { text: t });
           return this._speak(this._clean(full));   // read the whole thing
         }
-        this._pendingFull = null;   // not a "continue" — fall through and treat as a new question
+        this._pendingFull = null;   // not "continue" — fall through and treat as a new question
       }
+
+      // 2) local commands — handled here, NEVER sent to the model (no message consumed)
+      if (this.cfg.commands) {
+        if (this._isStop(t)) {
+          this._stopSpeaking(); this._awaitContinue = false; this._pendingFull = null;
+          if (this._convo) this.stopConversation(); else this._setState("idle");
+          return;
+        }
+        if (this._isCancel(t)) { this._awaitContinue = false; this._pendingFull = null; return this._convo ? this._endTurn() : this._setState("idle"); }
+        if (this._isSave(t)) {
+          if (typeof this.cfg.onSave === "function") { this._awaitSaveFormat = true; return this._speak("Sure. PDF or Word?"); }
+          return this._speak("Saving isn't set up here yet.");
+        }
+      }
+
       this._setState("thinking");
       try {
         let reply;
@@ -258,6 +294,24 @@
       return parts.slice(0, n).join(" ");
     },
 
+    // ---- local command recognition (kept deliberately tight to avoid false hits) ----
+    _words(t) { return t.trim().split(/\s+/).filter(Boolean); },
+    _isStop(t) {
+      const w = this._words(t);
+      return w.length <= 4 && /\b(stop|quiet|enough|halt|shush|silence)\b/i.test(t)
+        || /^(end|never mind|nevermind|shut up|stop talking|be quiet|that'?s enough)\b/i.test(t.trim());
+    },
+    _isCancel(t) { const w = this._words(t); return w.length <= 4 && /\b(cancel|never mind|nevermind|forget it|no thanks)\b/i.test(t); },
+    _isSave(t) {
+      const w = this._words(t);
+      if (w.length <= 2 && /^(save|download|export)\b/i.test(t.trim())) return true;   // "save", "download it"
+      return /\b(save|download|export)\b/i.test(t) && /\b(this|that|it|chat|conversation|response|answer|reply|everything)\b/i.test(t);
+    },
+    _doSave(fmt) {
+      this._speak(fmt === "word" ? "Saving the conversation as Word. Check your downloads." : "Saving the conversation as a PDF. Check your downloads.");
+      try { Promise.resolve(this.cfg.onSave(fmt)); } catch (e) { console.error("[BilliVoice] save failed", e); }
+    },
+
     // ---- TTS -----------------------------------------------------------------
     async _speak(text) {
       if (!text) return this._endTurn();
@@ -289,7 +343,7 @@
       const u = new SpeechSynthesisUtterance(text);
       const v = this._pickVoice();
       if (v) { u.voice = v; u.lang = v.lang || this.lang; } else { u.lang = this.lang; }
-      u.rate = this.cfg.rate; u.pitch = this.cfg.pitch;
+      u.rate = this._effRate(); u.pitch = this._effPitch();
       u.onend = () => this._endTurn();
       u.onerror = () => this._endTurn();
       speechSynthesis.cancel(); speechSynthesis.speak(u);
@@ -298,6 +352,7 @@
       if (this._voice) return this._voice;
       const vs = (window.speechSynthesis && speechSynthesis.getVoices()) || [];
       if (!vs.length) return null;
+      try { const saved = localStorage.getItem("billi_voice_name"); if (saved) { const sv = vs.find(x => x.name === saved); if (sv) return (this._voice = sv); } } catch (e) {}
       const has = (x, p) => ((x.name || "") + " " + (x.lang || "")).toLowerCase().indexOf(p) >= 0;
       const prefs = this.cfg.voicePreference || [];
       for (let i = 0; i < prefs.length; i++) { const hit = vs.find(x => has(x, prefs[i].toLowerCase())); if (hit) return (this._voice = hit); }
@@ -334,6 +389,13 @@
           lb.onclick = () => this._cycleLang(lb);
           document.body.appendChild(lb); this._langBtn = lb;
         }
+        // voice picker (gear)
+        if (this.cfg.showVoicePicker && window.speechSynthesis) {
+          const gb = document.createElement("button");
+          gb.className = "billi-voice-btn"; gb.setAttribute("aria-label", "Choose Billi's voice");
+          gb.innerHTML = GEAR_SVG; gb.onclick = () => this._togglePicker();
+          document.body.appendChild(gb);
+        }
       }
       btn.setAttribute("aria-label", "Talk to Billi");
       btn.innerHTML = MIC_SVG;
@@ -354,6 +416,51 @@
       this.lang = this.cfg.languages[(i + 1) % this.cfg.languages.length].code;
       el.textContent = this._labelFor(this.lang);
       this._emit("lang", { lang: this.lang });
+    },
+
+    // ---- voice selection + character profiles ----
+    setVoice(name) {
+      const v = ((window.speechSynthesis && speechSynthesis.getVoices()) || []).find(x => x.name === name);
+      if (v) { this._voice = v; try { localStorage.setItem("billi_voice_name", name); } catch (e) {} this._emit("voice", { name }); }
+      return v;
+    },
+    setProfile(name) {
+      if (!this.cfg.profiles[name]) return;
+      this.cfg.profile = name;
+      try { localStorage.setItem("billi_voice_profile", name); } catch (e) {}
+      this._emit("profile", { profile: name });
+    },
+    _effRate() { return this.cfg.rate != null ? this.cfg.rate : (this.cfg.profiles[this.cfg.profile] || this.cfg.profiles.warm).rate; },
+    _effPitch() { return this.cfg.pitch != null ? this.cfg.pitch : (this.cfg.profiles[this.cfg.profile] || this.cfg.profiles.warm).pitch; },
+    _sample() {
+      const txt = this.cfg.profile === "machine" ? "Superintelligence online." : "Hi, I'm Billi. How can I help?";
+      try { speechSynthesis.cancel(); } catch (e) {}
+      const u = new SpeechSynthesisUtterance(txt);
+      const v = this._pickVoice(); if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = this._effRate(); u.pitch = this._effPitch();
+      speechSynthesis.speak(u);
+    },
+    _togglePicker() { (this._picker && this._picker.style.display === "block") ? this._closePicker() : this._openPicker(); },
+    _closePicker() { if (this._picker) this._picker.style.display = "none"; },
+    _openPicker() {
+      if (!this._picker) { this._picker = document.createElement("div"); this._picker.className = "billi-picker"; document.body.appendChild(this._picker); }
+      const p = this._picker; p.style.display = "block";
+      const vs = ((window.speechSynthesis && speechSynthesis.getVoices()) || []).filter(v => /^en/i.test(v.lang));
+      const cur = this._pickVoice();
+      let html = '<div class="billi-pk-h">Voice</div><div class="billi-pk-list">';
+      if (!vs.length) html += '<div class="billi-pk-empty">No voices loaded yet — reopen in a moment.</div>';
+      vs.forEach(v => {
+        const sel = (cur && cur.name === v.name) ? " sel" : "";
+        html += '<button class="billi-pk-v' + sel + '" data-v="' + v.name.replace(/"/g, "&quot;") + '">' + v.name + ' <span>' + v.lang + '</span></button>';
+      });
+      html += '</div><div class="billi-pk-h">Character</div><div class="billi-pk-row">' +
+        '<button class="billi-pk-c' + (this.cfg.profile === "warm" ? " sel" : "") + '" data-p="warm">Warm · Billi</button>' +
+        '<button class="billi-pk-c' + (this.cfg.profile === "machine" ? " sel" : "") + '" data-p="machine">Machine</button></div>' +
+        '<button class="billi-pk-close">Done</button>';
+      p.innerHTML = html;
+      p.querySelectorAll(".billi-pk-v").forEach(b => b.onclick = () => { this.setVoice(b.getAttribute("data-v")); this._sample(); this._openPicker(); });
+      p.querySelectorAll(".billi-pk-c").forEach(b => b.onclick = () => { this.setProfile(b.getAttribute("data-p")); this._sample(); this._openPicker(); });
+      p.querySelector(".billi-pk-close").onclick = () => this._closePicker();
     },
 
     _setState(s) {
@@ -380,12 +487,28 @@
 .billi-mic[data-convo="on"]{box-shadow:0 0 0 3px #fff,0 0 0 6px #2FB6E6,0 6px 18px rgba(0,0,0,.3)}
 .billi-lang{position:fixed;right:24px;bottom:86px;min-width:34px;height:26px;padding:0 8px;border:none;border-radius:13px;
   background:#15212a;color:#EAF6FF;font:600 12px Arial;z-index:9999;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.25)}
+.billi-voice-btn{position:fixed;right:24px;bottom:200px;width:34px;height:34px;border:none;border-radius:50%;
+  background:#15212a;z-index:9999;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center}
+.billi-voice-btn svg{width:18px;height:18px;fill:#EAF6FF}
+.billi-picker{position:fixed;right:16px;bottom:244px;width:250px;max-height:54vh;overflow:auto;display:none;z-index:10002;
+  background:#0e1622;border:1px solid #24323e;border-radius:14px;padding:10px;box-shadow:0 10px 30px rgba(0,0,0,.5);font-family:Arial,sans-serif}
+.billi-pk-h{color:#7FB7D8;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin:6px 4px 4px}
+.billi-pk-list{display:flex;flex-direction:column;gap:4px}
+.billi-pk-v{text-align:left;background:#15212a;border:1px solid transparent;color:#EAF6FF;font-size:13px;padding:8px 10px;border-radius:9px;cursor:pointer}
+.billi-pk-v span{color:#8FA0AE;font-size:11px}
+.billi-pk-v.sel{border-color:#F69B2D;background:#1d2a36}
+.billi-pk-empty{color:#8FA0AE;font-size:12px;padding:8px}
+.billi-pk-row{display:flex;gap:6px;margin-top:4px}
+.billi-pk-c{flex:1;background:#15212a;border:1px solid transparent;color:#EAF6FF;font-size:12.5px;padding:8px;border-radius:9px;cursor:pointer}
+.billi-pk-c.sel{border-color:#F69B2D;background:#1d2a36}
+.billi-pk-close{width:100%;margin-top:8px;background:#F69B2D;border:none;color:#fff;font-weight:700;font-size:13px;padding:9px;border-radius:9px;cursor:pointer}
 @keyframes billiPulse{0%{box-shadow:0 0 0 0 rgba(47,182,230,.5)}70%{box-shadow:0 0 0 16px rgba(47,182,230,0)}100%{box-shadow:0 0 0 0 rgba(47,182,230,0)}}`;
       document.head.appendChild(css);
     }
   };
 
   const MIC_SVG = '<svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/></svg>';
+  const GEAR_SVG = '<svg viewBox="0 0 24 24"><path d="M19.14 12.94a7.5 7.5 0 0 0 0-1.88l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7 7 0 0 0-1.62-.94l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.5.42l-.36 2.54a7 7 0 0 0-1.62.94l-2.39-.96a.5.5 0 0 0-.6.22L2.71 8.84a.5.5 0 0 0 .12.64l2.03 1.58a7.5 7.5 0 0 0 0 1.88l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32a.5.5 0 0 0 .6.22l2.39-.96a7 7 0 0 0 1.62.94l.36 2.54a.5.5 0 0 0 .5.42h3.84a.5.5 0 0 0 .5-.42l.36-2.54a7 7 0 0 0 1.62-.94l2.39.96a.5.5 0 0 0 .6-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58zM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg>';
 
   window.BilliVoice = BilliVoice;
   // self-init if a config object is present
