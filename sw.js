@@ -3,7 +3,7 @@
 // Caches app shell for instant load + offline
 // ═══════════════════════════════════════════
 
-const CACHE_NAME = 'billi-v1';
+const CACHE_NAME = 'billi-v2';
 const CACHE_URLS = [
   '/app',
   '/billi-avatar.svg',
