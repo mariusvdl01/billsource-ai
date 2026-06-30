@@ -36,16 +36,29 @@
     // always-on conversation mode (hands-free back-and-forth)
     conversation: false,          // true = a tap starts a session; false = tap is one turn (long-press starts a session)
     conversationRestartMs: 400,   // pause after Billi speaks before re-opening the mic
-    conversationMaxSilence: 2     // consecutive silent turns before the session auto-ends
+    conversationMaxSilence: 2,    // consecutive silent turns before the session auto-ends
+
+    // ---- voice design ----
+    rate: 0.97, pitch: 1.06,      // warm + clear; tweak to taste
+    // preferred voice, tried in order (name or lang fragments). First match wins.
+    voicePreference: ["english (south africa)", "en-za", "google uk english female",
+                      "uk english female", "libby", "sonia", "hazel", "aria", "en-gb"],
+    // ---- long replies ----
+    summarize: true,              // speak a short summary of long replies, then offer to read the rest
+    summarizeEndpoint: null,      // set to "/api/voice/summarize" for a true AI summary; else first-sentences fallback
+    longReplyChars: 320,          // a reply longer than this (or >longReplySentences) is summarised
+    longReplySentences: 3
   };
 
   const BilliVoice = {
     cfg: null, state: "idle", lang: null, _rec: null, _mr: null, _chunks: [], _audio: null, _btn: null, _langBtn: null,
     _convo: false, _silence: 0, _gotResult: false,
+    _awaitContinue: false, _pendingFull: null, _voice: null,
 
     init(userCfg) {
       this.cfg = Object.assign({}, DEFAULTS, userCfg || {});
       this.lang = this.cfg.lang;
+      if (window.speechSynthesis) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => { this._voice = null; }; } catch (e) {} }
       this._mountUI();
       this._emit("ready", { stt: this._sttEngine(), tts: this._ttsEngine() });
       return this;
@@ -89,10 +102,12 @@
       this._stopListening(); this._stopSpeaking(); this._setState("idle");
     },
     _endTurn() {            // Billi finished speaking (or had nothing to say)
+      if (this._awaitContinue) { setTimeout(() => { if (this._awaitContinue) this._startListening(); }, this.cfg.conversationRestartMs); return; }
       if (this._convo) setTimeout(() => { if (this._convo) this._startListening(); }, this.cfg.conversationRestartMs);
       else this._setState("idle");
     },
     _noInput() {           // listening ended with no speech captured
+      if (this._awaitContinue) { this._awaitContinue = false; this._pendingFull = null; return this._convo ? this._endTurn() : this._setState("idle"); }
       if (!this._convo) return this._setState("idle");
       if (++this._silence >= this.cfg.conversationMaxSilence) return this.stopConversation();
       this._endTurn();     // re-open the mic for another try
@@ -156,6 +171,16 @@
 
     // ---- chat ----------------------------------------------------------------
     async _handle(text) {
+      // If we just summarised a long reply and are waiting to hear "continue":
+      if (this._awaitContinue) {
+        this._awaitContinue = false;
+        if (/\b(continue|carry on|go on|yes|yeah|ya|read|rest|more|full|please)\b/i.test(text)) {
+          const full = this._pendingFull; this._pendingFull = null;
+          this._emit("transcript", { text });
+          return this._speak(this._clean(full));   // read the whole thing
+        }
+        this._pendingFull = null;   // not a "continue" — fall through and treat as a new question
+      }
       this._setState("thinking");
       try {
         let reply;
@@ -176,8 +201,61 @@
           reply = data.reply || "";
         }
         this._emit("reply", { text: reply });
-        await this._speak(reply);
+        // long reply -> speak a short summary, then offer to read the rest
+        if (this.cfg.summarize && this._isLong(reply)) {
+          const summary = await this._summarize(reply);
+          this._pendingFull = reply;
+          this._awaitContinue = true;
+          await this._speak(summary + ". Want me to read the full answer? Say continue.");
+        } else {
+          await this._speak(this._clean(reply));
+        }
       } catch (e) { this._fail(e); }
+    },
+
+    // ---- speech text shaping -------------------------------------------------
+    _clean(t) {            // strip markdown so TTS says words, not "asterisk"
+      if (!t) return "";
+      return String(t)
+        .replace(/```[\s\S]*?```/g, ". ")               // code fences
+        .replace(/`([^`]+)`/g, "$1")                      // inline code
+        .replace(/!\[[^\]]*\]\([^)]*\)/g, "")             // images
+        .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")          // links -> text
+        .replace(/^\s{0,3}#{1,6}\s*/gm, "")               // headings
+        .replace(/^\s*>\s?/gm, "")                         // blockquotes
+        .replace(/^\s*[-*+]\s+/gm, ". ")                  // bullets -> pause
+        .replace(/^\s*\d+\.\s+/gm, ". ")                  // numbered list -> pause
+        .replace(/\*\*([^*]+)\*\*/g, "$1")                // bold **
+        .replace(/__([^_]+)__/g, "$1")                     // bold __
+        .replace(/\*([^*]+)\*/g, "$1")                     // italic *
+        .replace(/_([^_]+)_/g, "$1")                        // italic _
+        .replace(/~~([^~]+)~~/g, "$1")                      // strikethrough
+        .replace(/[*_#`~|>]/g, " ")                         // any leftover symbols
+        .replace(/\s+([.,!?;:])/g, "$1")                   // tidy spaces before punctuation
+        .replace(/\.{2,}/g, ".")                            // collapse ...
+        .replace(/\s{2,}/g, " ")                            // collapse spaces
+        .trim();
+    },
+    _isLong(t) {
+      const c = this._clean(t);
+      const sentences = (c.match(/[.!?]+(\s|$)/g) || []).length;
+      return c.length > this.cfg.longReplyChars || sentences > this.cfg.longReplySentences;
+    },
+    async _summarize(full) {
+      if (this.cfg.summarizeEndpoint) {       // true AI summary, if a route is wired
+        try {
+          const r = await fetch(this.cfg.summarizeEndpoint, {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: full }), credentials: "same-origin"
+          });
+          if (r.ok) { const d = await r.json(); if (d && d.summary) return this._clean(d.summary); }
+        } catch (e) { console.warn("[BilliVoice] summarize endpoint failed, using fallback", e); }
+      }
+      return this._extract(this._clean(full), 2);   // fallback: first 1-2 sentences
+    },
+    _extract(text, n) {
+      const parts = text.replace(/([.!?])\s+/g, "$1\n").split("\n").filter(Boolean);
+      return parts.slice(0, n).join(" ");
     },
 
     // ---- TTS -----------------------------------------------------------------
@@ -209,12 +287,30 @@
 
     _speakBrowser(text) {
       const u = new SpeechSynthesisUtterance(text);
-      u.lang = this.lang;
-      const v = (speechSynthesis.getVoices() || []).find(x => x.lang === this.lang)
-        || (speechSynthesis.getVoices() || []).find(x => x.lang.startsWith(this.lang.split("-")[0]));
-      if (v) u.voice = v;
+      const v = this._pickVoice();
+      if (v) { u.voice = v; u.lang = v.lang || this.lang; } else { u.lang = this.lang; }
+      u.rate = this.cfg.rate; u.pitch = this.cfg.pitch;
       u.onend = () => this._endTurn();
+      u.onerror = () => this._endTurn();
       speechSynthesis.cancel(); speechSynthesis.speak(u);
+    },
+    _pickVoice() {
+      if (this._voice) return this._voice;
+      const vs = (window.speechSynthesis && speechSynthesis.getVoices()) || [];
+      if (!vs.length) return null;
+      const has = (x, p) => ((x.name || "") + " " + (x.lang || "")).toLowerCase().indexOf(p) >= 0;
+      const prefs = this.cfg.voicePreference || [];
+      for (let i = 0; i < prefs.length; i++) { const hit = vs.find(x => has(x, prefs[i].toLowerCase())); if (hit) return (this._voice = hit); }
+      const female = vs.filter(x => /female|woman|samantha|libby|sonia|hazel|aria|amy|emma|tessa|karen|moira/i.test(x.name || ""));
+      const pool = female.length ? female : vs;
+      const langs = ["en-za", "en-gb", "en-au", "en-ie", "en"];
+      for (let j = 0; j < langs.length; j++) { const v = pool.find(x => (x.lang || "").toLowerCase().indexOf(langs[j]) === 0); if (v) return (this._voice = v); }
+      return (this._voice = pool[0] || vs[0] || null);
+    },
+    listVoices() {   // call BilliVoice.listVoices() in the console to see what your device offers
+      const vs = (window.speechSynthesis && speechSynthesis.getVoices()) || [];
+      try { console.table(vs.map(v => ({ name: v.name, lang: v.lang, default: v.default }))); } catch (e) { console.log(vs); }
+      return vs;
     },
 
     _stopSpeaking() {
