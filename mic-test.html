@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Billi Mic Test</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;font-family:Helvetica,Arial,sans-serif}
+  body{background:#15171b;color:#f4f0ea;padding:18px;line-height:1.5}
+  h1{font-size:20px;margin-bottom:6px;color:#F69B2D}
+  .env{font-size:12.5px;color:#9aa4ad;background:#1f2329;border:1px solid #2c323a;border-radius:10px;padding:10px 12px;margin:10px 0}
+  .env b{color:#cdd4db}
+  button{width:100%;border:none;border-radius:14px;padding:18px;font-size:17px;font-weight:700;
+    color:#fff;margin-top:14px;cursor:pointer}
+  .b1{background:#2FB6E6}.b2{background:#36A86B}
+  .out{margin-top:12px;background:#0e1116;border:1px solid #2c323a;border-radius:12px;padding:16px;min-height:90px;font-size:16px;white-space:pre-wrap;word-break:break-word}
+  .big{font-size:22px;font-weight:700}
+  .ok{color:#54e0a0}.err{color:#ff7a63}.mut{color:#9aa4ad}
+</style>
+</head>
+<body>
+  <h1>Billi — Microphone &amp; Voice Test</h1>
+  <div class="mut" style="font-size:13px">Open this in Chrome, tap each button, speak a sentence, and read the result.</div>
+
+  <div class="env" id="env">checking environment…</div>
+
+  <button class="b1" id="b1">1 — Test voice recognition</button>
+  <div class="out" id="o1"><span class="mut">Result will show here.</span></div>
+
+  <button class="b2" id="b2">2 — Test microphone capture</button>
+  <div class="out" id="o2"><span class="mut">Result will show here.</span></div>
+
+<script>
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  document.getElementById('env').innerHTML =
+    '<b>Speech recognition present:</b> ' + (SR ? 'yes' : 'NO') + '<br>' +
+    '<b>Secure (https):</b> ' + (window.isSecureContext ? 'yes' : 'NO') + '<br>' +
+    '<b>Installed app (PWA):</b> ' + (standalone ? 'YES — use a browser tab instead' : 'no (browser tab)') + '<br>' +
+    '<b>Browser:</b> ' + navigator.userAgent.replace(/^Mozilla\/5.0 /,'').slice(0,90);
+
+  // ---- Test 1: Web Speech recognition ----
+  var o1 = document.getElementById('o1');
+  document.getElementById('b1').onclick = function () {
+    if (!SR) { o1.innerHTML = '<span class="err big">No SpeechRecognition on this browser.</span>'; return; }
+    o1.innerHTML = '<span class="mut">requesting mic…</span>';
+    var rec = new SR();
+    rec.lang = 'en-US'; rec.interimResults = true; rec.maxAlternatives = 1; rec.continuous = false;
+    var got = false;
+    rec.onstart = function () { o1.innerHTML = '<span class="big">🎙️ Listening… say something</span>'; };
+    rec.onresult = function (e) {
+      got = true;
+      var t = '';
+      for (var i = 0; i < e.results.length; i++) t += e.results[i][0].transcript;
+      o1.innerHTML = '<span class="ok big">✓ HEARD:</span><br>' + t;
+    };
+    rec.onerror = function (e) {
+      o1.innerHTML = '<span class="err big">✗ ERROR: ' + e.error + '</span><br>' +
+        '<span class="mut">' + explain(e.error) + '</span>';
+    };
+    rec.onend = function () { if (!got && o1.innerHTML.indexOf('ERROR') < 0) o1.innerHTML = '<span class="err big">✗ ended with NO result</span><br><span class="mut">recognizer captured no speech (no-speech). Web Speech is not working here — use the server route.</span>'; };
+    try { rec.start(); } catch (err) { o1.innerHTML = '<span class="err">start() failed: ' + err.message + '</span>'; }
+  };
+  function explain(code){
+    if(code==='not-allowed'||code==='service-not-allowed') return 'Microphone permission is blocked. Allow it for this site.';
+    if(code==='no-speech') return 'Mic opened but heard nothing — likely a device/mic routing issue.';
+    if(code==='network') return 'The browser speech servers are unreachable on this device. Use the server STT route.';
+    if(code==='language-not-supported') return 'This language model is missing — try en-US.';
+    if(code==='aborted') return 'Recognition was cancelled.';
+    return 'Unrecognised error.';
+  }
+
+  // ---- Test 2: raw mic capture (proves the server STT path will work) ----
+  var o2 = document.getElementById('o2');
+  document.getElementById('b2').onclick = async function () {
+    o2.innerHTML = '<span class="mut">requesting mic… speak for ~3 seconds</span>';
+    try {
+      var stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      var mime = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '';
+      var mr = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
+      var bytes = 0;
+      mr.ondataavailable = function (ev) { bytes += ev.data.size; };
+      mr.onstop = function () {
+        stream.getTracks().forEach(function (t) { t.stop(); });
+        if (bytes > 800) o2.innerHTML = '<span class="ok big">✓ MIC WORKS</span><br>captured ' + Math.round(bytes/1024) + ' KB of audio.<br><span class="mut">The server STT route (Deepgram) will work here.</span>';
+        else o2.innerHTML = '<span class="err big">✗ captured almost no audio (' + bytes + ' bytes)</span><br><span class="mut">the microphone is not feeding audio — check device mic settings.</span>';
+      };
+      o2.innerHTML = '<span class="big">🔴 Recording… speak now</span>';
+      mr.start();
+      setTimeout(function () { if (mr.state !== 'inactive') mr.stop(); }, 3000);
+    } catch (err) {
+      o2.innerHTML = '<span class="err big">✗ mic error: ' + (err && err.name) + '</span><br><span class="mut">' + (err && err.message) + '</span>';
+    }
+  };
+</script>
+</body>
+</html>
